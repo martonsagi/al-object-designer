@@ -93,17 +93,21 @@ export class ALObjectDesignerPanel {
 
         let watcher = vscode.workspace.createFileSystemWatcher('**/*.al');
         watcher.onDidCreate(async (e: vscode.Uri) => {
-            await this._update();
+            if (e.fsPath.indexOf('.vscode') == -1) {
+                await this._update();
+            }
         });
 
         watcher.onDidChange(async (e: vscode.Uri) => {
-            setTimeout(async () => {
+            if (e.fsPath.indexOf('.vscode') == -1) {
                 await this._update();
-            }, 300);            
+            }
         });
 
         watcher.onDidDelete(async (e: vscode.Uri) => {
-            await this._update();
+            if (e.fsPath.indexOf('.vscode') == -1) {
+                await this._update();
+            }
         });
 
         this._disposables.push(watcher);
