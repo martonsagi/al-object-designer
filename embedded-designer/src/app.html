@@ -1,0 +1,11 @@
+<template>
+  <require from="./app.css"></require>
+
+  <compose view="resources/elements/header.html"></compose>
+
+  <compose view="resources/elements/toolbar.html"></compose>
+
+  <compose view="resources/elements/designer.html" show.bind="mode == 'Design'"></compose>
+
+  <compose view="resources/elements/objects.html" show.bind="mode == 'List'"></compose>
+</template>

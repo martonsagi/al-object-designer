@@ -1,0 +1,58 @@
+<template>
+    <div class="content" class="virtual-repeater-wrapper">
+
+        <div hidden.bind="loaded">
+            <h1>Discovering objects...</h1>
+        </div>        
+
+        <table id="object-list" style="width: 100%;" show.bind="loaded">
+            <tr>
+                <th style="text-align: left; width: 105px">Type</th>
+                <th style="text-align: right; width: 100px" class="search-col">Id</th>
+                <th style="text-align: left; width: 40px;"></th>
+                <th style="text-align: left;" class="search-col">Name</th>
+                <th style="text-align: left; min-width: 100px" class="search-col">Application</th>
+                <th style="text-align: right; width: 100px">Version</th>
+                <th style="text-align: left; min-width: 100px" class="search-col">Publisher</th>
+            </tr>
+            <tr virtual-repeat.for="element of results" class="virtual-repeated-item" class.bind="selectedObject == element ? 'selected' : ''"
+                mouseover.delegate="setContextBtnVisible(element)" mouseout.delegate="setContextBtnVisible(null)"
+                click.trigger="selectRow(element, $event.target)">
+                <td style="text-align: left;">${element.Type}</td>
+                <td style="text-align: right;">${element.Id || ''}</td>
+                <td style="text-align: left;" class="context-menu-td" id.bind="selectedObject == element || hoverObject == element ? 'context-selected' : ''">
+                    <a class="context-menu-btn" show.bind="selectedObject == element || hoverObject == element" class="context-menu"
+                        click.trigger="setContextMenuVisible()">&nbsp;
+                    </a>
+                    <ul show.bind="selectedObject == element && showMenu == true" class="context-menu-ul">
+                        <li click.trigger="sendCommand(element, 'Definition')"><i class="fa fa-view"></i> View</li>
+                        <li show.bind="element.CanExecute" click.trigger="sendCommand(element, 'Run')"><i class="fa fa-run"></i>
+                            Run</li>
+                        <li show.bind="element.CanDesign" click.trigger="openPageDesigner(element)"><i class="fa fa-design"></i>
+                            Design</li>
+                        <li show.bind="element.CanCreatePage" click.trigger="sendCommand(element, 'NewCard')"><i class="fa fa-list"></i>
+                            New
+                            Card</li>
+                        <li show.bind="element.CanCreatePage" click.trigger="sendCommand(element, 'NewList')"><i class="fa fa-list"></i>
+                            New
+                            List</li>
+                        <li show.bind="element.CanCreatePage" click.trigger="sendCommand(element, 'NewReport')"><i
+                                class="fa fa-report"></i>
+                            New Report</li>
+                        <!-- li show.bind="element.CanCreatePage" click.trigger="sendCommand(element, 'NewXmlPort')"><i
+                                class="fa fa-plus"></i>
+                            New XmlPort</li -->
+                        <li show.bind="element.CanCreatePage" click.trigger="sendCommand(element, 'NewQuery')"><i class="fa fa-plus"></i>
+                            New Query</li>
+                    </ul>
+                </td>
+                <td style="text-align: left;" class="td-name"><a href="#click" click.delegate="sendCommand(element, 'Definition')">${element.Name
+                        || ''}</a>
+                </td>
+                <td style="text-align: left;">${element.Application || ''}</td>
+                <td style="text-align: right;">${element.Version || ''}</td>
+                <td style="text-align: left;">${element.Publisher || ''}</td>
+            </tr>
+        </table>
+    </div>
+</template>

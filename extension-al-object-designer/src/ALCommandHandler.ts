@@ -1,0 +1,255 @@
+import * as vscode from 'vscode';
+import * as path from 'path';
+import * as utils from './utils';
+import { ALObjectCreator } from './ALObjectCreator';
+import { ALObjectDesignerPanel } from './ALObjectDesignerPanel';
+
+export class ALCommandHandler {
+    message: any;
+
+    protected objectDesigner: ALObjectDesignerPanel;
+    protected extensionPath: string = '';
+
+
+    public constructor(lObjectDesigner: ALObjectDesignerPanel, lExtensionPath: string) {
+        this.objectDesigner = lObjectDesigner;
+        this.extensionPath = lExtensionPath;
+    }
+
+    public async dispatch(message: any) {
+        let showOpen = true;
+        switch (message.Command) {
+            default:
+                showOpen = false;
+                await this.commandContextMenuHandler(message);
+                break;
+            case 'Run':
+                await this.commandRun(message);
+                break;
+            case 'NewEmpty':
+                showOpen = false;
+                await this.commandNewEmpty(message);
+                break;
+            case 'NewEmptyCustom':
+                showOpen = false;
+                await this.commandNewEmptyCustom(message);
+                break;
+            case 'Definition':
+                await this.commandDefinition(message);
+                break;
+            case 'Design':
+                await this.commandDesign(message);
+                break;
+        }
+
+        if (showOpen)
+            await vscode.window.showInformationMessage(message.Type + ' ' + message.Id + ' ' + message.Name + ' opened.');
+    }
+
+    //#region Commands
+    private async commandNewEmpty(message: any) {
+        if (message.Command == 'NewEmpty') {
+            let newDoc = await vscode.workspace.openTextDocument({ language: 'al', content: '' });
+            let editor = await vscode.window.showTextDocument(newDoc);
+
+            if (message.Type != 'empty') {
+                let snippet: any = await utils.read(path.join(this.extensionPath, 'altemplates', `${message.Type}.json`));
+                snippet = JSON.parse(snippet);
+                editor.insertSnippet(new vscode.SnippetString(snippet.body.join("\r\n")));
+            }
+            return;
+        }
+    }
+
+    private async commandNewEmptyCustom(message: any) {
+        let newDoc = await vscode.workspace.openTextDocument({ language: 'al', content: '' });
+        let editor = await vscode.window.showTextDocument(newDoc);
+
+        let snippet: any = await utils.read(message.FsPath);
+        snippet = JSON.parse(snippet);
+        editor.insertSnippet(new vscode.SnippetString(snippet.body.join("\r\n")));
+
+        return;
+    }
+
+    private async commandRun(message: any) {
+        return await this.commandDefinition(message);
+    }
+
+    private async commandDefinition(message: any) {
+        let objType = message.Type,
+            notDefinition = message.Command != 'Definition';
+        switch (objType) {
+            case 'Table':
+                objType = 'Record';
+                break;
+        }
+
+        let createFile: boolean = message.FsPath == "" || message.Command == 'Run';
+        let fname = "";
+
+        if (createFile) {
+            fname = (vscode.workspace as any).workspaceFolders[0].uri.fsPath + path.sep + `.vscode` + path.sep + `Opening_${Date.now()}.al`;
+            let snippet =
+                `${notDefinition ? message.Type.toLowerCase() : "codeunit"} ${notDefinition ? message.Id : "99999999"} ${notDefinition ? '"' + message.Name + '"' : "Temp"} {
+    var
+        Lookup: ${objType} "${message.Name}";
+}`
+                ;
+            await utils.write(fname, snippet);
+            let newDoc = await vscode.workspace.openTextDocument(fname);
+            let editor = await vscode.window.showTextDocument(newDoc);
+
+            let pos = new vscode.Position(2, 18 + objType.length);
+            editor.selection = new vscode.Selection(pos, pos);
+        }
+
+        if (message.Command == 'Run') {
+            let res: any = await vscode.commands.executeCommand('crs.RunCurrentObjectWeb');
+            await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+        } else {
+            if (message.FsPath != "") {
+                let newDoc = await vscode.workspace.openTextDocument(message.FsPath);
+                await vscode.window.showTextDocument(newDoc, vscode.ViewColumn.One);
+            } else {
+                let res: any = await vscode.commands.executeCommand('editor.action.goToDeclaration');
+            }
+        }
+
+        if (createFile) {
+            setTimeout(() => {
+                try {
+                    utils.unlink(fname);
+                } catch (e) {
+                    console.log(e);
+                }
+            }, 1000);
+        }
+    }
+
+    private async commandDesign(message: any) {
+        if (message.Command == 'Design') {
+            let parsedObj = new ALObjectCreator(message, message);
+            await parsedObj.create();
+            message.ParsedObject = parsedObj.fields;
+            message.SubType = parsedObj.subType;
+            ALObjectDesignerPanel.createOrShow(this.extensionPath, "Design", message);
+            return;
+        }
+    }
+
+    private async commandContextMenuHandler(message: any) {
+        if (['Parse', 'NewList', 'NewCard', 'NewReport', 'NewXmlPort', 'NewQuery'].indexOf(message.Command) != -1) {
+            let testobj = new ALObjectCreator(message, message);
+            let newOptions: any = {};
+            switch (message.Command) {
+                case 'NewList':
+                    newOptions = {
+                        Type: "page",
+                        SubType: "List",
+                        Group: "group(Group)",
+                        Area: "area(content)",
+                        Field: "field"
+                    };
+                    break;
+                case 'NewCard':
+                    newOptions = {
+                        Type: "page",
+                        SubType: "Card",
+                        Group: "group(General)",
+                        Area: "area(content)",
+                        Field: "field"
+                    };
+                    break;
+                case 'NewReport':
+                    newOptions = {
+                        Type: "report",
+                        SubType: "",
+                        Group: `dataitem(MainItem;"${message.Name}")`,
+                        Area: "dataset",
+                        Field: "column"
+                    };
+                    break;
+                case 'NewXmlPort':
+                    newOptions = {
+                        Type: "xmlport",
+                        SubType: "",
+                        Group: `dataitem(MainItem;"${message.Name}")`,
+                        Area: "dataset",
+                        Field: "column"
+                    };
+                    break;
+                case 'NewQuery':
+                    newOptions = {
+                        Type: "query",
+                        SubType: "",
+                        Group: `dataitem(MainItem;"${message.Name}")`,
+                        Area: "elements",
+                        Field: "column"
+                    };
+                    break;
+            }
+            await testobj.create();
+
+            let fields = testobj.fields;
+            let caption = `${testobj.name}${newOptions.SubType != "" ? ` ${newOptions.SubType}` : ''}`;
+            let content = `
+${newOptions.Type} ${'${1:id}'} "${'${2:' + caption + '}'}"
+{
+    Caption = '${'${2:' + caption + '}'}';`;
+
+            if (newOptions.Type == "page") {
+                content += `
+    PageType = Card;
+    SourceTable = "${testobj.name}";
+    UsageCategory = ${newOptions.SubType == "Card" ? 'Documents' : 'Lists'};
+    
+    layout
+    {
+    `;
+            }
+
+            content +=
+                `       
+        ${newOptions.Area}
+        {
+            ${newOptions.Group}
+            {
+                `;
+
+            for (let i = 0; i < fields.length; i++) {
+                const element = fields[i];
+
+                content += `
+                ${newOptions.Field}("${newOptions.Type == "page" ? element : element.replace(/\s|\./g, '_')}"; "${element}") 
+                {
+                        ${newOptions.Type == "Page" ? 'ApplicationArea = All;' : ''}
+                }
+                `;
+            }
+
+            content += `
+            }
+        }`;
+
+            if (newOptions.Type == "page") {
+                content += `
+    }
+    `;
+            }
+            content += `
+}`;
+
+            let newDoc = await vscode.workspace.openTextDocument({ language: "al", content: '' });
+            let editor = await vscode.window.showTextDocument(newDoc);
+            editor.insertSnippet(new vscode.SnippetString(content));
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    //#endregion
+
+}

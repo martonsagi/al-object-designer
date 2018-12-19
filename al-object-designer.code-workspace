@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "extension-al-object-designer"
+		},
+		{
+			"path": "embedded-designer"
+		}
+	],
+	"settings": {
+		"typescript.tsc.autoDetect": "off"
+	}
+}

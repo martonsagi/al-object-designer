@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AL Object Designer</title>
+</head>
+
+<body>
+    <div aurelia-app="main"></div>
+    <script>
+        window.vscode = acquireVsCodeApi();
+        window.panelMode = "${panelMode}";
+        window.objectInfo = ${objectInfo};
+    </script>
+
+    <script src="scripts/vendor-bundle.js" data-main="aurelia-bootstrapper"></script>
+</body>

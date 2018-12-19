@@ -1,0 +1,26 @@
+<template>
+    <div class="content" class="virtual-repeater-wrapper">
+
+        <div id="card-designer-wrapper" show.bind="objectInfo.SubType == 'Card'">
+            <div id="actions-placeholder">Actions...</div>
+            <h2>Group</h2>
+            <div class="designer-input" repeat.for="item of objectInfo.ParsedObject" style="margin-bottom: 9px;">
+                <a style="width: 200px; display: inline-block">${item}</a><input style="width: 200px" type="text" value="..."
+                    disabled>
+            </div>
+        </div>
+
+        <div show.bind="objectInfo.SubType == 'List'">
+            <div id="actions-placeholder">Actions...</div>
+            <div style="margin-top: 10px;"></div>
+            <table style="width: 100%">
+                <tr>
+                    <th repeat.for="field of objectInfo.ParsedObject" style="min-width: 150px; text-align: left;">${field}</th>
+                </tr>
+                <tr repeat.for="i of 10">
+                    <td repeat.for="field of objectInfo.ParsedObject">&nbsp;</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</template>
