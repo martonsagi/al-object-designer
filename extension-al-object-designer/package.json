@@ -19,7 +19,11 @@
         "url": "https://github.com/martonsagi/al-object-designer.git"
     },
     "keywords": [
-        "AL", "AL Extensions", "Business Central", "CSIDE", "Dynamics NAV"
+        "AL",
+        "AL Extensions",
+        "Business Central",
+        "CSIDE",
+        "Dynamics NAV"
     ],
     "engines": {
         "vscode": "^1.29.0"
@@ -48,7 +52,6 @@
         "test": "npm run compile && node ./node_modules/vscode/bin/test"
     },
     "extensionDependencies": [
-        "Microsoft.al",
         "waldo.crs-al-language-extension"
     ],
     "devDependencies": {
@@ -59,7 +62,6 @@
         "@types/mocha": "^2.2.42"
     },
     "dependencies": {
-        "firstline": "^2.0.2",
         "fs-extra": "^7.0.1",
         "jszip": "^3.1.5",
         "thenby": "^1.3.0"

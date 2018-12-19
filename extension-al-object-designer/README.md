@@ -30,6 +30,7 @@ TODO: this is something I want for future releases. Many options are now hardcod
 ## Known Issues
 
 * Page generation works only with local table objects. You cannot generate new page from standard objects (symbols).
+* Design feature works only with local pages, the window is empty when selecting page extensions.
 * View (Go to definition) is activate for all object types, however, it will not work with Control Add-ins for example. 
 * It might be too bright for dark themes. 
 

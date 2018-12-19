@@ -65,6 +65,10 @@ div.content {
     padding: 200px 40px 20px;
 }
 
+div.designer-content {
+    padding-top: 150px;
+}
+
 th {
     font-family: webclient-standard, device-standard, "Segoe UI", "Segoe WP", Segoe, Tahoma, Helvetica, Arial, sans-serif !important;
     font-weight: 400 !important;
@@ -326,6 +330,10 @@ tr.selected:hover td#context-selected {
 
     div.content {
         padding-top: 280px;
+    }
+
+    div.designer-content {
+        padding-top: 150px;
     }
 
   }

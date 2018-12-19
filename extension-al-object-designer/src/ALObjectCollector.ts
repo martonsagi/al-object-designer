@@ -2,7 +2,6 @@ import { workspace } from 'vscode';
 import * as path from 'path';
 import * as utils from './utils';
 let firstBy = require('thenby');
-let firstline = require('firstline');
 
 export class ALObjectCollector {
 
@@ -68,7 +67,7 @@ export class ALObjectCollector {
 
         for (let i = 0; i < dalFiles.length; i++) {
             const element = dalFiles[i];
-            
+
             let regex = /([aA-zZ\s]+)([0-9\.]+)(\.app)/g;
             let matches = utils.getAllMatches(regex, element);
             let matchInfo = matches[0];
@@ -103,7 +102,7 @@ export class ALObjectCollector {
 
         for (let i = 0; i < result.length; i++) {
             let file = result[i].fsPath;
-            let line: string = await firstline(file);
+            let line: string = await utils.getFirstCodeLine(file);
             let parts = line.split(" ");
 
             if (parts.length > 2) {

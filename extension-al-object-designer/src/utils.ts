@@ -175,3 +175,18 @@ export async function mkdir(folder: any) {
 export async function copyFiles(source: any, destination: any) {
     return await fs.copy(source, destination);
 }
+
+export async function getFirstCodeLine(file: string) {
+    return new Promise<string>((resolve, reject) => {
+        let lineReader = require('readline').createInterface({
+            input: require('fs').createReadStream(file),
+        });
+
+        lineReader.on('line', (fline: string) => { 
+            if (fline.length > 0 && fline[0] != '/') {
+                resolve(fline);
+                lineReader.close(); 
+            }
+        });
+    });
+}
