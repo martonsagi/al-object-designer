@@ -17,7 +17,7 @@ C/Side Object Designer was something that the new AL development environment lac
 * **Custom snippets**: use your own snippets placed in `<project root>/.altemplates` folder
 * **Design view** for Pages (experimental): a simple card/list layout is rendered for local pages. 
 
-![alt](https://github.com/martonsagi/al-object-designer/extension-al-object-designer/images/preview1.png)
+![alt](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/extension-al-object-designer/images/preview1.PNG)
 
 ## Requirements
 
@@ -36,13 +36,13 @@ TODO: this is something I want for future releases. Many options are now hardcod
 ## Preview
 
 ### Searching for "Item Ledger Entry" table
-![alt](https://github.com/martonsagi/al-object-designer/extension-al-object-designer/images/preview2.png)
+![alt](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/extension-al-object-designer/images/preview2.PNG)
 
 ### Find Page "Sales Order" as a dynosaur would :)
-![alt](https://github.com/martonsagi/al-object-designer/extension-al-object-designer/images/preview3.png)
+![alt](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/extension-al-object-designer/images/preview3.PNG)
 
 ### Filter to workspace and check the context menu for more options
-![alt](https://github.com/martonsagi/al-object-designer/extension-al-object-designer/images/preview4.png)
+![alt](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/extension-al-object-designer/images/preview4.PNG)
 
 ## Under the hood
 AL Object Designer is literally a single-page [Aurelia](https://aurelia.io/) app that is embedded into a VS Code WebView and exchanges data back and forth.
