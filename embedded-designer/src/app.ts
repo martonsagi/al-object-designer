@@ -81,7 +81,7 @@ export class App {
           || f.Version.toLowerCase().indexOf(this.query.toLowerCase()) != -1
           || this.searchParts(this.query, `${f.Type}${f.Id}`) == true
           || this.searchParts(this.query, f.Name) == true)
-          //|| this.searchParts(this.query, f.EventName) == true
+          || (this.showEvents == true && this.query != "" && this.searchParts(this.query, f.EventName) == true)
       );
 
     this.count = this.results.length;
