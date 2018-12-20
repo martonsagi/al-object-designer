@@ -13,9 +13,9 @@
                 <th style="text-align: left;" class="search-col">Name</th>
                 <th show.bind="showEvents" style="text-align: left;">Event Name</th>
                 <th show.bind="showEvents" style="text-align: left;">Event Type</th>
-                <th style="text-align: left; min-width: 100px" class="search-col">Application</th>
-                <th style="text-align: right; width: 100px">Version</th>
-                <th style="text-align: left; min-width: 100px" class="search-col">Publisher</th>
+                <th hide.bind="showEvents" style="text-align: left; min-width: 100px" class="search-col">Application</th>
+                <th hide.bind="showEvents" style="text-align: right; width: 100px">Version</th>
+                <th hide.bind="showEvents" style="text-align: left; min-width: 100px" class="search-col">Publisher</th>
             </tr>
             <tr virtual-repeat.for="element of results" class="virtual-repeated-item" class.bind="selectedObject == element ? 'selected' : ''"
                 mouseover.delegate="setContextBtnVisible(element)" mouseout.delegate="setContextBtnVisible(null)"
@@ -53,9 +53,9 @@
                 </td>
                 <td show.bind="showEvents" style="text-align: left;">${element.EventName || ''}</td>
                 <td show.bind="showEvents" style="text-align: left;">${element.EventType || ''}</td>
-                <td style="text-align: left;">${element.Application || ''}</td>
-                <td style="text-align: right;">${element.Version || ''}</td>
-                <td style="text-align: left;">${element.Publisher || ''}</td>
+                <td hide.bind="showEvents" style="text-align: left;">${element.Application || ''}</td>
+                <td hide.bind="showEvents" style="text-align: right;">${element.Version || ''}</td>
+                <td hide.bind="showEvents" style="text-align: left;">${element.Publisher || ''}</td>
             </tr>
         </table>
     </div>
