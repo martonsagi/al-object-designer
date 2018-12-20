@@ -13,11 +13,12 @@ export class App {
   loaded: boolean = false;
   mode: string;
   customLinks: Array<any> = [];
+  events: Array<any> = [];
+  showEvents: boolean = false;
+  headerType: string = 'object';
 
   @observable
   objectInfo: any;
-
-  
 
   @observable
   currentProject: boolean;
@@ -47,6 +48,7 @@ export class App {
         case 'data':
           this.data = message.data;
           this.customLinks = message.customLinks;
+          this.events = message.events;
           this.loaded = true;
 
           this.filterType("");
@@ -65,7 +67,9 @@ export class App {
       this.query = newQuery;
     }
 
-    this.results = this.data
+    let source = this.showEvents ? this.events : this.data;
+
+    this.results = source
       .filter(f =>
         (this.activeType != "" ? f.Type == this.activeType : true)
         &&
@@ -77,6 +81,7 @@ export class App {
           || f.Version.toLowerCase().indexOf(this.query.toLowerCase()) != -1
           || this.searchParts(this.query, `${f.Type}${f.Id}`) == true
           || this.searchParts(this.query, f.Name) == true)
+          //|| this.searchParts(this.query, f.EventName) == true
       );
 
     this.count = this.results.length;
@@ -174,6 +179,12 @@ export class App {
 
   setContextMenuVisible() {
     this.showMenu = !this.showMenu;
+  }
+
+  setEventsView() {
+    this.showEvents = !this.showEvents;
+    this.headerType = this.showEvents ? 'event' : 'object';
+    this.search();
   }
 
   setCurrentProjectFilter() {

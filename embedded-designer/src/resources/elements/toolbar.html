@@ -28,6 +28,7 @@
             <button class.bind="activeType == 'Profile' ? 'selected' : ''" click.delegate="filterType('Profile')" id="filter-Profile">Profiles</button>
         </div>
         <div class="object-bar-line" show.bind="mode == 'List'">
+            <button class.bind="showEvents ? 'selected' : ''" click.delegate="setEventsView()" title="Show Events" style="cursor: pointer">Events</button>
             <span class="new-object-link" click.delegate="refreshDesigner()" title="Create a new Object" style="cursor: pointer">Refresh</span>
             <span class="new-object-link" click.delegate="addNewObject('empty')" title="Create a new Object" style="cursor: pointer">+
                 New Object</span>

@@ -135,6 +135,7 @@ export class ALObjectDesignerPanel {
         if (this.panelMode == "List") {            
             let objectCollector = new ALObjectCollector();
             let objs = await objectCollector.discover();
+            let events = objectCollector.events;
             let links: Array<any> = [];
             try {
                 let linkCollector = new ALTemplateCollector(this._extensionPath);
@@ -144,7 +145,7 @@ export class ALObjectDesignerPanel {
                 console.log(`Cannot load templates: ${e}`);
             }
 
-            this._panel.webview.postMessage({ command: 'data', data: objs, 'customLinks': links });
+            this._panel.webview.postMessage({ command: 'data', data: objs, 'customLinks': links, 'events': events });
         } else {
             let parsedObj = new ALObjectCreator(this.objectInfo, this.objectInfo);
             await parsedObj.create();

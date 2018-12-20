@@ -3,10 +3,10 @@
         <h1>AL</h1>
         <h1>Object Designer</h1>
         <h1 show.bind="loaded">
-            <span textcontent.bind="count || 0"></span> object${count > 1 ? 's' : ''}
+            <span textcontent.bind="count || 0"></span> ${headerType}${count > 1 ? 's' : ''}
         </h1>
         <h1 style="float: right; padding: 6px 15px 5px 15px;">
-            <input id="searchInput" type="text" id="searchVal" placeholder="Search for objects" value.bind="query"
+            <input id="searchInput" type="text" id="searchVal" placeholder="Search for ${headerType}s" value.bind="query"
                 keyup.delegate="search() & throttle:350" />
         </h1>
         <h1 id="searchHeader" style="float: right; padding-right: 15px; border-left: none; cursor: pointer" click.delegate="filterType('', true)">

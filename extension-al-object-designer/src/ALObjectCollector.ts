@@ -2,8 +2,11 @@ import { workspace } from 'vscode';
 import * as path from 'path';
 import * as utils from './utils';
 let firstBy = require('thenby');
+let linq = require('linq');
 
 export class ALObjectCollector {
+
+    public events: Array<any> = [];
 
     private types = [
         "Tables",
@@ -141,7 +144,8 @@ export class ALObjectCollector {
                     "CanExecute": ["Table", "Page", "PageExtension", "PageCustomization", "TableExtension", "Report"].indexOf(ucType) != -1,
                     "CanDesign": ["Page", "PageExtension"].indexOf(ucType) != -1,
                     "CanCreatePage": ['Table', 'TableExtension'].indexOf(ucType) != -1 && file != "",
-                    "FsPath": file
+                    "FsPath": file,
+                    "EventName": 'not_an_event'
                 };
 
                 objs.push(newItem);
@@ -169,6 +173,40 @@ export class ALObjectCollector {
 
                     if (json[elem]) {
                         let tempArr = json[elem].map((t: any) => {
+                            let levents: Array<any> = [];
+                            if (t.Methods) {
+                                for (let k = 0; k < t.Methods.length; k++) {
+                                    const m = t.Methods[k];
+                                    if (m.Attributes) {
+                                        let attrs = m.Attributes.filter((a: any) => {
+                                            return a.Name.indexOf('Event') != -1;
+                                        });
+
+                                        if (attrs.length > 0) {
+                                            levents.push({
+                                                'Type': lType,
+                                                'Id': t.Id,
+                                                'Name': t.Name,
+                                                "TargetObject": t.TargetObject || "",
+                                                "Publisher": json.Publisher || "Platform",
+                                                "Application": json.Name || "",
+                                                "Version": json.Version || "",
+                                                "CanExecute": false,
+                                                "CanDesign": false,
+                                                "FsPath": "",
+                                                'EventName': m.Name,
+                                                'EventType': attrs[0].Name,
+                                                'EventParameters': m.Parameters
+                                            });
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (levents.length > 0) {
+                                this.events = this.events.concat(levents);
+                            }
+
                             return {
                                 "TypeId": j || "",
                                 "Type": lType || "",
@@ -180,7 +218,9 @@ export class ALObjectCollector {
                                 "Version": json.Version || "",
                                 "CanExecute": ["Table", "Page", "PageExtension", "TableExtension", "PageCustomization", "Report"].indexOf(lType) != -1,
                                 "CanDesign": false,
-                                "FsPath": ""
+                                "FsPath": "",
+                                "Events": levents,
+                                "EventName": 'not_an_event'
                             };
                         });
 
