@@ -5,10 +5,12 @@ C/Side Object Designer was something that the new AL development environment lac
 ## Main Features
 
 * **List Overview** of all AL objects in your project: based on symbols (*.app) and your local .al files.
+* **List Events** from symbol objects, browse them in the same way as objects.
 * **Live Update:** object list is automatically maintained as you create/change/delete objects or download symbols.
 * **Multi-Folder workspaces** are supported: e.g. a workspace with MainApp/TestApp folders.
 * **Object Search**: filter by Object Type, Name or ID.
-* **Name filtering**: works with partial matches as well. Just like the Windows RTC Client's search field.
+* **Event Search**: filter by Object Type, Name, ID or Event Name.
+* **Object/Event Name filtering**: works with partial matches as well. Just like the Windows RTC Client's search field.
 * **Run** selected objects.
 * **Run** table/page **extentions**.
 * **View definition of Symbols**: original file is opened for local files.
@@ -32,6 +34,7 @@ TODO: this is something I want for future releases. Many options are now hardcod
 * Page generation works only with local table objects. You cannot generate new page from standard objects (symbols).
 * Design feature works only with local pages, the window is empty when selecting page extensions.
 * View (Go to definition) is activate for all object types, however, it will not work with Control Add-ins for example. 
+* Event listing does not include events defined in local objects.
 * It might be too bright for dark themes. 
 
 ## Preview
@@ -45,10 +48,19 @@ TODO: this is something I want for future releases. Many options are now hardcod
 ### Filter to workspace and check the context menu for more options
 ![alt](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/extension-al-object-designer/images/preview4.PNG)
 
+### Browse events
+![alt](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/extension-al-object-designer/images/preview5.PNG)
+
 ## Under the hood
 AL Object Designer is literally a single-page [Aurelia](https://aurelia.io/) app that is embedded into a VS Code WebView and exchanges data back and forth.
 
 ## Release Notes
+
+### 0.0.3
+Event Browser feature
+
+### 0.0.2
+Fixed wrong package description
 
 ### 0.0.1
 
