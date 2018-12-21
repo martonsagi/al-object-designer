@@ -51,6 +51,12 @@ TODO: this is something I want for future releases. Many options are now hardcod
 ### Browse events
 ![alt](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/extension-al-object-designer/images/preview5.PNG)
 
+### Copy/Paste Events
+![alt](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/extension-al-object-designer/images/ALObjectDesigner_ObjectEventCopyPaste.gif)
+
+### Real-time Page Designer (pre-alpha :-) )
+![alt](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/extension-al-object-designer/images/ALObjectDesigner_PageDesign.gif)
+
 ## Under the hood
 AL Object Designer is literally a single-page [Aurelia](https://aurelia.io/) app that is embedded into a VS Code WebView and exchanges data back and forth.
 
