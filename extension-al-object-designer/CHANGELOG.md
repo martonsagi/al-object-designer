@@ -1,5 +1,5 @@
 # Change Log
-All notable changes to the "calfeatures" extension.
+All notable changes to the "al-object-designer" extension.
 
 ## 0.0.3 - 2018-12-21
 Event Browser feature:
