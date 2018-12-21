@@ -51,7 +51,7 @@
                 <td style="text-align: left;" class="td-name"><a href="#click" click.delegate="sendCommand(element, 'Definition')">${element.Name
                         || ''}</a>
                 </td>
-                <td show.bind="showEvents" style="text-align: left;">${element.EventName || ''}</td>
+                <td show.bind="showEvents" style="text-align: left;"><a href="#click" click.delegate="showEventParams(element)">${element.EventName || ''}</a></td>
                 <td show.bind="showEvents" style="text-align: left;">${element.EventType || ''}</td>
                 <td hide.bind="showEvents" style="text-align: left;">${element.Application || ''}</td>
                 <td hide.bind="showEvents" style="text-align: right;">${element.Version || ''}</td>

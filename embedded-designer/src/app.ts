@@ -67,7 +67,7 @@ export class App {
       this.query = newQuery;
     }
 
-    let source = this.showEvents ? this.events : this.data;
+    let source = this.showEvents === true ? this.events : this.data;
 
     this.results = source
       .filter(f =>
@@ -76,12 +76,10 @@ export class App {
         (this.currentProject == true ? f.FsPath != "" : true)
         &&
         (f.Id.toString().indexOf(this.query.toLowerCase()) != -1
-          //|| `${f.Type} ${f.Id} ${f.Name}`.toLowerCase().indexOf(this.query.toLowerCase()) != -1
           || f.Publisher.toLowerCase().indexOf(this.query.toLowerCase()) != -1
           || f.Version.toLowerCase().indexOf(this.query.toLowerCase()) != -1
           || this.searchParts(this.query, `${f.Type}${f.Id}`) == true
-          || this.searchParts(this.query, f.Name) == true)
-          || (this.showEvents == true && this.query != "" && this.searchParts(this.query, f.EventName) == true)
+          || this.searchParts(this.query, this.showEvents ? `${f.Name} ${f.EventName}` : f.Name) == true)
       );
 
     this.count = this.results.length;
@@ -126,7 +124,8 @@ export class App {
       Id: id,
       Name: name,
       FsPath: element.FsPath,
-      Command: command
+      Command: command,
+      EventData: element
     };
 
     let messages = [message];
@@ -222,5 +221,9 @@ export class App {
     ];*/
 
     this.sendCommand(element, 'Design');
+  }
+
+  showEventParams(element) {
+    this.sendCommand(element, 'CopyEvent');
   }
 }

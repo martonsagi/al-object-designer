@@ -16,6 +16,8 @@ export class ALObjectDesignerPanel {
     public static currentPanel: ALObjectDesignerPanel | undefined;
     private panelMode: string = "List"; // List, Designer
     public objectInfo: any;
+    public objectList: Array<any> = [];
+    public eventList: Array<any> = [];
 
     public static readonly viewType = 'alObjectDesigner';
 
@@ -134,8 +136,8 @@ export class ALObjectDesignerPanel {
 
         if (this.panelMode == "List") {            
             let objectCollector = new ALObjectCollector();
-            let objs = await objectCollector.discover();
-            let events = objectCollector.events;
+            this.objectList = await objectCollector.discover();
+            this.eventList = objectCollector.events;
             let links: Array<any> = [];
             try {
                 let linkCollector = new ALTemplateCollector(this._extensionPath);
@@ -145,7 +147,7 @@ export class ALObjectDesignerPanel {
                 console.log(`Cannot load templates: ${e}`);
             }
 
-            this._panel.webview.postMessage({ command: 'data', data: objs, 'customLinks': links, 'events': events });
+            this._panel.webview.postMessage({ command: 'data', data: this.objectList, 'customLinks': links, 'events': this.eventList });
         } else {
             let parsedObj = new ALObjectCreator(this.objectInfo, this.objectInfo);
             await parsedObj.create();

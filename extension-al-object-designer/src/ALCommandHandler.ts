@@ -3,13 +3,13 @@ import * as path from 'path';
 import * as utils from './utils';
 import { ALObjectCreator } from './ALObjectCreator';
 import { ALObjectDesignerPanel } from './ALObjectDesignerPanel';
+const clipboardy = require('clipboardy');
 
 export class ALCommandHandler {
     message: any;
 
     protected objectDesigner: ALObjectDesignerPanel;
     protected extensionPath: string = '';
-
 
     public constructor(lObjectDesigner: ALObjectDesignerPanel, lExtensionPath: string) {
         this.objectDesigner = lObjectDesigner;
@@ -40,10 +40,14 @@ export class ALCommandHandler {
             case 'Design':
                 await this.commandDesign(message);
                 break;
+            case 'CopyEvent':
+                showOpen = false;
+                await this.commandCopyEvent(message);
+                break;
         }
 
         if (showOpen)
-            await vscode.window.showInformationMessage(message.Type + ' ' + message.Id + ' ' + message.Name + ' opened.');
+            await vscode.window.showInformationMessage(`${message.Type} ${message.Id} ${message.Name} opened.`);
     }
 
     //#region Commands
@@ -136,6 +140,50 @@ export class ALCommandHandler {
             ALObjectDesignerPanel.createOrShow(this.extensionPath, "Design", message);
             return;
         }
+    }
+
+    private async commandCopyEvent(message: any) {
+        console.log(message.EventData);
+        let objEvent = message.EventData;
+        let eventParams = [];
+
+        if (objEvent.EventParameters) {
+            for (let i = 0; i < objEvent.EventParameters.length; i++) {
+                const eventParam = objEvent.EventParameters[i];
+                let paramType = eventParam.TypeDefinition;
+                let paramTypeStr = `${paramType.Name}`;
+                if (paramType.Subtype) {
+                    if (!paramType.IsEmpty) {
+                        let object = this.objectDesigner.objectList.filter(f => {
+                            let lType = paramType.Name == 'Record' ? 'Table' : paramType.Name;
+                            return f.Type == lType && f.Id == paramType.Subtype.Id;
+                        });
+
+                        if (object.length > 0) {
+                            paramType.Subtype.Id = `"${object[0].Name}"`;
+                        }
+
+                        paramTypeStr = `${paramType.Name} ${paramType.Subtype.Id}`
+                    }
+                }
+
+                eventParams.push(`${eventParam.IsVar ? 'var ' : ''}${eventParam.Name}: ${paramTypeStr}`);
+            }
+        }
+
+        let eventSnippet = `
+    [EventSubscriber(ObjectType::${objEvent.Type}, ${objEvent.Type == 'Table' ? 'Database' : objEvent.Type}::"${objEvent.Name}", '${objEvent.EventName}', '', true, true)]
+    local procedure "${objEvent.Name}_${objEvent.EventName}"
+    (
+        ${eventParams.join(';\r\n\t\t')}
+    )
+    begin
+
+    end;
+`
+        await clipboardy.write(eventSnippet);
+
+        await vscode.window.showInformationMessage(`${objEvent.Type} ${objEvent.Id} ${objEvent.Name} - ${objEvent.EventName} copied to clipboard.`);
     }
 
     private async commandContextMenuHandler(message: any) {

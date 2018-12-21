@@ -3,7 +3,7 @@
         <h1>AL</h1>
         <h1>Object Designer</h1>
         <h1 show.bind="loaded">
-            <span textcontent.bind="count || 0"></span> ${headerType}${count > 1 ? 's' : ''}
+            <span textcontent.bind="count || 0"></span> ${headerType}${count > 1 ? 's' : ''} ${activeType}
         </h1>
         <h1 style="float: right; padding: 6px 15px 5px 15px;">
             <input id="searchInput" type="text" id="searchVal" placeholder="Search for ${headerType}s" value.bind="query"
