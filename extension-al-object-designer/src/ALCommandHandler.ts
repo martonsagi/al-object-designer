@@ -3,6 +3,8 @@ import * as path from 'path';
 import * as utils from './utils';
 import { ALObjectCreator } from './ALObjectCreator';
 import { ALObjectDesignerPanel } from './ALObjectDesignerPanel';
+import { ALObjectDesigner } from './ALModules';
+
 const clipboardy = require('clipboardy');
 
 export class ALCommandHandler {
@@ -137,7 +139,7 @@ export class ALCommandHandler {
             await parsedObj.create();
             message.ParsedObject = parsedObj.fields;
             message.SubType = parsedObj.subType;
-            ALObjectDesignerPanel.createOrShow(this.extensionPath, "Design", message);
+            ALObjectDesignerPanel.createOrShow(this.extensionPath, ALObjectDesigner.PanelMode.Design, message);
             return;
         }
     }

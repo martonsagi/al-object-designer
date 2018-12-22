@@ -4,11 +4,13 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import { ALObjectDesignerPanel } from './ALObjectDesignerPanel';
+import { ALObjectDesigner } from './ALModules';
 
 // this method is called when your extension is activated
 export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand('extension.openALWindow', () => {
-        ALObjectDesignerPanel.createOrShow(context.extensionPath, "List");
+        let panelMode =  ALObjectDesigner.PanelMode.List;
+        ALObjectDesignerPanel.createOrShow(context.extensionPath, ALObjectDesigner.PanelMode.List);
     }));
 }
 

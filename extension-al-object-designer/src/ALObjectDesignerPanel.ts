@@ -5,6 +5,7 @@ import { ALCommandHandler } from './ALCommandHandler';
 import { ALObjectCollector } from './ALObjectCollector';
 import { ALTemplateCollector } from './ALTemplateCollector';
 import { ALObjectCreator } from './ALObjectCreator';
+import { ALObjectDesigner } from './ALModules';
 
 /**
  * Manages AL Object Designer webview panel
@@ -14,10 +15,10 @@ export class ALObjectDesignerPanel {
      * Track the currently panel. Only allow a single panel to exist at a time.
      */
     public static currentPanel: ALObjectDesignerPanel | undefined;
-    private panelMode: string = "List"; // List, Designer
+    private panelMode: ALObjectDesigner.PanelMode = ALObjectDesigner.PanelMode.List; // List, Designer
     public objectInfo: any;
-    public objectList: Array<any> = [];
-    public eventList: Array<any> = [];
+    public objectList: Array<ALObjectDesigner.CollectorItem> = [];
+    public eventList: Array<ALObjectDesigner.CollectorItem> = [];
 
     public static readonly viewType = 'alObjectDesigner';
 
@@ -25,7 +26,7 @@ export class ALObjectDesignerPanel {
     private readonly _extensionPath: string;
     private _disposables: vscode.Disposable[] = [];
 
-    public static createOrShow(extensionPath: string, mode: string, objectInfo?: any) {
+    public static createOrShow(extensionPath: string, mode: ALObjectDesigner.PanelMode, objectInfo?: any) {
         const column = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
 
         // If we already have a panel, show it.
@@ -57,7 +58,7 @@ export class ALObjectDesignerPanel {
     private constructor(
         panel: vscode.WebviewPanel,
         extensionPath: string,
-        mode: string
+        mode: ALObjectDesigner.PanelMode
     ) {
         this._panel = panel;
         this._extensionPath = extensionPath;
@@ -138,7 +139,7 @@ export class ALObjectDesignerPanel {
             let objectCollector = new ALObjectCollector();
             this.objectList = await objectCollector.discover();
             this.eventList = objectCollector.events;
-            let links: Array<any> = [];
+            let links: Array<ALObjectDesigner.TemplateItem> = [];
             try {
                 let linkCollector = new ALTemplateCollector(this._extensionPath);
                 await linkCollector.initialize();

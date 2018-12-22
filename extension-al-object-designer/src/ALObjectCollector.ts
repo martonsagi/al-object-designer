@@ -1,10 +1,11 @@
 import { workspace } from 'vscode';
 import * as path from 'path';
 import * as utils from './utils';
-let firstBy = require('thenby');
-let linq = require('linq');
+import { ALSymbolPackage, ALObjectDesigner } from './ALModules';
 
-export class ALObjectCollector {
+let firstBy = require('thenby');
+
+export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
 
     public events: Array<any> = [];
 
@@ -92,7 +93,7 @@ export class ALObjectCollector {
                 .thenBy("Id")
         );
 
-        return objs;
+        return objs as Array<ALObjectDesigner.CollectorItem>;
     }
 
     private async _CheckObjectInProject(objs: Array<any>) {
@@ -165,7 +166,7 @@ export class ALObjectCollector {
             let files = Object.keys(zip.files).filter(i => i.indexOf('.json') != -1);
             if (files.length > 0) {
                 let contents: string = await zip.file(files[0]).async('string');
-                let json = JSON.parse(contents.trim());
+                let json: ALSymbolPackage.SymbolReference = JSON.parse(contents.trim());
 
                 for (let j = 0; j < this.types.length; j++) {
                     let elem: string = this.types[j];

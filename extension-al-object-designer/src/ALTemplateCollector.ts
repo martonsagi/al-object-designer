@@ -1,9 +1,11 @@
 import { workspace } from 'vscode';
 import * as path from 'path';
 import * as utils from './utils';
+import { ALObjectDesigner } from './ALModules';
+
 let firstBy = require('thenby');
 
-export class ALTemplateCollector {
+export class ALTemplateCollector implements ALObjectDesigner.TemplateCollector {
     protected extensionPath: string = '';
 
     constructor(lExtensionPath: string) {
@@ -22,7 +24,7 @@ export class ALTemplateCollector {
 
     public async discover() {
         let fpaths: any = (workspace as any).workspaceFolders,
-            templates: Array<any> = [];
+            templates: Array<ALObjectDesigner.TemplateItem> = [];
 
         for (let i = 0; i < fpaths.length; i++) {
             const wkspace = fpaths[i];
@@ -30,7 +32,7 @@ export class ALTemplateCollector {
             let items: any = await utils.readDir(fpath);
             items = items.filter((f: string) => f.endsWith('.json'));
 
-            let files = items.map(async (f: any) => {
+            let files: Array<ALObjectDesigner.TemplateItem> = items.map(async (f: any) => {
                 let fp = path.join(fpath, f);
                 let content: any = await utils.read(fp);
                 content = JSON.parse(content);
