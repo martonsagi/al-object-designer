@@ -20,9 +20,9 @@ export module ALSymbolPackage {
         DotNetPackages: Array<any>;
     }
 
-    export interface ALObject {
-        Id: number;
-        Name: string;
+    export class ALObject {
+        Id: number = 0;
+        Name: string = "";
         Properties?: Array<Property>;
         Variables?: Array<Variable>;
         Methods?: Array<Method>;
@@ -45,7 +45,7 @@ export module ALSymbolPackage {
 
     export interface PageExtension extends ALObject {
         TargetObject: string;
-        ControlChanges: Array<any>;        
+        ControlChanges: Array<any>;
     }
 
     export interface PageCustomization extends PageExtension {
@@ -109,7 +109,7 @@ export module ALSymbolPackage {
 
     export interface Variable {
         Name: string;
-        TypeDefinition: TypeDefinition;        
+        TypeDefinition: TypeDefinition;
     }
 
     export interface Parameter extends Variable {
@@ -161,7 +161,7 @@ export module ALSymbolPackage {
         Kind: number;
         Actions?: Array<PageAction>;
         Properties?: Array<Property>;
-    }   
+    }
 }
 
 export module ALObjectDesigner {
@@ -211,11 +211,16 @@ export module ALObjectDesigner {
         discover(): Promise<Array<TemplateItem>>;
     }
 
-    export interface TemplateCollector {
-
+    export interface CommandHandler {
+        dispatch(message: any): Promise<void>;
     }
 
-    export interface CommandHandler {
+    export interface ObjectParser {
+        parse(filePath: string): Promise<ALSymbolPackage.ALObject>;
+    }
 
+    export interface ObjectDesignerData {
+        setFromFile(filePath: string): void;
+        setFromSymbol(alObject: ALSymbolPackage.ALObject): void;
     }
 }

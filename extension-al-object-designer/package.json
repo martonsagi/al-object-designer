@@ -62,6 +62,7 @@
         "@types/mocha": "^2.2.42"
     },
     "dependencies": {
+        "balanced-match": "^1.0.0",
         "clipboardy": "^1.2.3",
         "fs-extra": "^7.0.1",
         "jszip": "^3.1.5",

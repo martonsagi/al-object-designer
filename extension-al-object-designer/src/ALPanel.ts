@@ -4,17 +4,17 @@ import * as utils from './utils';
 import { ALCommandHandler } from './ALCommandHandler';
 import { ALObjectCollector } from './ALObjectCollector';
 import { ALTemplateCollector } from './ALTemplateCollector';
-import { ALObjectCreator } from './ALObjectCreator';
+import { ALObjectParser } from './ALObjectParser';
 import { ALObjectDesigner } from './ALModules';
 
 /**
  * Manages AL Object Designer webview panel
  */
-export class ALObjectDesignerPanel {
+export class ALPanel {
     /**
      * Track the currently panel. Only allow a single panel to exist at a time.
      */
-    public static currentPanel: ALObjectDesignerPanel | undefined;
+    public static currentPanel: ALPanel | undefined;
     private panelMode: ALObjectDesigner.PanelMode = ALObjectDesigner.PanelMode.List; // List, Designer
     public objectInfo: any;
     public objectList: Array<ALObjectDesigner.CollectorItem> = [];
@@ -30,14 +30,14 @@ export class ALObjectDesignerPanel {
         const column = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
 
         // If we already have a panel, show it.
-        if (ALObjectDesignerPanel.currentPanel && (mode == "List")) {
-            ALObjectDesignerPanel.currentPanel._panel.reveal(column);
+        if (ALPanel.currentPanel && (mode == "List")) {
+            ALPanel.currentPanel._panel.reveal(column);
             return;
         }
 
         // Otherwise, create a new panel.
         let title = mode == "List" ? "AL Object Designer" : `AL Designer: ${objectInfo.Type} ${objectInfo.Id} ${objectInfo.Name}`;
-        const panel = vscode.window.createWebviewPanel(ALObjectDesignerPanel.viewType, title, mode == "List" ? vscode.ViewColumn.One : vscode.ViewColumn.Two, {
+        const panel = vscode.window.createWebviewPanel(ALPanel.viewType, title, mode == "List" ? vscode.ViewColumn.One : vscode.ViewColumn.Two, {
             // Enable javascript in the webview
             enableScripts: true,
 
@@ -51,8 +51,8 @@ export class ALObjectDesignerPanel {
             ]
         });
 
-        ALObjectDesignerPanel.currentPanel = new ALObjectDesignerPanel(panel, extensionPath, mode);
-        ALObjectDesignerPanel.currentPanel.objectInfo = objectInfo;
+        ALPanel.currentPanel = new ALPanel(panel, extensionPath, mode);
+        ALPanel.currentPanel.objectInfo = objectInfo;
     }
 
     private constructor(
@@ -117,7 +117,7 @@ export class ALObjectDesignerPanel {
     }
 
     public dispose() {
-        ALObjectDesignerPanel.currentPanel = undefined;
+        ALPanel.currentPanel = undefined;
 
         // Clean up our resources
         this._panel.dispose();
@@ -150,7 +150,7 @@ export class ALObjectDesignerPanel {
 
             this._panel.webview.postMessage({ command: 'data', data: this.objectList, 'customLinks': links, 'events': this.eventList });
         } else {
-            let parsedObj = new ALObjectCreator(this.objectInfo, this.objectInfo);
+            let parsedObj = new ALObjectParser(this.objectInfo, this.objectInfo);
             await parsedObj.create();
             this.objectInfo.ParsedObject = parsedObj.fields;
             this.objectInfo.SubType = parsedObj.subType;

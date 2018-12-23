@@ -1,19 +1,19 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as utils from './utils';
-import { ALObjectCreator } from './ALObjectCreator';
-import { ALObjectDesignerPanel } from './ALObjectDesignerPanel';
+import { ALObjectParser } from './ALObjectParser';
+import { ALPanel } from './ALPanel';
 import { ALObjectDesigner } from './ALModules';
 
 const clipboardy = require('clipboardy');
 
-export class ALCommandHandler {
+export class ALCommandHandler implements ALObjectDesigner.CommandHandler {
     message: any;
 
-    protected objectDesigner: ALObjectDesignerPanel;
+    protected objectDesigner: ALPanel;
     protected extensionPath: string = '';
 
-    public constructor(lObjectDesigner: ALObjectDesignerPanel, lExtensionPath: string) {
+    public constructor(lObjectDesigner: ALPanel, lExtensionPath: string) {
         this.objectDesigner = lObjectDesigner;
         this.extensionPath = lExtensionPath;
     }
@@ -135,11 +135,11 @@ export class ALCommandHandler {
 
     private async commandDesign(message: any) {
         if (message.Command == 'Design') {
-            let parsedObj = new ALObjectCreator(message, message);
+            let parsedObj = new ALObjectParser(message, message);
             await parsedObj.create();
             message.ParsedObject = parsedObj.fields;
             message.SubType = parsedObj.subType;
-            ALObjectDesignerPanel.createOrShow(this.extensionPath, ALObjectDesigner.PanelMode.Design, message);
+            ALPanel.createOrShow(this.extensionPath, ALObjectDesigner.PanelMode.Design, message);
             return;
         }
     }
@@ -190,7 +190,7 @@ export class ALCommandHandler {
 
     private async commandContextMenuHandler(message: any) {
         if (['Parse', 'NewList', 'NewCard', 'NewReport', 'NewXmlPort', 'NewQuery'].indexOf(message.Command) != -1) {
-            let testobj = new ALObjectCreator(message, message);
+            let testobj = new ALObjectParser(message, message);
             let newOptions: any = {};
             switch (message.Command) {
                 case 'NewList':
