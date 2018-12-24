@@ -22,6 +22,7 @@ export module ALSymbolPackage {
 
     export class ALObject {
         Id: number = 0;
+        Type: string = "";
         Name: string = "";
         Properties?: Array<Property>;
         Variables?: Array<Variable>;
@@ -84,8 +85,8 @@ export module ALSymbolPackage {
         Value: string;
     }
 
-    export interface TypeDefinition {
-        Name: string;
+    export class TypeDefinition {
+        Name: string = '';
         Subtype?: TypeDefinitionSubType
     }
 
@@ -146,19 +147,19 @@ export module ALSymbolPackage {
         Properties?: Array<Property>;
     }
 
-    export interface PageControl {
-        Id: number;
-        Name: string;
-        Kind: number;
+    export class PageControl {
+        Id: number = 0;
+        Name: string = '';
+        Kind: number = 0;
         Controls?: Array<PageControl>;
-        TypeDefinition: TypeDefinition;
+        TypeDefinition: TypeDefinition = new TypeDefinition();
         Properties?: Array<Property>;
     }
 
-    export interface PageAction {
-        Id: number;
-        Name: string;
-        Kind: number;
+    export class PageAction {
+        Id: number = 0;
+        Name: string = '';
+        Kind: number = 0;
         Actions?: Array<PageAction>;
         Properties?: Array<Property>;
     }
@@ -222,5 +223,14 @@ export module ALObjectDesigner {
     export interface ObjectDesignerData {
         setFromFile(filePath: string): void;
         setFromSymbol(alObject: ALSymbolPackage.ALObject): void;
+    }
+
+    export class ParsedObjectRegion {
+        Region: string = '';
+        Name?: string = '';
+        Children?: Array<ParsedObjectRegion>;
+        Id?: number;
+        Type?: string;
+        Properties?: Array<ALSymbolPackage.Property|null>;
     }
 }
