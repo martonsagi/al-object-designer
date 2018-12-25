@@ -54,7 +54,7 @@ export class App {
           this.filterType("");
           break;
         case 'designer':
-          this.objectInfo = [];
+          //this.objectInfo = [];
           this.objectInfo = message.objectInfo;
           console.log(this.objectInfo);
           break;

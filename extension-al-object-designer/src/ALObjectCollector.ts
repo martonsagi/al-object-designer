@@ -82,10 +82,33 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
             }
         }
 
-        let result = await this._getWorkspaceData(dalFiles);
-        objs = objs.concat(result);
+        let tasks: Array<Promise<any>> = [];
+        for (let dal of dalFiles) {
+            tasks.push(this._getWorkspaceData([dal]));
+        }
 
-        objs = await this._CheckObjectInProject(objs);
+        tasks.push(this._CheckObjectInProject(objs));
+
+        let res = await Promise.all(tasks);
+        let projectFiles = res.pop();
+        for (let arr of res) {
+            objs = objs.concat(arr);
+        }
+
+        for (let pFile of projectFiles) {
+            let check = objs.filter((f: any) => {
+                return f.Type.toLowerCase() == pFile.Type.toLowerCase() && f.Id == pFile.Id;
+            });
+
+            if (check.length > 0) {
+                let temp = check[0];
+                let index = objs.indexOf(temp);
+                objs.splice(index, 1);
+            }
+
+            objs.push(pFile);
+        }
+
         objs = utils.uniqBy(objs, JSON.stringify);
 
         objs.sort(
@@ -103,6 +126,7 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
             return objs;
         }
 
+        console.log('files found', Date.now());
 
         for (let i = 0; i < result.length; i++) {
             let file = result[i].fsPath;
@@ -112,16 +136,6 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
             if (parts.length > 2) {
                 let objType = parts[0],
                     objId = parts[1];
-
-                let check = objs.filter((f: any) => {
-                    return f.Type.toLowerCase() == objType.toLowerCase() && f.Id == objId;
-                });
-
-                if (check.length > 0) {
-                    let temp = check[0];
-                    let index = objs.indexOf(temp);
-                    objs.splice(index, 1);
-                }
 
                 let ucType = utils.toUpperCaseFirst(objType);
                 let extendIndex = parts.indexOf('extends');

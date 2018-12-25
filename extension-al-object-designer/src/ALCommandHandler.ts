@@ -138,6 +138,7 @@ export class ALCommandHandler implements ALObjectDesigner.CommandHandler {
             let parsedObj = new ALObjectParser(message, message);
             await parsedObj.create();
             message.ParsedObject = parsedObj.fields;
+            message.Symbol = await parsedObj.parse(message.FsPath);
             message.SubType = parsedObj.subType;
             ALPanel.createOrShow(this.extensionPath, ALObjectDesigner.PanelMode.Design, message);
             return;
@@ -145,7 +146,6 @@ export class ALCommandHandler implements ALObjectDesigner.CommandHandler {
     }
 
     private async commandCopyEvent(message: any) {
-        console.log(message.EventData);
         let objEvent = message.EventData;
         let eventParams = [];
 

@@ -40,15 +40,9 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
     }
 
     public async parse(filePath: string) {
-
         let result: ALObject = new ALObject();
-
-        let file: string = (await utils.read(filePath)) as string;
-
-        let matches: Array<any> = this.recursiveMatch({ body: file });
-
-        //console.log(JSON.stringify(matches[0]));
-
+        let fileContent: string = await utils.read(filePath) as string;
+        let matches: Array<any> = this.recursiveMatch({ body: fileContent });
         result = this.generateSymbol(matches[0]);
 
         console.log(JSON.stringify(result));
@@ -63,30 +57,34 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
         if (match) {
             let result: ObjectRegion = new ObjectRegion();
 
-            let lines: Array<string> = match.pre.trim().split('\r\n');
-            let regionInfo: any = this.processRegion(lines.pop() as string);
+            let lines: Array<string> = match.pre.trim().split('\r\n'),
+                lastLine = lines.pop();
+
+            let regionInfo: any = this.processRegion(lastLine as string);
 
             result.Region = regionInfo.Region;
             result.Id = regionInfo.Id;
             result.Name = regionInfo.Name;
             result.Type = regionInfo.Type;
+            result.Source = lastLine;
 
             let match2 = balanced('{', '}', match.body);
             let isField = result.Region.indexOf('field') != -1;
             if (match2 || isField) {
                 let lines2: Array<string> = (isField ? match.body : match2.pre).trim().split('\r\n');
-                result.Properties = lines2.map((l): ObjectProperty | null => {
-                    let prop = l.split('=');
+                result.Properties = lines2
+                    .map((l): ObjectProperty | null => {
+                        let prop = l.split('=');
 
-                    if (prop.length < 2) {
-                        return null;
-                    }
+                        if (prop.length < 2) {
+                            return null;
+                        }
 
-                    return {
-                        Name: prop[0].trim(),
-                        Value: prop[1].trim().replace(';', '')
-                    }
-                })
+                        return {
+                            Name: prop[0].trim(),
+                            Value: prop[1].trim().replace(';', '')
+                        }
+                    })
                     .filter(f => {
                         return f !== null;
                     });
@@ -112,7 +110,6 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
         let match = utils.getAllMatches(namePattern, region);
         if (match.length > 0) {
             // process object props
-            console.log(match);
             return {
                 Region: match[0][1],
                 Name: match[0][3].replace(/"/g, '').trim(),
@@ -123,7 +120,7 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
             match = utils.getAllMatches(pattern, region);
             if (match.length > 0) {
                 //process region
-                console.log(match);
+
                 return {
                     Region: match[0][1],
                     Name: match[0][2].replace(/"/g, '').trim(),
@@ -158,9 +155,8 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
                     let container = isActions ? "Actions" : "Controls";
                     obj[container] = this.processSymbol(obj, container, child);
                 }
-                
-                return obj;
 
+                result = obj;
                 break;
         }
 
@@ -174,8 +170,23 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
                 result = [];
                 for (let child of metadata.Children as Array<ObjectRegion>) {
                     let control: any = {};
-                    control.Name = child.Region == 'group' ? 'Group' : utils.toUpperCaseFirst(child.Name || '');
+                    control.ControlType = child.Region;
+                    control.SourceCodeAnchor = child.Source || '';
+                    control.SourceExpression = '';
+                    if (['field', 'part'].indexOf(control.ControlType) != -1) {
+                        let fieldData = (child.Name as string).split(';');
+                        control.Name = fieldData[0].trim();
+                        control.SourceExpression = fieldData[1].trim();
+                    } else {
+                        control.Name = utils.toUpperCaseFirst(child.Name as string);
+                    }
                     control.Properties = child.Properties as Array<ObjectProperty>;
+                    let caption = control.Properties ? control.Properties.filter((f: any) => f.Name == 'Caption') : [];
+                    if (caption.length > 0) {
+                        control.Caption = caption[0].Value.replace(/'/g, '').trim();
+                    } else {
+                        control.Caption = control.Name.replace(/"/g, '').trim();
+                    }
                     control[container] = this.processSymbol(alObject, container, child);
                     result.push(control);
                 }
@@ -186,7 +197,7 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
     }
 
     private async parseSourceObject() {
-        let debug = await this.parse(this.sourceObject.FsPath);
+        //let debug = await this.parse(this.sourceObject.FsPath);
 
         let file: any = await utils.read(this.sourceObject.FsPath);
         let typeRegex = /([a-z]+)\s([0-9]+)\s(.*)/m;

@@ -154,6 +154,10 @@ export module ALSymbolPackage {
         Controls?: Array<PageControl>;
         TypeDefinition: TypeDefinition = new TypeDefinition();
         Properties?: Array<Property>;
+        ControlType?: string;
+        SourceExpression?: string;
+        Caption?: string;
+        SourceCodeAnchor?: string = '';
     }
 
     export class PageAction {
@@ -162,6 +166,10 @@ export module ALSymbolPackage {
         Kind: number = 0;
         Actions?: Array<PageAction>;
         Properties?: Array<Property>;
+        ControlType?: string;
+        SourceExpression?: string;
+        Caption?: string;
+        SourceCodeAnchor?: string = '';
     }
 }
 
@@ -232,5 +240,6 @@ export module ALObjectDesigner {
         Id?: number;
         Type?: string;
         Properties?: Array<ALSymbolPackage.Property|null>;
+        Source?: string = '';
     }
 }

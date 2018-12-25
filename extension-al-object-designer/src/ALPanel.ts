@@ -153,6 +153,7 @@ export class ALPanel {
             let parsedObj = new ALObjectParser(this.objectInfo, this.objectInfo);
             await parsedObj.create();
             this.objectInfo.ParsedObject = parsedObj.fields;
+            this.objectInfo.Symbol = await parsedObj.parse(this.objectInfo.FsPath);
             this.objectInfo.SubType = parsedObj.subType;
 
             this._panel.webview.postMessage({ command: 'designer', objectInfo: this.objectInfo });

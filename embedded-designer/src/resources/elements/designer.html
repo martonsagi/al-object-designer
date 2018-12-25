@@ -2,11 +2,14 @@
     <div class="content designer-content" class="virtual-repeater-wrapper">
 
         <div id="card-designer-wrapper" show.bind="objectInfo.SubType == 'Card'">
-            <div id="actions-placeholder">Actions...</div>
-            <h2>Group</h2>
-            <div class="designer-input" repeat.for="item of objectInfo.ParsedObject" style="margin-bottom: 9px;">
-                <a style="width: 200px; display: inline-block">${item}</a><input style="width: 200px" type="text" value="..."
-                    disabled>
+            <div id="actions-placeholder">
+                <span repeat.for="action of objectInfo.Symbol.Actions" style="margin-bottom: 10px;">
+                    <actionelement action.bind="action"></actionelement>
+                </span>
+            </div>
+
+            <div repeat.for="control of objectInfo.Symbol.Controls">
+                <designelement control.bind="control"></designelement>
             </div>
         </div>
 
