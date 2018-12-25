@@ -247,9 +247,13 @@ tr.selected:hover td#context-selected {
 #card-designer-wrapper h2 {
     font-size: 1.3em;
     font-weight: bold;
-    border-bottom: 2px solid #222;
+    border-bottom: 1px solid #222;
     padding-bottom: 5px;
     margin-bottom: 10px;
+}
+
+#card-designer-wrapper h2:first {
+    border-bottom-width: 2px;
 }
 
 #actions-placeholder {
@@ -261,6 +265,14 @@ tr.selected:hover td#context-selected {
     border-width: 1px 0;
     border-style: solid;
     margin-bottom: 5px;
+}
+
+.page-control {
+
+}
+
+.page-control-right {
+
 }
 
 .designer-input {

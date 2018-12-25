@@ -1,14 +1,18 @@
 <template bindable="control">
-    <div>
-        <h2 if.bind="control.ControlType == 'group'">${control.Caption}</h2>
-        <div class="designer-input" repeat.for="item of control.Controls" style="margin-bottom: 9px;">
-            <div if.bind="item.ControlType == 'field'">
-            <a style="width: 200px; display: inline-block">${item.Caption}</a><input style="width: 200px" type="text"
-                value='[SourceExpr: "${item.SourceExpression}"]' disabled>
-            </div>
 
-            <designelement control.bind="item"></designelement>
+    <h2 if.bind="(control.ControlType == 'group' || control.ControlType == 'part') && control.Parent.ControlType != 'group'">${control.Caption}</h2>
+    <div if.bind="control.ControlType == 'group' && control.Parent.ControlType == 'group'"
+        style="text-transform: uppercase; font-weight: 400; padding-bottom: 10px;">
+        ${control.Caption}
+    </div>
+    <div if.bind="control.ControlType == 'part'" style="padding: 30px; border: 1px solid #ccc;">PagePart: &quot;${control.SourceExpression}&quot;</div>
+    <div class="designer-input page-control ${item.Separator == true ? 'page-control-right' : ''}" repeat.for="item of control.Controls" style="margin-bottom: 9px;">
+        <div if.bind="item.ControlType == 'field'">
+        <a style="width: 200px; display: inline-block">${item.Caption}</a><input style="width: 200px" type="text"
+            value='[SourceExpr: "${item.SourceExpression}"]' disabled>
         </div>
 
+        <designelement control.bind="item"></designelement>
     </div>
+
 </template>

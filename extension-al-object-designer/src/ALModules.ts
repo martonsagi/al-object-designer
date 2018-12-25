@@ -147,29 +147,27 @@ export module ALSymbolPackage {
         Properties?: Array<Property>;
     }
 
-    export class PageControl {
+    export class PageControlBase {
         Id: number = 0;
         Name: string = '';
         Kind: number = 0;
-        Controls?: Array<PageControl>;
         TypeDefinition: TypeDefinition = new TypeDefinition();
         Properties?: Array<Property>;
         ControlType?: string;
         SourceExpression?: string;
         Caption?: string;
         SourceCodeAnchor?: string = '';
+        Parent?: PageControlBase;        
     }
 
-    export class PageAction {
-        Id: number = 0;
-        Name: string = '';
-        Kind: number = 0;
+    export class PageControl extends PageControlBase {
+        Controls?: Array<PageControl>;
+        Parent?: PageControl;
+    }
+
+    export class PageAction extends PageControlBase {
         Actions?: Array<PageAction>;
-        Properties?: Array<Property>;
-        ControlType?: string;
-        SourceExpression?: string;
-        Caption?: string;
-        SourceCodeAnchor?: string = '';
+        Parent?: PageAction;
     }
 }
 

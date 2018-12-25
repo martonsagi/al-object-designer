@@ -2,7 +2,7 @@
     <span if.bind="action.ControlType == 'group'"><strong>${action.Caption}: </strong></span>
     <span class="designer-input" repeat.for="item of action.Actions" style="margin-bottom: 9px;">
         <span if.bind="item.ControlType == 'action'">
-            <a style="display: inline-block; margin-left: 10px;">${item.Caption}</a>
+            <a style="display: inline-block; margin-right: 10px;">${item.Caption}</a>
         </span>        
         <actionelement action.bind="item"></actionelement>
         <br  if.bind="item.ControlType == 'group'">

@@ -45,7 +45,7 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
         let matches: Array<any> = this.recursiveMatch({ body: fileContent });
         result = this.generateSymbol(matches[0]);
 
-        console.log(JSON.stringify(result));
+        //console.log(JSON.stringify(result));
 
         return result;
     }
@@ -163,13 +163,32 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
         return result;
     }
 
-    private processSymbol(alObject: ALObject, container: string, metadata: ObjectRegion): any {
+    private processSymbol(alObject: ALObject, container: string, metadata: ObjectRegion, parent?: ALSymbolPackage.PageControlBase): any {
         let result: any;
         switch (alObject.Type) {
             case 'page':
                 result = [];
+                let count = (metadata.Children || []).length;
+                let separator = Math.ceil(count / 2);
+                if (separator == 0) {
+                    separator = count;
+                }
+                let i = 0;
                 for (let child of metadata.Children as Array<ObjectRegion>) {
+                    i++;
                     let control: any = {};
+                    control.Parent = Object.assign({}, parent);
+                    delete control.Parent['Controls'];
+                    delete control.Parent['Actions'];
+                    delete control.Parent['Parent'];
+
+                    if ((count % 2 == 0 && i >= separator) ||
+                        (count % 2 != 0 && i >= separator + 1)) {
+                        control.Separator = true;
+                    } else {
+                        control.Separator = control.Parent.Separator === true;
+                    }
+
                     control.ControlType = child.Region;
                     control.SourceCodeAnchor = child.Source || '';
                     control.SourceExpression = '';
@@ -187,7 +206,7 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
                     } else {
                         control.Caption = control.Name.replace(/"/g, '').trim();
                     }
-                    control[container] = this.processSymbol(alObject, container, child);
+                    control[container] = this.processSymbol(alObject, container, child, control);
                     result.push(control);
                 }
                 break;
