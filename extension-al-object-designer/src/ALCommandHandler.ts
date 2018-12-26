@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as utils from './utils';
 import { ALObjectParser } from './ALObjectParser';
 import { ALPanel } from './ALPanel';
-import { ALObjectDesigner } from './ALModules';
+import { ALObjectDesigner, ALSymbolPackage } from './ALModules';
 
 const clipboardy = require('clipboardy');
 
@@ -135,7 +135,7 @@ export class ALCommandHandler implements ALObjectDesigner.CommandHandler {
 
     private async commandDesign(message: any) {
         if (message.Command == 'Design') {
-            let parsedObj = new ALObjectParser(message, message);
+            let parsedObj = new ALObjectParser(message);
             await parsedObj.create();
             message.ParsedObject = parsedObj.fields;
             message.Symbol = await parsedObj.parse(message.FsPath);
@@ -190,14 +190,13 @@ export class ALCommandHandler implements ALObjectDesigner.CommandHandler {
 
     private async commandContextMenuHandler(message: any) {
         if (['Parse', 'NewList', 'NewCard', 'NewReport', 'NewXmlPort', 'NewQuery'].indexOf(message.Command) != -1) {
-            let testobj = new ALObjectParser(message, message);
             let newOptions: any = {};
             switch (message.Command) {
                 case 'NewList':
                     newOptions = {
                         Type: "page",
                         SubType: "List",
-                        Group: "group(Group)",
+                        Group: "repeater(Group)",
                         Area: "area(content)",
                         Field: "field"
                     };
@@ -239,10 +238,12 @@ export class ALCommandHandler implements ALObjectDesigner.CommandHandler {
                     };
                     break;
             }
-            await testobj.create();
 
-            let fields = testobj.fields;
-            let caption = `${testobj.name}${newOptions.SubType != "" ? ` ${newOptions.SubType}` : ''}`;
+            let parser = new ALObjectParser();
+            let parsedObject = await parser.parse(message.FsPath) as ALSymbolPackage.Table;
+
+            let fields = parsedObject.Fields;
+            let caption = `${parsedObject.Name}${newOptions.SubType != "" ? ` ${newOptions.SubType}` : ''}`;
             let content = `
 ${newOptions.Type} ${'${1:id}'} "${'${2:' + caption + '}'}"
 {
@@ -250,8 +251,8 @@ ${newOptions.Type} ${'${1:id}'} "${'${2:' + caption + '}'}"
 
             if (newOptions.Type == "page") {
                 content += `
-    PageType = Card;
-    SourceTable = "${testobj.name}";
+    PageType = ${newOptions.SubType};
+    SourceTable = "${parsedObject.Name}";
     UsageCategory = ${newOptions.SubType == "Card" ? 'Documents' : 'Lists'};
     
     layout
@@ -267,11 +268,10 @@ ${newOptions.Type} ${'${1:id}'} "${'${2:' + caption + '}'}"
             {
                 `;
 
-            for (let i = 0; i < fields.length; i++) {
-                const element = fields[i];
+            for (let field of fields) {
 
                 content += `
-                ${newOptions.Field}("${newOptions.Type == "page" ? element : element.replace(/\s|\./g, '_')}"; "${element}") 
+                ${newOptions.Field}("${newOptions.Type == "page" ? field.Name : field.Name.replace(/\s|\./g, '_')}"; "${field.Name}") 
                 {
                         ${newOptions.Type == "Page" ? 'ApplicationArea = All;' : ''}
                 }

@@ -150,7 +150,7 @@ export class ALPanel {
 
             this._panel.webview.postMessage({ command: 'data', data: this.objectList, 'customLinks': links, 'events': this.eventList });
         } else {
-            let parsedObj = new ALObjectParser(this.objectInfo, this.objectInfo);
+            let parsedObj = new ALObjectParser(this.objectInfo);
             await parsedObj.create();
             this.objectInfo.ParsedObject = parsedObj.fields;
             this.objectInfo.Symbol = await parsedObj.parse(this.objectInfo.FsPath);

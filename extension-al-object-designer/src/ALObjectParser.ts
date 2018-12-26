@@ -8,7 +8,6 @@ const balanced = require('balanced-match');
 export class ALObjectParser implements ALObjectDesigner.ObjectParser {
 
     protected sourceObject: any;
-    protected destinationObject: any
     public type: string = "";
     public name: string = "";
     public fields: Array<any> = [];
@@ -30,9 +29,8 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
         "DotNetPackage"
     ];
 
-    public constructor(sourceObj: any, destType: any) {
+    public constructor(sourceObj?: any) {
         this.sourceObject = sourceObj;
-        this.destinationObject = destType;
     }
 
     public async create() {
@@ -40,8 +38,15 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
     }
 
     public async parse(filePath: string) {
+        let fileContent: string = await utils.read(filePath) as string,
+            result: ALObject = new ALObject();
+
+        result = await this.parseText(fileContent);
+        return result;
+    }
+
+    public async parseText(fileContent: string) {
         let result: ALObject = new ALObject();
-        let fileContent: string = await utils.read(filePath) as string;
         let matches: Array<any> = this.recursiveMatch({ body: fileContent });
         result = this.generateSymbol(matches[0]);
 
@@ -158,25 +163,41 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
 
                 result = obj;
                 break;
+            case 'table':
+                let table = result as ALSymbolPackage.Table;
+                table.Fields = [];
+                table.Keys = [];
+                table.FieldGroups = [];
+                for (let child of metadata.Children as Array<ObjectRegion>) {
+                    let isGroup = ['fields', 'keys'].indexOf(child.Region) != -1;
+                    if (isGroup) {
+                        let container = utils.toUpperCaseFirst(child.Region);
+                        table[container] = this.processSymbol(table, container, child);
+                    }
+                }
+
+                result = table;
+                break;
         }
 
         return result;
     }
 
     private processSymbol(alObject: ALObject, container: string, metadata: ObjectRegion, parent?: ALSymbolPackage.PageControlBase): any {
-        let result: any;
-        switch (alObject.Type) {
-            case 'page':
-                result = [];
-                let count = (metadata.Children || []).length;
-                let separator = Math.ceil(count / 2);
-                if (separator == 0) {
-                    separator = count;
-                }
-                let i = 0;
-                for (let child of metadata.Children as Array<ObjectRegion>) {
+        let result: any = [];
+        let i = 0;
+        let count = (metadata.Children || []).length;
+        let separator = Math.ceil(count / 2);
+        if (separator == 0) {
+            separator = count;
+        }
+        
+        for (let child of metadata.Children as Array<ObjectRegion>) {
+            let control: any = {};
+            switch (alObject.Type) {
+                case 'page':
                     i++;
-                    let control: any = {};
+
                     control.Parent = Object.assign({}, parent);
                     delete control.Parent['Controls'];
                     delete control.Parent['Actions'];
@@ -199,17 +220,41 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
                     } else {
                         control.Name = utils.toUpperCaseFirst(child.Name as string);
                     }
-                    control.Properties = child.Properties as Array<ObjectProperty>;
-                    let caption = control.Properties ? control.Properties.filter((f: any) => f.Name == 'Caption') : [];
-                    if (caption.length > 0) {
-                        control.Caption = caption[0].Value.replace(/'/g, '').trim();
+                    break;
+                case 'table':
+                    control.ControlType = child.Region;
+                    control.SourceCodeAnchor = child.Source || '';
+                    control.SourceExpression = '';
+
+                    if (['field', 'key'].indexOf(control.ControlType) != -1) {
+                        let fieldData = (child.Name as string).split(';');
+
+                        switch (control.ControlType) {
+                            case 'field':
+                                control.Id = fieldData[0].trim();
+                                control.Name = fieldData[1].trim();
+                                break;
+                            case 'key':
+                                control.Name = fieldData[0].trim();
+                                control.FieldNames = fieldData[1].trim().split(',').map(m => m.trim());
+                                break;
+                        }
+
                     } else {
-                        control.Caption = control.Name.replace(/"/g, '').trim();
+                        control.Name = utils.toUpperCaseFirst(child.Name as string);
                     }
-                    control[container] = this.processSymbol(alObject, container, child, control);
-                    result.push(control);
-                }
-                break;
+                    break;
+            }
+
+            control.Properties = child.Properties as Array<ObjectProperty>;
+            let caption = control.Properties ? control.Properties.filter((f: any) => f.Name == 'Caption') : [];
+            if (caption.length > 0) {
+                control.Caption = caption[0].Value.replace(/'/g, '').trim();
+            } else {
+                control.Caption = control.Name.replace(/"/g, '').trim();
+            }
+            control[container] = this.processSymbol(alObject, container, child, control);
+            result.push(control);
         }
 
         return result;
