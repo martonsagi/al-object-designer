@@ -56,9 +56,12 @@ export class App {
         case 'designer':
           //this.objectInfo = [];
           this.objectInfo = message.objectInfo;
-          console.log(this.objectInfo);
           break;
       }
+    });
+
+    window.addEventListener('field-onclick', event => {
+      console.log(event);
     });
   }
 
@@ -225,5 +228,9 @@ export class App {
 
   showEventParams(element) {
     this.sendCommand(element, 'CopyEvent');
+  }
+
+  designerFieldOnClick(event) {
+    console.log(event);
   }
 }

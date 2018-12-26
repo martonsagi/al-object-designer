@@ -2,12 +2,14 @@ import { workspace } from 'vscode';
 import * as path from 'path';
 import * as utils from './utils';
 import { ALSymbolPackage, ALObjectDesigner } from './ALModules';
+import { ALObjectCollectorCache } from './ALObjectCollectorCache';
 
 let firstBy = require('thenby');
 
 export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
 
     public events: Array<any> = [];
+    private collectorCache: ALObjectCollectorCache;
 
     private types = [
         "Tables",
@@ -42,7 +44,7 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
     ];
 
     public constructor() {
-
+        this.collectorCache = new ALObjectCollectorCache();
     }
 
     public async discover() {
@@ -84,7 +86,7 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
 
         let tasks: Array<Promise<any>> = [];
         for (let dal of dalFiles) {
-            tasks.push(this._getWorkspaceData([dal]));
+            tasks.push(this._getWorkspaceData(dal));
         }
 
         tasks.push(this._CheckObjectInProject(objs));
@@ -125,8 +127,6 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
         if (result.length == 0) {
             return objs;
         }
-
-        console.log('files found', Date.now());
 
         for (let i = 0; i < result.length; i++) {
             let file = result[i].fsPath;
@@ -170,80 +170,91 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
         return objs;
     }
 
-    private async _getWorkspaceData(items: any) {
-        let objs: Array<any> = new Array();
+    private async _getWorkspaceData(filePath: string) {
+        let objs: Array<any> = new Array(),
+            levents: Array<any> = [],
+            isCached = await this.collectorCache.isCached(filePath);
 
-        for (var i = 0; i < items.length; i++) {
-            let filePath = items[i];
+        if (isCached) {
+            let cacheInfo = await this.collectorCache.getCache(filePath);
+            let eventInfo = await this.collectorCache.getCache(filePath, 'events');
+            if (eventInfo.Items.length > 0) {
+                this.events = this.events.concat(eventInfo.Items);
+            }
 
-            let zip: any = await utils.readZip(filePath);
-            let files = Object.keys(zip.files).filter(i => i.indexOf('.json') != -1);
-            if (files.length > 0) {
-                let contents: string = await zip.file(files[0]).async('string');
-                let json: ALSymbolPackage.SymbolReference = JSON.parse(contents.trim());
+            return cacheInfo.Items;
+        }
 
-                for (let j = 0; j < this.types.length; j++) {
-                    let elem: string = this.types[j];
-                    let lType: string = this.alTypes[j];
+        let zip: any = await utils.readZip(filePath);
+        let files = Object.keys(zip.files).filter(i => i.indexOf('.json') != -1);
+        if (files.length > 0) {
+            let contents: string = await zip.file(files[0]).async('string');
+            let json: ALSymbolPackage.SymbolReference = JSON.parse(contents.trim());
 
-                    if (json[elem]) {
-                        let tempArr = json[elem].map((t: any) => {
-                            let levents: Array<any> = [];
-                            if (t.Methods) {
-                                for (let k = 0; k < t.Methods.length; k++) {
-                                    const m = t.Methods[k];
-                                    if (m.Attributes) {
-                                        let attrs = m.Attributes.filter((a: any) => {
-                                            return a.Name.indexOf('Event') != -1;
+            for (let j = 0; j < this.types.length; j++) {
+                let elem: string = this.types[j];
+                let lType: string = this.alTypes[j];
+
+                if (json[elem]) {
+                    let tempArr = json[elem].map((t: any) => {
+                        if (t.Methods) {
+                            for (let k = 0; k < t.Methods.length; k++) {
+                                const m = t.Methods[k];
+                                if (m.Attributes) {
+                                    let attrs = m.Attributes.filter((a: any) => {
+                                        return a.Name.indexOf('Event') != -1;
+                                    });
+
+                                    if (attrs.length > 0) {
+                                        levents.push({
+                                            'Type': lType,
+                                            'Id': t.Id,
+                                            'Name': t.Name,
+                                            "TargetObject": t.TargetObject || "",
+                                            "Publisher": json.Publisher || "Platform",
+                                            "Application": json.Name || "",
+                                            "Version": json.Version || "",
+                                            "CanExecute": false,
+                                            "CanDesign": false,
+                                            "FsPath": "",
+                                            'EventName': m.Name,
+                                            'EventType': attrs[0].Name,
+                                            'EventParameters': m.Parameters
                                         });
-
-                                        if (attrs.length > 0) {
-                                            levents.push({
-                                                'Type': lType,
-                                                'Id': t.Id,
-                                                'Name': t.Name,
-                                                "TargetObject": t.TargetObject || "",
-                                                "Publisher": json.Publisher || "Platform",
-                                                "Application": json.Name || "",
-                                                "Version": json.Version || "",
-                                                "CanExecute": false,
-                                                "CanDesign": false,
-                                                "FsPath": "",
-                                                'EventName': m.Name,
-                                                'EventType': attrs[0].Name,
-                                                'EventParameters': m.Parameters
-                                            });
-                                        }
                                     }
                                 }
                             }
+                        }
 
-                            if (levents.length > 0) {
-                                this.events = this.events.concat(levents);
-                            }
+                        return {
+                            "TypeId": j || "",
+                            "Type": lType || "",
+                            "Id": t.Id || "",
+                            "Name": t.Name || "",
+                            "TargetObject": t.TargetObject || "",
+                            "Publisher": json.Publisher || "Platform",
+                            "Application": json.Name || "",
+                            "Version": json.Version || "",
+                            "CanExecute": ["Table", "Page", "PageExtension", "TableExtension", "PageCustomization", "Report"].indexOf(lType) != -1,
+                            "CanDesign": false,
+                            "FsPath": "",
+                            //"Events": levents,
+                            "EventName": 'not_an_event'
+                        };
+                    });
 
-                            return {
-                                "TypeId": j || "",
-                                "Type": lType || "",
-                                "Id": t.Id || "",
-                                "Name": t.Name || "",
-                                "TargetObject": t.TargetObject || "",
-                                "Publisher": json.Publisher || "Platform",
-                                "Application": json.Name || "",
-                                "Version": json.Version || "",
-                                "CanExecute": ["Table", "Page", "PageExtension", "TableExtension", "PageCustomization", "Report"].indexOf(lType) != -1,
-                                "CanDesign": false,
-                                "FsPath": "",
-                                "Events": levents,
-                                "EventName": 'not_an_event'
-                            };
-                        });
 
-                        objs = objs.concat(tempArr);
-                    }
+                    objs = objs.concat(tempArr);
                 }
             }
         }
+
+        if (levents.length > 0) {
+            this.events = this.events.concat(levents);
+        }
+
+        this.collectorCache.setCache(filePath, objs);
+        this.collectorCache.setCache(filePath, levents, 'events');
 
         return objs;
     }

@@ -205,6 +205,18 @@ export module ALObjectDesigner {
         path: string;
     }
 
+    export interface ObjectCollectorCache {
+        isCached(path: string): Promise<boolean>;
+        setCache(path: string, data: any): Promise<void>;
+        getCache(path: string): Promise<ObjectCollectorCacheInfo>;
+    }
+
+    export class ObjectCollectorCacheInfo {
+        Path: string = '';
+        Timestamp: number = 0;
+        Items: Array<CollectorItem> = [];
+    }
+
     export interface Collector<T> {
         discover(): Promise<Array<T>>;
     }

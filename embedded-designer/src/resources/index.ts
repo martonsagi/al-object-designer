@@ -5,7 +5,7 @@ export function configure(config: FrameworkConfiguration) {
     './elements/header.html',
     './elements/toolbar.html',
     './elements/designer.html',
-    './elements/designelement.html',
+    './elements/design-element',
     './elements/actionelement.html',
     './elements/objects.html'
   ]);
