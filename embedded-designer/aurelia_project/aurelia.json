@@ -1,134 +1,144 @@
 {
-  "name": "object-designer",
-  "type": "project:application",
-  "bundler": {
-    "id": "cli",
-    "displayName": "Aurelia-CLI"
-  },
-  "build": {
-    "targets": [
-      {
+    "name": "object-designer",
+    "type": "project:application",
+    "bundler": {
+        "id": "cli",
+        "displayName": "Aurelia-CLI"
+    },
+    "build": {
+        "targets": [
+            {
+                "id": "web",
+                "displayName": "Web",
+                "port": 9000,
+                "index": "index.html",
+                "baseDir": ".",
+                "output": "scripts"
+            }
+        ],
+        "options": {
+            "minify": "stage & prod",
+            "sourcemaps": "dev & stage",
+            "rev": false,
+            "cache": "dev & stage"
+        },
+        "bundles": [
+            {
+                "name": "vendor-bundle.js",
+                "prepend": [
+                    "node_modules/bluebird/js/browser/bluebird.core.js",
+                    {
+                        "path": "node_modules/aurelia-cli/lib/resources/scripts/configure-bluebird-no-long-stacktraces.js",
+                        "env": "stage & prod"
+                    },
+                    {
+                        "path": "node_modules/aurelia-cli/lib/resources/scripts/configure-bluebird.js",
+                        "env": "dev"
+                    },
+                    "node_modules/@babel/polyfill/browser.js",
+                    "node_modules/requirejs/require.js"
+                ],
+                "source": [
+                    "**/*.{js,json,css,html}"
+                ],
+                "dependencies": [
+                    "aurelia-bootstrapper",
+                    "aurelia-loader-default",
+                    "aurelia-pal-browser",
+                    {
+                        "name": "aurelia-testing",
+                        "env": "dev"
+                    },
+                    "text",
+                    {
+                        "name": "sortablejs",
+                        "path": "../node_modules/sortablejs/",
+                        "main": "sortable"
+                    },
+                    {
+                        "name": "aurelia-sortablejs",
+                        "path": "../node_modules/aurelia-sortablejs/dist/amd",
+                        "main": "index"
+                    }
+                ]
+            }
+        ],
+        "copyFiles": {
+            "./scripts/*": "../extension-al-object-designer/designer/scripts",
+            "index.html": "../extension-al-object-designer/designer"
+        },
+        "loader": {
+            "type": "require",
+            "configTarget": "vendor-bundle.js",
+            "includeBundleMetadataInConfig": "auto",
+            "plugins": [
+                {
+                    "name": "text",
+                    "extensions": [
+                        ".html",
+                        ".css"
+                    ],
+                    "stub": true
+                }
+            ]
+        }
+    },
+    "platform": {
         "id": "web",
         "displayName": "Web",
         "port": 9000,
         "index": "index.html",
         "baseDir": ".",
         "output": "scripts"
-      }
-    ],
-    "options": {
-      "minify": "stage & prod",
-      "sourcemaps": "dev & stage",
-      "rev": false,
-      "cache": "dev & stage"
     },
-    "bundles": [
-      {
-        "name": "vendor-bundle.js",
-        "prepend": [
-          "node_modules/bluebird/js/browser/bluebird.core.js",
-          {
-            "path": "node_modules/aurelia-cli/lib/resources/scripts/configure-bluebird-no-long-stacktraces.js",
-            "env": "stage & prod"
-          },
-          {
-            "path": "node_modules/aurelia-cli/lib/resources/scripts/configure-bluebird.js",
-            "env": "dev"
-          },
-          "node_modules/@babel/polyfill/browser.js",
-          "node_modules/requirejs/require.js"
+    "transpiler": {
+        "id": "typescript",
+        "displayName": "TypeScript",
+        "fileExtension": ".ts",
+        "dtsSource": [
+            "./custom_typings/**/*.d.ts"
         ],
-        "source": [
-          "**/*.{js,json,css,html}"
-        ],
-        "dependencies": [
-          "aurelia-bootstrapper",
-          "aurelia-loader-default",
-          "aurelia-pal-browser",
-          {
-            "name": "aurelia-testing",
-            "env": "dev"
-          },
-          "text"
-        ]
-      }
-    ],
-    "copyFiles": {
-      "./scripts/*": "../extension-al-object-designer/designer/scripts",
-      "index.html": "../extension-al-object-designer/designer"
+        "source": "src/**/*.ts"
     },
-    "loader": {
-      "type": "require",
-      "configTarget": "vendor-bundle.js",
-      "includeBundleMetadataInConfig": "auto",
-      "plugins": [
+    "markupProcessor": {
+        "id": "none",
+        "displayName": "None",
+        "fileExtension": ".html",
+        "source": "src/**/*.html"
+    },
+    "cssProcessor": {
+        "id": "none",
+        "displayName": "None",
+        "fileExtension": ".css",
+        "source": "src/**/*.css"
+    },
+    "jsonProcessor": {
+        "id": "none",
+        "displayName": "None",
+        "fileExtension": ".json",
+        "source": "src/**/*.json"
+    },
+    "editor": {
+        "id": "vscode",
+        "displayName": "Visual Studio Code"
+    },
+    "unitTestRunners": [
         {
-          "name": "text",
-          "extensions": [
-            ".html",
-            ".css"
-          ],
-          "stub": true
+            "id": "none",
+            "displayName": "None"
         }
-      ]
-    }
-  },
-  "platform": {
-    "id": "web",
-    "displayName": "Web",
-    "port": 9000,
-    "index": "index.html",
-    "baseDir": ".",
-    "output": "scripts"
-  },
-  "transpiler": {
-    "id": "typescript",
-    "displayName": "TypeScript",
-    "fileExtension": ".ts",
-    "dtsSource": [
-      "./custom_typings/**/*.d.ts"
     ],
-    "source": "src/**/*.ts"
-  },
-  "markupProcessor": {
-    "id": "none",
-    "displayName": "None",
-    "fileExtension": ".html",
-    "source": "src/**/*.html"
-  },
-  "cssProcessor": {
-    "id": "none",
-    "displayName": "None",
-    "fileExtension": ".css",
-    "source": "src/**/*.css"
-  },
-  "jsonProcessor": {
-    "id": "none",
-    "displayName": "None",
-    "fileExtension": ".json",
-    "source": "src/**/*.json"
-  },
-  "editor": {
-    "id": "vscode",
-    "displayName": "Visual Studio Code"
-  },
-  "unitTestRunners": [
-    {
-      "id": "none",
-      "displayName": "None"
-    }
-  ],
-  "integrationTestRunner": {
-    "id": "none",
-    "displayName": "None"
-  },
-  "paths": {
-    "root": "src",
-    "resources": "resources",
-    "elements": "resources/elements",
-    "attributes": "resources/attributes",
-    "valueConverters": "resources/value-converters",
-    "bindingBehaviors": "resources/binding-behaviors"
-  },
-  "packageManager": "npm"
+    "integrationTestRunner": {
+        "id": "none",
+        "displayName": "None"
+    },
+    "paths": {
+        "root": "src",
+        "resources": "resources",
+        "elements": "resources/elements",
+        "attributes": "resources/attributes",
+        "valueConverters": "resources/value-converters",
+        "bindingBehaviors": "resources/binding-behaviors"
+    },
+    "packageManager": "npm"
 }

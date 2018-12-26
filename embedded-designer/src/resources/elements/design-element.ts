@@ -6,9 +6,17 @@ export class DesignElement {
     @bindable control: any;
 
     element: Element;
-    
+
+    dragOptions: any;
+
     constructor(element: Element) {
         this.element = element;
+
+        this.dragOptions = {
+            draggable: '.designer-input',
+            group: 'group',
+            disabled: true // turned on locally
+        };
     }
 
     clickOnField(item) {

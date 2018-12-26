@@ -10,11 +10,13 @@
   "dependencies": {
     "aurelia-animator-css": "^1.0.4",
     "aurelia-bootstrapper": "^2.3.0",
+    "aurelia-sortablejs": "^1.1.0",
     "aurelia-ui-virtualization": "^1.0.0-beta.3.3.2",
     "bluebird": "^3.5.2",
     "bootstrap": "^4.1.3",
     "font-awesome": "^4.7.0",
     "requirejs": "^2.3.6",
+    "sortablejs": "^1.8.0-rc1",
     "text": "github:requirejs/text#latest"
   },
   "peerDependencies": {},

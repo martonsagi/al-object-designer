@@ -32,6 +32,11 @@ export class App {
   @observable
   hoverObject: any;
 
+  dragOptions: any;
+
+  constructor() {
+  }
+
   activate(params, routeConfig, navigationInstruction) {
   }
 
