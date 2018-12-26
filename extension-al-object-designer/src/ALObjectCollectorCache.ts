@@ -16,8 +16,9 @@ export class ALObjectCollectorCache implements ALObjectDesigner.ObjectCollectorC
     async isCached(filepath: string, tagName?: string) {
         let cache = await this.getCacheInfo(filepath, tagName);
         let stat = await fs.stat(filepath);
+        let mtime = stat.mtime.getTime();
 
-        return cache.invalid === false && cache.content.Timestamp <= stat.mtime.getTime();
+        return cache.invalid === false && mtime <= cache.content.Timestamp;
     }
 
     async setCache(filepath: string, data: Array<CollectorItem>, tagName?: string) {
