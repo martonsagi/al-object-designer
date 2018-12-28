@@ -58,8 +58,7 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
         let fpaths: any = (workspace as any).workspaceFolders;
         let dalFiles: Array<any> = [];
 
-        for (let i = 0; i < fpaths.length; i++) {
-            const wkspace = fpaths[i];
+        for (let wkspace of fpaths) {
             let fpath: any = path.join(wkspace.uri.fsPath, '.alpackages', path.sep);
             let items: any = await utils.readDir(fpath);
             items = items.filter((f: string) => f.endsWith('.app'));
@@ -98,14 +97,12 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
         }
 
         for (let pFile of projectFiles) {
-            let check = objs.filter((f: any) => {
+            let checkIndex = objs.findIndex((f: any) => {
                 return f.Type.toLowerCase() == pFile.Type.toLowerCase() && f.Id == pFile.Id;
             });
 
-            if (check.length > 0) {
-                let temp = check[0];
-                let index = objs.indexOf(temp);
-                objs.splice(index, 1);
+            if (checkIndex) {
+                objs.splice(checkIndex, 1);
             }
 
             objs.push(pFile);
@@ -128,8 +125,8 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
             return objs;
         }
 
-        for (let i = 0; i < result.length; i++) {
-            let file = result[i].fsPath;
+        for (let item of result) {
+            let file = item.fsPath;
             let line: string = await utils.getFirstCodeLine(file);
             let parts = line.split(" ");
 
@@ -158,7 +155,7 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
                     "Version": "0.0.0.0" || "", //TODO: read app.json
                     "CanExecute": ["Table", "Page", "PageExtension", "PageCustomization", "TableExtension", "Report"].indexOf(ucType) != -1,
                     "CanDesign": ["Page", "PageExtension"].indexOf(ucType) != -1,
-                    "CanCreatePage": ['Table', 'TableExtension'].indexOf(ucType) != -1 && file != "",
+                    "CanCreatePage": ['Table', 'TableExtension'].indexOf(ucType) != -1,
                     "FsPath": file,
                     "EventName": 'not_an_event',
                     "SymbolData": null
@@ -191,6 +188,11 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
         if (files.length > 0) {
             let contents: string = await zip.file(files[0]).async('string');
             let json: ALSymbolPackage.SymbolReference = JSON.parse(contents.trim());
+            let info = {
+                Publisher: json.Publisher,
+                Name: json.Name,
+                Version: json.Version
+            };
 
             for (let j = 0; j < this.types.length; j++) {
                 let elem: string = this.types[j];
@@ -198,35 +200,7 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
 
                 if (json[elem]) {
                     let tempArr = json[elem].map((t: any, index: number) => {
-                        if (t.Methods) {
-                            for (let k = 0; k < t.Methods.length; k++) {
-                                const m = t.Methods[k];
-                                if (m.Attributes) {
-                                    let attrs = m.Attributes.filter((a: any) => {
-                                        return a.Name.indexOf('Event') != -1;
-                                    });
-
-                                    if (attrs.length > 0) {
-                                        levents.push({
-                                            'Type': lType,
-                                            'Id': t.Id,
-                                            'Name': t.Name,
-                                            "TargetObject": t.TargetObject || "",
-                                            "Publisher": json.Publisher || "Platform",
-                                            "Application": json.Name || "",
-                                            "Version": json.Version || "",
-                                            "CanExecute": false,
-                                            "CanDesign": false,
-                                            "FsPath": "",
-                                            'EventName': m.Name,
-                                            'EventType': attrs[0].Name,
-                                            'EventParameters': m.Parameters,
-                                            "SymbolData": null
-                                        });
-                                    }
-                                }
-                            }
-                        }
+                        levents = levents.concat(this.extractEvents(lType, t, info));
 
                         return {
                             "TypeId": j || "",
@@ -239,6 +213,7 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
                             "Version": json.Version || "",
                             "CanExecute": ["Table", "Page", "PageExtension", "TableExtension", "PageCustomization", "Report"].indexOf(lType) != -1,
                             "CanDesign": ["Page"].indexOf(lType) != -1,
+                            "CanCreatePage": ['Table', 'TableExtension'].indexOf(lType) != -1,
                             "FsPath": "",
                             //"Events": levents,
                             "EventName": 'not_an_event',
@@ -266,6 +241,42 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
         return objs;
     }
 
+    protected extractEvents(type: string, item: any, info: any) {
+        let levents = [];
+
+        if (item.Methods) {
+            for (let m of item.Methods) {
+                if (m.Attributes) {
+                    let attr = m.Attributes.find((a: any) => {
+                        return a.Name.indexOf('Event') != -1;
+                    });
+
+                    if (attr) {
+                        levents.push({
+                            'Type': type,
+                            'Id': item.Id,
+                            'Name': item.Name,
+                            "TargetObject": item.TargetObject || "",
+                            "Publisher": info.Publisher || "Platform",
+                            "Application": info.Name || "",
+                            "Version": info.Version || "",
+                            "CanExecute": false,
+                            "CanDesign": false,
+                            "FsPath": "",
+                            'EventName': m.Name,
+                            'EventType': attr.Name,
+                            'EventParameters': m.Parameters,
+                            "SymbolData": null
+                        });
+                    }
+                }
+            }
+        }
+
+        return levents;
+
+    }
+
     public async getSymbolReference(data: ALObjectDesigner.SymbolData) {
         let zip: any = await utils.readZip(data.Path);
         let files = Object.keys(zip.files).filter(i => i.indexOf('.json') != -1);
@@ -274,7 +285,7 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
             let json: ALSymbolPackage.SymbolReference = JSON.parse(contents.trim());
             return json[data.Type][data.Index];
         }
-        
+
         return null;
     }
 

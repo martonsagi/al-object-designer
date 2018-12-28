@@ -141,7 +141,7 @@ export class ALCommandHandler implements ALObjectDesigner.CommandHandler {
             } else {
                 await parsedObj.create();
                 message.ParsedObject = parsedObj.fields;
-                message.Symbol = await parsedObj.parse(message.FsPath, ALObjectDesigner.ParseMode.File);
+                message.Symbol = await parsedObj.parse(message, ALObjectDesigner.ParseMode.File);
             }
             message.SubType = parsedObj.subType;
             await ALPanel.createOrShow(this.extensionPath, ALObjectDesigner.PanelMode.Design, message);
@@ -154,20 +154,19 @@ export class ALCommandHandler implements ALObjectDesigner.CommandHandler {
         let eventParams = [];
 
         if (objEvent.EventParameters) {
-            for (let i = 0; i < objEvent.EventParameters.length; i++) {
-                const eventParam = objEvent.EventParameters[i];
+            for (let eventParam of objEvent.EventParameters) {
                 let paramType = eventParam.TypeDefinition;
                 let paramTypeStr = `${paramType.Name}`;
                 if (paramType.Subtype) {
                     if (!paramType.IsEmpty) {
                         let objectList = this.objectDesigner.objectList as Array<ALObjectDesigner.CollectorItem>;
-                        let object = objectList.filter(f => {
+                        let object = objectList.find(f => {
                             let lType = paramType.Name == 'Record' ? 'Table' : paramType.Name;
                             return f.Type == lType && f.Id == paramType.Subtype.Id;
                         });
 
-                        if (object.length > 0) {
-                            paramType.Subtype.Id = `"${object[0].Name}"`;
+                        if (object) {
+                            paramType.Subtype.Id = `"${object.Name}"`;
                         }
 
                         paramTypeStr = `${paramType.Name} ${paramType.Subtype.Id}`
@@ -180,10 +179,19 @@ export class ALCommandHandler implements ALObjectDesigner.CommandHandler {
 
         let eventSnippet = `
     [EventSubscriber(ObjectType::${objEvent.Type}, ${objEvent.Type == 'Table' ? 'Database' : objEvent.Type}::"${objEvent.Name}", '${objEvent.EventName}', '', true, true)]
-    local procedure "${objEvent.Name}_${objEvent.EventName}"
+    local procedure "${objEvent.Name}_${objEvent.EventName}"`;
+
+    if (eventParams.length > 1) {
+        eventSnippet += `
     (
         ${eventParams.join(';\r\n\t\t')}
-    )
+    )`;
+
+    } else {
+        eventSnippet += `(${eventParams.join(';\r\n\t\t')})`;
+    }
+    
+    eventSnippet += `
     begin
 
     end;
@@ -245,7 +253,8 @@ export class ALCommandHandler implements ALObjectDesigner.CommandHandler {
             }
 
             let parser = new ALObjectParser();
-            let parsedObject = await parser.parse(message.FsPath, ALObjectDesigner.ParseMode.File) as ALSymbolPackage.Table;
+            let parseMode = message.FsPath != '' ? ALObjectDesigner.ParseMode.File : ALObjectDesigner.ParseMode.Symbol;
+            let parsedObject = await parser.parse(message, parseMode) as ALSymbolPackage.Table;
 
             let fields = parsedObject.Fields;
             let caption = `${parsedObject.Name}${newOptions.SubType != "" ? ` ${newOptions.SubType}` : ''}`;

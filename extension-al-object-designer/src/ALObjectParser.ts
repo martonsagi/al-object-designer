@@ -46,7 +46,7 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
 
         switch (mode) {
             case ParseMode.File:
-                result = await this.parseFile(options);
+                result = await this.parseFile(options.FsPath);
                 break;
             case ParseMode.Text:
                 result = await this.parseText(options);
@@ -72,20 +72,18 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
         let matches: Array<any> = this.recursiveMatch({ body: fileContent });
         result = this.generateSymbol(matches[0]);
 
-        //console.log(JSON.stringify(result));
-
         return result;
     }
 
     public async parseSymbol(objectInfo: ALObjectDesigner.CollectorItem) {
         let collector = new ALObjectCollector();
         this._objectList = await collector.discover();
-        let result = this._objectList.filter(f => {
+        let result = this._objectList.find(f => {
             return f.Id == objectInfo.Id && f.Type.toLowerCase() == objectInfo.Type.toLowerCase()
         });
 
-        if (result.length > 0) {
-            let symbolData = result[0].SymbolData;
+        if (result) {
+            let symbolData = result.SymbolData;
             if (symbolData) {
                 let symbol = await collector.getSymbolReference(symbolData);
                 return symbol;

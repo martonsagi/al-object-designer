@@ -73,20 +73,11 @@ export class ALPanel {
         // This happens when the user closes the panel or when the panel is closed programatically
         this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
 
-        // Update the content based on view changes
-        /*this._panel.onDidChangeViewState(e => {
-            if (this._panel.visible) {
-                this._update()
-            }
-        }, null, this._disposables);*/
-
         // Handle messages from the webview
         this._panel.webview.onDidReceiveMessage(async (messages) => {
             let handler: ALCommandHandler = new ALCommandHandler(this, extensionPath);
 
-            for (let i = 0; i < messages.length; i++) {
-                const message = messages[i];
-
+            for (let message of messages) {
                 if (message.Command == 'Refresh') {
                     await this.update();
                     return;
@@ -154,19 +145,21 @@ export class ALPanel {
         } else {
             let parsedObj = new ALObjectParser(this.objectInfo);
             await parsedObj.create();
-            this.objectInfo.ParsedObject = parsedObj.fields;
             if (this.objectInfo.FsPath == '') {
                 this.objectInfo.Symbol = await parsedObj.parse(this.objectInfo, ALObjectDesigner.ParseMode.Symbol);
-                let type = this.objectInfo.Symbol.Properties.filter((f: any) => {
+                let type = this.objectInfo.Symbol.Properties.find((f: any) => {
                     return f.Name == 'PageType'
                 });
-                if (type.length > 0) {
-                    this.objectInfo.SubType = ["Document", "Card"].indexOf(type[0].Value) != -1 ? 'Card' : 'List';
+
+                if (type) {
+                    this.objectInfo.SubType = ["Document", "Card"].indexOf(type.Value) != -1 ? 'Card' : 'List';
                 }
             } else {
-                this.objectInfo.Symbol = await parsedObj.parse(this.objectInfo.FsPath, ALObjectDesigner.ParseMode.File);
+                this.objectInfo.Symbol = await parsedObj.parse(this.objectInfo, ALObjectDesigner.ParseMode.File);
                 this.objectInfo.SubType = parsedObj.subType;
-            }            
+            }   
+            
+            this.objectInfo.ParsedObject = parsedObj.fields;
 
             await this._panel.webview.postMessage({ command: 'designer', objectInfo: this.objectInfo });
         }
