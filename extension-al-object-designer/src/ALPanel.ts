@@ -156,7 +156,7 @@ export class ALPanel {
                 }
             } else {
                 this.objectInfo.Symbol = await parsedObj.parse(this.objectInfo, ALObjectDesigner.ParseMode.File);
-                this.objectInfo.SubType = parsedObj.subType;
+                this.objectInfo.SubType = ["Document", "Card"].indexOf(parsedObj.subType) != -1 ? 'Card' : 'List';
             }   
             
             this.objectInfo.ParsedObject = parsedObj.fields;

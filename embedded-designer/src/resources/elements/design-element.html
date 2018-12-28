@@ -1,5 +1,5 @@
 <template bindable="control">
-    <div sortable.bind="dragOptions">
+    <div sortable.bind="dragOptions" style="overflow-y: auto">
         <h2 if.bind="(getControlType(control) == 'group' || getControlType(control) == 'part') && getControlType(control.Parent) != 'group'">${getCaption(control)}</h2>
         <div if.bind="getControlType(control) == 'group' && getControlType(control.Parent) == 'group'" style="text-transform: uppercase; font-weight: 400; padding-bottom: 10px;">
             ${getCaption(control)}
@@ -7,14 +7,27 @@
         <div if.bind="getControlType(control) == 'part'" style="padding: 30px; border: 1px solid #ccc;">PagePart:
             &quot;${control.SourceExpression}&quot;
         </div>
-        <div class="designer-input page-control ${item.Separator == true ? 'page-control-right' : ''}" repeat.for="item of control.Controls"
+        <div if.bind="getControlType(control) != 'repeater'" class="designer-input page-control ${item.Separator == true ? 'page-control-right' : ''}" repeat.for="item of control.Controls"
             style="margin-bottom: 9px;">
             <div if.bind="getControlType(item) == 'field'">
                 <a style="width: 200px; display: inline-block" click.delegate="clickOnField(item)">${getCaption(item)}</a><input
-                    style="width: 200px" type="text" value='[SourceExpr: "${item.Name}"]' disabled>
+                    style="width: 200px" type="text" value='["${item.Name}"]' disabled>
             </div>
 
             <design-element control.bind="item"></design-element>
         </div>
+
+        
+        <table style="width: 100%; margin-top: 10px;" if.bind="getControlType(control) == 'repeater'">
+            <tr>
+                <th repeat.for="field of control.Controls" style="min-width: 150px; text-align: left;">${getCaption(field)}</th>
+            </tr>
+            <tr repeat.for="i of 10">
+                <td repeat.for="field of control.Controls">
+                    <span if.bind="i == 0">[&quot;${field.Name}&quot;]</span>&nbsp;
+                </td>
+            </tr>
+        </table>
+
     </div>
 </template>

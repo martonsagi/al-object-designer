@@ -1,7 +1,7 @@
 <template>
     <div class="content designer-content" class="virtual-repeater-wrapper">
 
-        <div id="card-designer-wrapper" show.bind="objectInfo.SubType == 'Card'">
+        <div id="card-designer-wrapper">
             <div id="actions-placeholder">
                 <span repeat.for="action of objectInfo.Symbol.Actions" style="margin-bottom: 10px;">
                     <action-element action.bind="action"></action-element>
@@ -11,24 +11,6 @@
             <div repeat.for="control of objectInfo.Symbol.Controls">
                 <design-element control.bind="control"></design-element>
             </div>
-        </div>
-
-        <div show.bind="objectInfo.SubType == 'List'">
-            <div id="actions-placeholder">
-                <span repeat.for="action of objectInfo.Symbol.Actions" style="margin-bottom: 10px;">
-                    <action-element action.bind="action"></action-element>
-                </span>
-            </div>
-
-            <div style="margin-top: 10px;"></div>
-            <table style="width: 100%">
-                <tr>
-                    <th repeat.for="field of objectInfo.ParsedObject" style="min-width: 150px; text-align: left;">${field}</th>
-                </tr>
-                <tr repeat.for="i of 10">
-                    <td repeat.for="field of objectInfo.ParsedObject">&nbsp;</td>
-                </tr>
-            </table>
         </div>
     </div>
 </template>
