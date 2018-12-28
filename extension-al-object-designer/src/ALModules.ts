@@ -27,6 +27,7 @@ export module ALSymbolPackage {
         Properties?: Array<Property>;
         Variables?: Array<Variable>;
         Methods?: Array<Method>;
+        FsPath?: string;
     }
 
     export interface Table extends ALObject {
@@ -157,17 +158,79 @@ export module ALSymbolPackage {
         SourceExpression?: string;
         Caption?: string;
         SourceCodeAnchor?: string = '';
-        Parent?: PageControlBase;        
+        Parent?: PageControlBase;
     }
 
     export class PageControl extends PageControlBase {
         Controls?: Array<PageControl>;
         Parent?: PageControl;
+        Kind: ControlKind = 0;
     }
 
     export class PageAction extends PageControlBase {
         Actions?: Array<PageAction>;
         Parent?: PageAction;
+        Kind: ActionKind = 0;
+    }
+
+    export enum ControlKind {
+        Area,
+        Group,
+        CueGroup,
+        Repeater,
+        Fixed,
+        Grid,
+        Part,
+        SystemPart,
+        Field,
+        Label,
+        UserControl,
+        ChartPart
+    }
+
+    export enum ActionKind {
+        Area,
+        Group,
+        Action,
+        Separator
+    }
+
+    export enum ExtendedDatatypeKind {
+        None,
+        PhoneNo,
+        URL,
+        EMail,
+        Ratio,
+        Masked,
+        Person
+    }
+
+    export enum FieldClassKind {
+        Normal,
+        FlowField,
+        FlowFilter
+    }
+
+    export enum FieldSubtypeKind {
+        Json,
+        UserDefined,
+        Bitmap,
+        Memo
+    }
+
+    export enum DefaultLayoutKind {
+        RDLC,
+        Word
+    }
+
+    export enum MethodKind {
+        Method,
+        Trigger,
+        BuiltInMethod,
+        BuiltInOperator,
+        Property,
+        DeclareMethod,
+        EventTrigger
     }
 }
 
@@ -176,6 +239,12 @@ export module ALObjectDesigner {
     export enum PanelMode {
         List = "List",
         Design = "Design"
+    }
+
+    export enum ParseMode {
+        File = 'File',
+        Text = 'Text',
+        Symbol = 'Symbol'
     }
 
     export interface CollectorItem {
@@ -194,6 +263,7 @@ export module ALObjectDesigner {
         EventType?: string;
         Events?: Array<any>;
         EventParameters?: Array<ALSymbolPackage.Parameter>;
+        SymbolData?: SymbolData;
     }
 
     export interface TemplateItem {
@@ -225,6 +295,12 @@ export module ALObjectDesigner {
         discover(): Promise<Array<CollectorItem>>;
     }
 
+    export class SymbolData {
+        Path: string = '';
+        Type: string = '';
+        Index: number = 0;
+    }
+
     export interface TemplateCollector extends Collector<TemplateItem> {
         initialize(): void;
         discover(): Promise<Array<TemplateItem>>;
@@ -235,7 +311,7 @@ export module ALObjectDesigner {
     }
 
     export interface ObjectParser {
-        parse(filePath: string): Promise<ALSymbolPackage.ALObject>;
+        parse(options: any, mode: ParseMode): Promise<ALSymbolPackage.ALObject>;
     }
 
     export interface ObjectDesignerData {
@@ -249,7 +325,7 @@ export module ALObjectDesigner {
         Children?: Array<ParsedObjectRegion>;
         Id?: number;
         Type?: string;
-        Properties?: Array<ALSymbolPackage.Property|null>;
+        Properties?: Array<ALSymbolPackage.Property | null>;
         Source?: string = '';
     }
 }

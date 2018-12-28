@@ -30408,7 +30408,85 @@ define('main',["require", "exports", "./environment"], function (require, export
 
 
 
-define('text!resources/elements/actionelement.html',[],function(){return "<template bindable=\"action\">\r\n    <span if.bind=\"action.ControlType == 'group'\"><strong>${action.Caption}: </strong></span>\r\n    <span class=\"designer-input\" repeat.for=\"item of action.Actions\" style=\"margin-bottom: 9px;\">\r\n        <span if.bind=\"item.ControlType == 'action'\">\r\n            <a style=\"display: inline-block; margin-right: 10px;\">${item.Caption}</a>\r\n        </span>        \r\n        <actionelement action.bind=\"item\"></actionelement>\r\n        <br  if.bind=\"item.ControlType == 'group'\">\r\n    </span>\r\n</template>";});
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+define('resources/elements/action-element',["require", "exports", "aurelia-framework"], function (require, exports, aurelia_framework_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var ActionElement = (function () {
+        function ActionElement(element) {
+            this.element = element;
+            this.dragOptions = {
+                draggable: '.designer-input',
+                group: 'group',
+                disabled: true
+            };
+        }
+        ActionElement.prototype.dispatch = function (name, data) {
+            window.dispatchEvent(new CustomEvent(name, {
+                bubbles: true,
+                detail: data
+            }));
+        };
+        ActionElement.prototype.getActionType = function (item) {
+            if (!item) {
+                return;
+            }
+            if (item.ControlType) {
+                return item.ControlType;
+            }
+            if (item.Kind) {
+                var kind = ActionKind[item.Kind];
+                return kind.toLowerCase();
+            }
+        };
+        ActionElement.prototype.getCaption = function (item) {
+            if (!item) {
+                return;
+            }
+            if (item.Caption && item.Caption != '') {
+                return item.Caption;
+            }
+            var caption = item.Properties.filter(function (f) {
+                return f.Name == 'CaptionML' || f.Name == 'Caption';
+            });
+            if (caption.length > 0) {
+                return caption[0].Value.substr(4);
+            }
+            else {
+                return item.Name;
+            }
+        };
+        __decorate([
+            aurelia_framework_1.bindable,
+            __metadata("design:type", Object)
+        ], ActionElement.prototype, "action", void 0);
+        ActionElement = __decorate([
+            aurelia_framework_1.autoinject,
+            __metadata("design:paramtypes", [Element])
+        ], ActionElement);
+        return ActionElement;
+    }());
+    exports.ActionElement = ActionElement;
+    var ActionKind;
+    (function (ActionKind) {
+        ActionKind[ActionKind["Area"] = 0] = "Area";
+        ActionKind[ActionKind["Group"] = 1] = "Group";
+        ActionKind[ActionKind["Action"] = 2] = "Action";
+        ActionKind[ActionKind["Separator"] = 3] = "Separator";
+    })(ActionKind = exports.ActionKind || (exports.ActionKind = {}));
+});
+
+
+
+define('text!resources/elements/action-element.html',[],function(){return "<template bindable=\"action\">\r\n    <span if.bind=\"getActionType(action) == 'group'\"><strong>${getCaption(action)}: </strong></span>\r\n    <span class=\"designer-input\" repeat.for=\"item of action.Actions\" style=\"margin-bottom: 9px;\">\r\n        <span if.bind=\"getActionType(item) == 'action'\">\r\n            <a style=\"display: inline-block; margin-right: 10px;\">${getCaption(item)}</a>\r\n        </span>        \r\n        <action-element action.bind=\"item\"></action-element>\r\n        <br  if.bind=\"getActionType(item) == 'group'\">\r\n    </span>\r\n</template>";});
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -30439,6 +30517,35 @@ define('resources/elements/design-element',["require", "exports", "aurelia-frame
                 detail: data
             }));
         };
+        DesignElement.prototype.getControlType = function (item) {
+            if (!item) {
+                return;
+            }
+            if (item.ControlType) {
+                return item.ControlType;
+            }
+            if (item.Kind) {
+                var kind = ControlKind[item.Kind];
+                return kind.toLowerCase();
+            }
+        };
+        DesignElement.prototype.getCaption = function (item) {
+            if (!item) {
+                return;
+            }
+            if (item.Caption && item.Caption != '') {
+                return item.Caption;
+            }
+            var caption = item.Properties.filter(function (f) {
+                return f.Name == 'CaptionML' || f.Name == 'Caption';
+            });
+            if (caption.length > 0) {
+                return caption[0].Value.substr(4);
+            }
+            else {
+                return item.Name;
+            }
+        };
         __decorate([
             aurelia_framework_1.bindable,
             __metadata("design:type", Object)
@@ -30450,12 +30557,27 @@ define('resources/elements/design-element',["require", "exports", "aurelia-frame
         return DesignElement;
     }());
     exports.DesignElement = DesignElement;
+    var ControlKind;
+    (function (ControlKind) {
+        ControlKind[ControlKind["Area"] = 0] = "Area";
+        ControlKind[ControlKind["Group"] = 1] = "Group";
+        ControlKind[ControlKind["CueGroup"] = 2] = "CueGroup";
+        ControlKind[ControlKind["Repeater"] = 3] = "Repeater";
+        ControlKind[ControlKind["Fixed"] = 4] = "Fixed";
+        ControlKind[ControlKind["Grid"] = 5] = "Grid";
+        ControlKind[ControlKind["Part"] = 6] = "Part";
+        ControlKind[ControlKind["SystemPart"] = 7] = "SystemPart";
+        ControlKind[ControlKind["Field"] = 8] = "Field";
+        ControlKind[ControlKind["Label"] = 9] = "Label";
+        ControlKind[ControlKind["UserControl"] = 10] = "UserControl";
+        ControlKind[ControlKind["ChartPart"] = 11] = "ChartPart";
+    })(ControlKind || (ControlKind = {}));
 });
 
 
 
-define('text!resources/elements/design-element.html',[],function(){return "<template bindable=\"control\">\r\n    <div sortable.bind=\"dragOptions\">\r\n        <h2 if.bind=\"(control.ControlType == 'group' || control.ControlType == 'part') && control.Parent.ControlType != 'group'\">${control.Caption}</h2>\r\n        <div if.bind=\"control.ControlType == 'group' && control.Parent.ControlType == 'group'\" style=\"text-transform: uppercase; font-weight: 400; padding-bottom: 10px;\">\r\n            ${control.Caption}\r\n        </div>\r\n        <div if.bind=\"control.ControlType == 'part'\" style=\"padding: 30px; border: 1px solid #ccc;\">PagePart:\r\n            &quot;${control.SourceExpression}&quot;</div>\r\n        <div class=\"designer-input page-control ${item.Separator == true ? 'page-control-right' : ''}\" repeat.for=\"item of control.Controls\"\r\n            style=\"margin-bottom: 9px;\">\r\n            <div if.bind=\"item.ControlType == 'field'\">\r\n                <a style=\"width: 200px; display: inline-block\" click.delegate=\"clickOnField(item)\">${item.Caption}</a><input\r\n                    style=\"width: 200px\" type=\"text\" value='[SourceExpr: \"${item.SourceExpression}\"]' disabled>\r\n            </div>\r\n\r\n            <design-element control.bind=\"item\"></design-element>\r\n        </div>\r\n    </div>\r\n</template>";});
-define('text!resources/elements/designer.html',[],function(){return "<template>\r\n    <div class=\"content designer-content\" class=\"virtual-repeater-wrapper\">\r\n\r\n        <div id=\"card-designer-wrapper\" show.bind=\"objectInfo.SubType == 'Card'\">\r\n            <div id=\"actions-placeholder\">\r\n                <span repeat.for=\"action of objectInfo.Symbol.Actions\" style=\"margin-bottom: 10px;\">\r\n                    <actionelement action.bind=\"action\"></actionelement>\r\n                </span>\r\n            </div>\r\n\r\n            <div repeat.for=\"control of objectInfo.Symbol.Controls\">\r\n                <design-element control.bind=\"control\"></design-element>\r\n            </div>\r\n        </div>\r\n\r\n        <div show.bind=\"objectInfo.SubType == 'List'\">\r\n            <div id=\"actions-placeholder\">Actions...</div>\r\n            <div style=\"margin-top: 10px;\"></div>\r\n            <table style=\"width: 100%\">\r\n                <tr>\r\n                    <th repeat.for=\"field of objectInfo.ParsedObject\" style=\"min-width: 150px; text-align: left;\">${field}</th>\r\n                </tr>\r\n                <tr repeat.for=\"i of 10\">\r\n                    <td repeat.for=\"field of objectInfo.ParsedObject\">&nbsp;</td>\r\n                </tr>\r\n            </table>\r\n        </div>\r\n    </div>\r\n</template>";});
+define('text!resources/elements/design-element.html',[],function(){return "<template bindable=\"control\">\r\n    <div sortable.bind=\"dragOptions\">\r\n        <h2 if.bind=\"(getControlType(control) == 'group' || getControlType(control) == 'part') && getControlType(control.Parent) != 'group'\">${getCaption(control)}</h2>\r\n        <div if.bind=\"getControlType(control) == 'group' && getControlType(control.Parent) == 'group'\" style=\"text-transform: uppercase; font-weight: 400; padding-bottom: 10px;\">\r\n            ${getCaption(control)}\r\n        </div>\r\n        <div if.bind=\"getControlType(control) == 'part'\" style=\"padding: 30px; border: 1px solid #ccc;\">PagePart:\r\n            &quot;${control.SourceExpression}&quot;\r\n        </div>\r\n        <div class=\"designer-input page-control ${item.Separator == true ? 'page-control-right' : ''}\" repeat.for=\"item of control.Controls\"\r\n            style=\"margin-bottom: 9px;\">\r\n            <div if.bind=\"getControlType(item) == 'field'\">\r\n                <a style=\"width: 200px; display: inline-block\" click.delegate=\"clickOnField(item)\">${getCaption(item)}</a><input\r\n                    style=\"width: 200px\" type=\"text\" value='[SourceExpr: \"${item.Name}\"]' disabled>\r\n            </div>\r\n\r\n            <design-element control.bind=\"item\"></design-element>\r\n        </div>\r\n    </div>\r\n</template>";});
+define('text!resources/elements/designer.html',[],function(){return "<template>\r\n    <div class=\"content designer-content\" class=\"virtual-repeater-wrapper\">\r\n\r\n        <div id=\"card-designer-wrapper\" show.bind=\"objectInfo.SubType == 'Card'\">\r\n            <div id=\"actions-placeholder\">\r\n                <span repeat.for=\"action of objectInfo.Symbol.Actions\" style=\"margin-bottom: 10px;\">\r\n                    <action-element action.bind=\"action\"></action-element>\r\n                </span>\r\n            </div>\r\n\r\n            <div repeat.for=\"control of objectInfo.Symbol.Controls\">\r\n                <design-element control.bind=\"control\"></design-element>\r\n            </div>\r\n        </div>\r\n\r\n        <div show.bind=\"objectInfo.SubType == 'List'\">\r\n            <div id=\"actions-placeholder\">\r\n                <span repeat.for=\"action of objectInfo.Symbol.Actions\" style=\"margin-bottom: 10px;\">\r\n                    <action-element action.bind=\"action\"></action-element>\r\n                </span>\r\n            </div>\r\n\r\n            <div style=\"margin-top: 10px;\"></div>\r\n            <table style=\"width: 100%\">\r\n                <tr>\r\n                    <th repeat.for=\"field of objectInfo.ParsedObject\" style=\"min-width: 150px; text-align: left;\">${field}</th>\r\n                </tr>\r\n                <tr repeat.for=\"i of 10\">\r\n                    <td repeat.for=\"field of objectInfo.ParsedObject\">&nbsp;</td>\r\n                </tr>\r\n            </table>\r\n        </div>\r\n    </div>\r\n</template>";});
 define('text!resources/elements/header.html',[],function(){return "<template>\r\n    <div class=\"header\" show.bind=\"mode == 'List'\">\r\n        <h1>AL</h1>\r\n        <h1>Object Designer</h1>\r\n        <h1 show.bind=\"loaded\">\r\n            <span textcontent.bind=\"count || 0\"></span> ${activeType} ${headerType}${count > 1 ? 's' : ''}\r\n        </h1>\r\n        <h1 style=\"float: right; padding: 6px 15px 5px 15px;\">\r\n            <input id=\"searchInput\" type=\"text\" id=\"searchVal\" placeholder=\"Search for ${headerType}s\" value.bind=\"query\"\r\n                keyup.delegate=\"search() & throttle:350\" />\r\n        </h1>\r\n        <h1 id=\"searchHeader\" style=\"float: right; padding-right: 15px; border-left: none; cursor: pointer\" click.delegate=\"filterType('', true)\">\r\n            ${query == '' ? 'Search' : 'Show All (X)'}\r\n        </h1>\r\n        <div style=\"clear: both;\"></div>\r\n    </div>\r\n\r\n    <div class=\"header\" show.bind=\"mode == 'Design'\">\r\n        <h1>AL</h1>\r\n        <h1>Object Designer</h1>\r\n        <h1>${objectInfo.Type} ${objectInfo.Id} ${objectInfo.Name}</h1>\r\n        <div style=\"clear: both;\"></div>\r\n    </div>\r\n</template>";});
 define('text!resources/elements/objects.html',[],function(){return "<template>\r\n    <div class=\"content\" class=\"virtual-repeater-wrapper\">\r\n\r\n        <div hidden.bind=\"loaded\">\r\n            <h1>Discovering objects...</h1>\r\n        </div>        \r\n\r\n        <table id=\"object-list\" style=\"width: 100%;\" show.bind=\"loaded\">\r\n            <tr>\r\n                <th style=\"text-align: left; width: 105px\">Type</th>\r\n                <th style=\"text-align: right; width: 100px\" class=\"search-col\">Id</th>\r\n                <th style=\"text-align: left; width: 40px;\"></th>\r\n                <th style=\"text-align: left;\" class=\"search-col\">Name</th>\r\n                <th show.bind=\"showEvents\" style=\"text-align: left;\">Event Name</th>\r\n                <th show.bind=\"showEvents\" style=\"text-align: left;\">Event Type</th>\r\n                <th hide.bind=\"showEvents\" style=\"text-align: left; min-width: 100px\" class=\"search-col\">Application</th>\r\n                <th hide.bind=\"showEvents\" style=\"text-align: right; width: 100px\">Version</th>\r\n                <th hide.bind=\"showEvents\" style=\"text-align: left; min-width: 100px\" class=\"search-col\">Publisher</th>\r\n            </tr>\r\n            <tr virtual-repeat.for=\"element of results\" class=\"virtual-repeated-item\" class.bind=\"selectedObject == element ? 'selected' : ''\"\r\n                mouseover.delegate=\"setContextBtnVisible(element)\" mouseout.delegate=\"setContextBtnVisible(null)\"\r\n                click.trigger=\"selectRow(element, $event.target)\">\r\n                <td style=\"text-align: left;\">${element.Type}</td>\r\n                <td style=\"text-align: right;\">${element.Id || ''}</td>\r\n                <td style=\"text-align: left;\" class=\"context-menu-td\" id.bind=\"selectedObject == element || hoverObject == element ? 'context-selected' : ''\">\r\n                    <a class=\"context-menu-btn\" show.bind=\"selectedObject == element || hoverObject == element\" class=\"context-menu\"\r\n                        click.trigger=\"setContextMenuVisible()\">&nbsp;\r\n                    </a>\r\n                    <ul show.bind=\"selectedObject == element && showMenu == true\" class=\"context-menu-ul\">\r\n                        <li click.trigger=\"sendCommand(element, 'Definition')\"><i class=\"fa fa-view\"></i> View</li>\r\n                        <li show.bind=\"element.CanExecute\" click.trigger=\"sendCommand(element, 'Run')\"><i class=\"fa fa-run\"></i>\r\n                            Run</li>\r\n                        <li show.bind=\"element.CanDesign\" click.trigger=\"openPageDesigner(element)\"><i class=\"fa fa-design\"></i>\r\n                            Design</li>\r\n                        <li show.bind=\"element.CanCreatePage\" click.trigger=\"sendCommand(element, 'NewCard')\"><i class=\"fa fa-list\"></i>\r\n                            New\r\n                            Card</li>\r\n                        <li show.bind=\"element.CanCreatePage\" click.trigger=\"sendCommand(element, 'NewList')\"><i class=\"fa fa-list\"></i>\r\n                            New\r\n                            List</li>\r\n                        <li show.bind=\"element.CanCreatePage\" click.trigger=\"sendCommand(element, 'NewReport')\"><i\r\n                                class=\"fa fa-report\"></i>\r\n                            New Report</li>\r\n                        <!-- li show.bind=\"element.CanCreatePage\" click.trigger=\"sendCommand(element, 'NewXmlPort')\"><i\r\n                                class=\"fa fa-plus\"></i>\r\n                            New XmlPort</li -->\r\n                        <li show.bind=\"element.CanCreatePage\" click.trigger=\"sendCommand(element, 'NewQuery')\"><i class=\"fa fa-plus\"></i>\r\n                            New Query</li>\r\n                    </ul>\r\n                </td>\r\n                <td style=\"text-align: left;\" class=\"td-name\"><a href=\"#click\" click.delegate=\"sendCommand(element, 'Definition')\">${element.Name\r\n                        || ''}</a>\r\n                </td>\r\n                <td show.bind=\"showEvents\" style=\"text-align: left;\"><a href=\"#click\" click.delegate=\"showEventParams(element)\">${element.EventName || ''}</a></td>\r\n                <td show.bind=\"showEvents\" style=\"text-align: left;\">${element.EventType || ''}</td>\r\n                <td hide.bind=\"showEvents\" style=\"text-align: left;\">${element.Application || ''}</td>\r\n                <td hide.bind=\"showEvents\" style=\"text-align: right;\">${element.Version || ''}</td>\r\n                <td hide.bind=\"showEvents\" style=\"text-align: left;\">${element.Publisher || ''}</td>\r\n            </tr>\r\n        </table>\r\n    </div>\r\n</template>";});
 define('text!resources/elements/toolbar.html',[],function(){return "<template>\r\n    <div class=\"object-bar buttons\">\r\n        <div class=\"object-bar-line\" show.bind=\"mode == 'Design'\">\r\n            <h2>Design Mode (Experimental)</h2>\r\n        </div>\r\n        <div class=\"object-bar-line\" show.bind=\"mode == 'List'\">\r\n            <button class.bind=\"activeType == '' && !currentProject ? 'selected' : ''\" click.delegate=\"showAll()\">All</button>\r\n            <button class.bind=\"activeType == 'Table' ? 'selected' : ''\" click.delegate=\"filterType('Table')\" id=\"filter-Table\">Tables</button>\r\n            <button class.bind=\"activeType == 'Page' ? 'selected' : ''\" click.delegate=\"filterType('Page')\" id=\"filter-Page\">Pages</button>\r\n            <button class.bind=\"activeType == 'Report' ? 'selected' : ''\" click.delegate=\"filterType('Report')\" id=\"filter-Report\">Reports</button>\r\n            <span class=\"linebreaker\"></span>\r\n            <button class.bind=\"activeType == 'Codeunit' ? 'selected' : ''\" click.delegate=\"filterType('Codeunit')\" id=\"filter-Codeunit\">Codeunits</button>\r\n            <button class.bind=\"activeType == 'Query' ? 'selected' : ''\" click.delegate=\"filterType('Query')\" id=\"filter-Query\">Queries</button>\r\n            <button class.bind=\"activeType == 'XmlPort' ? 'selected' : ''\" click.delegate=\"filterType('XmlPort')\" id=\"filter-XmlPort\">XmlPorts</button>\r\n        </div>\r\n        <div class=\"object-bar-line\" show.bind=\"mode == 'List'\">\r\n            <button class.bind=\"currentProject ? 'selected' : ''\" click.delegate=\"setCurrentProjectFilter()\">Workspace</button>\r\n            <button class.bind=\"activeType == 'TableExtension' ? 'selected' : ''\" click.delegate=\"filterType('TableExtension')\"\r\n                id=\"filter-TableExtension\">Table Ext.</button>\r\n            <button class.bind=\"activeType == 'PageExtension' ? 'selected' : ''\" click.delegate=\"filterType('PageExtension')\"\r\n                id=\"filter-PageExtension\">Page Ext.</button>            \r\n            <button class.bind=\"activeType == 'PageCustomization' ? 'selected' : ''\" click.delegate=\"filterType('PageCustomization')\"\r\n                id=\"filter-PageCustomization\">Page Cust.</button>\r\n            <span class=\"linebreaker\"></span>\r\n            <button class.bind=\"activeType == 'ControlAddIn' ? 'selected' : ''\" click.delegate=\"filterType('ControlAddIn')\"\r\n                id=\"filter-ControlAddIn\">Control Add.</button>\r\n            <button class.bind=\"activeType == 'Enum' ? 'selected' : ''\" click.delegate=\"filterType('Enum')\" id=\"filter-Enum\">Enums</button>\r\n            <button class.bind=\"activeType == 'Profile' ? 'selected' : ''\" click.delegate=\"filterType('Profile')\" id=\"filter-Profile\">Profiles</button>\r\n        </div>\r\n        <div class=\"object-bar-line\" show.bind=\"mode == 'List'\">\r\n            <button class.bind=\"showEvents ? 'selected' : ''\" click.delegate=\"setEventsView()\" title=\"Show Events\" style=\"cursor: pointer\">Events</button>\r\n            <span class=\"new-object-link\" click.delegate=\"refreshDesigner()\" title=\"Create a new Object\" style=\"cursor: pointer\">Refresh</span>\r\n            <span class=\"new-object-link\" click.delegate=\"addNewObject('empty')\" title=\"Create a new Object\" style=\"cursor: pointer\">+\r\n                New Object</span>\r\n            <span repeat.for=\"link of customLinks\" class=\"new-object-link\" click.delegate=\"addNewCustomObject(link)\"\r\n                title=\"link.description\" style=\"cursor: pointer\">${link.title}</span>\r\n        </div>\r\n    </div>\r\n</template>";});
@@ -30468,7 +30590,7 @@ define('resources/index',["require", "exports"], function (require, exports) {
             './elements/toolbar.html',
             './elements/designer.html',
             './elements/design-element',
-            './elements/actionelement.html',
+            './elements/action-element',
             './elements/objects.html'
         ]);
     }
@@ -32500,7 +32622,8 @@ define('aurelia-ui-virtualization/template-strategy',['aurelia-ui-virtualization
 define('aurelia-ui-virtualization/utilities',['aurelia-ui-virtualization/dist/commonjs/utilities'],function(m){return m;});
 define('aurelia-ui-virtualization/virtual-repeat',['aurelia-ui-virtualization/dist/commonjs/virtual-repeat'],function(m){return m;});
 define('aurelia-ui-virtualization/virtual-repeat-strategy-locator',['aurelia-ui-virtualization/dist/commonjs/virtual-repeat-strategy-locator'],function(m){return m;});
-define('text!elements/actionelement.html',['text!resources/elements/actionelement.html'],function(m){return m;});
+define('elements/action-element',['resources/elements/action-element'],function(m){return m;});
+define('text!elements/action-element.html',['text!resources/elements/action-element.html'],function(m){return m;});
 define('elements/design-element',['resources/elements/design-element'],function(m){return m;});
 define('text!elements/design-element.html',['text!resources/elements/design-element.html'],function(m){return m;});
 define('text!elements/designer.html',['text!resources/elements/designer.html'],function(m){return m;});

@@ -160,7 +160,8 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
                     "CanDesign": ["Page", "PageExtension"].indexOf(ucType) != -1,
                     "CanCreatePage": ['Table', 'TableExtension'].indexOf(ucType) != -1 && file != "",
                     "FsPath": file,
-                    "EventName": 'not_an_event'
+                    "EventName": 'not_an_event',
+                    "SymbolData": null
                 };
 
                 objs.push(newItem);
@@ -196,7 +197,7 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
                 let lType: string = this.alTypes[j];
 
                 if (json[elem]) {
-                    let tempArr = json[elem].map((t: any) => {
+                    let tempArr = json[elem].map((t: any, index: number) => {
                         if (t.Methods) {
                             for (let k = 0; k < t.Methods.length; k++) {
                                 const m = t.Methods[k];
@@ -219,7 +220,8 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
                                             "FsPath": "",
                                             'EventName': m.Name,
                                             'EventType': attrs[0].Name,
-                                            'EventParameters': m.Parameters
+                                            'EventParameters': m.Parameters,
+                                            "SymbolData": null
                                         });
                                     }
                                 }
@@ -236,10 +238,15 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
                             "Application": json.Name || "",
                             "Version": json.Version || "",
                             "CanExecute": ["Table", "Page", "PageExtension", "TableExtension", "PageCustomization", "Report"].indexOf(lType) != -1,
-                            "CanDesign": false,
+                            "CanDesign": ["Page"].indexOf(lType) != -1,
                             "FsPath": "",
                             //"Events": levents,
-                            "EventName": 'not_an_event'
+                            "EventName": 'not_an_event',
+                            "SymbolData": {
+                                'Path': filePath,
+                                'Type': elem,
+                                'Index': index
+                            }
                         };
                     });
 
@@ -257,6 +264,18 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
         this.collectorCache.setCache(filePath, levents, 'events');
 
         return objs;
+    }
+
+    public async getSymbolReference(data: ALObjectDesigner.SymbolData) {
+        let zip: any = await utils.readZip(data.Path);
+        let files = Object.keys(zip.files).filter(i => i.indexOf('.json') != -1);
+        if (files.length > 0) {
+            let contents: string = await zip.file(files[0]).async('string');
+            let json: ALSymbolPackage.SymbolReference = JSON.parse(contents.trim());
+            return json[data.Type][data.Index];
+        }
+        
+        return null;
     }
 
     //#endregion

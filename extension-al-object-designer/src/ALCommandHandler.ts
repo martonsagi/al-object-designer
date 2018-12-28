@@ -136,11 +136,15 @@ export class ALCommandHandler implements ALObjectDesigner.CommandHandler {
     private async commandDesign(message: any) {
         if (message.Command == 'Design') {
             let parsedObj = new ALObjectParser(message);
-            await parsedObj.create();
-            message.ParsedObject = parsedObj.fields;
-            message.Symbol = await parsedObj.parse(message.FsPath);
+            if (message.FsPath == '') {
+                message.Symbol = await parsedObj.parse(message, ALObjectDesigner.ParseMode.Symbol);
+            } else {
+                await parsedObj.create();
+                message.ParsedObject = parsedObj.fields;
+                message.Symbol = await parsedObj.parse(message.FsPath, ALObjectDesigner.ParseMode.File);
+            }
             message.SubType = parsedObj.subType;
-            ALPanel.createOrShow(this.extensionPath, ALObjectDesigner.PanelMode.Design, message);
+            await ALPanel.createOrShow(this.extensionPath, ALObjectDesigner.PanelMode.Design, message);
             return;
         }
     }
@@ -156,7 +160,8 @@ export class ALCommandHandler implements ALObjectDesigner.CommandHandler {
                 let paramTypeStr = `${paramType.Name}`;
                 if (paramType.Subtype) {
                     if (!paramType.IsEmpty) {
-                        let object = this.objectDesigner.objectList.filter(f => {
+                        let objectList = this.objectDesigner.objectList as Array<ALObjectDesigner.CollectorItem>;
+                        let object = objectList.filter(f => {
                             let lType = paramType.Name == 'Record' ? 'Table' : paramType.Name;
                             return f.Type == lType && f.Id == paramType.Subtype.Id;
                         });
@@ -240,7 +245,7 @@ export class ALCommandHandler implements ALObjectDesigner.CommandHandler {
             }
 
             let parser = new ALObjectParser();
-            let parsedObject = await parser.parse(message.FsPath) as ALSymbolPackage.Table;
+            let parsedObject = await parser.parse(message.FsPath, ALObjectDesigner.ParseMode.File) as ALSymbolPackage.Table;
 
             let fields = parsedObject.Fields;
             let caption = `${parsedObject.Name}${newOptions.SubType != "" ? ` ${newOptions.SubType}` : ''}`;

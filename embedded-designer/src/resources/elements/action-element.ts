@@ -1,9 +1,9 @@
 import { bindable, autoinject, bindingMode } from 'aurelia-framework';
 
 @autoinject
-export class DesignElement {
+export class ActionElement {
 
-    @bindable control: any;
+    @bindable action: any;
 
     element: Element;
 
@@ -19,10 +19,6 @@ export class DesignElement {
         };
     }
 
-    clickOnField(item) {
-        this.dispatch('field-onclick', item);
-    }
-
     dispatch(name, data) {
         window.dispatchEvent(
             new CustomEvent(name, {
@@ -32,7 +28,7 @@ export class DesignElement {
         );
     }
 
-    getControlType(item) {        
+    getActionType(item) {
         if (!item) {
             return;
         }
@@ -42,7 +38,7 @@ export class DesignElement {
         }
 
         if (item.Kind) {
-            let kind = ControlKind[item.Kind];
+            let kind = ActionKind[item.Kind];
             return kind.toLowerCase();
         }
     }
@@ -69,17 +65,9 @@ export class DesignElement {
 }
 
 
-enum ControlKind {
+export enum ActionKind {
     Area,
     Group,
-    CueGroup,
-    Repeater,
-    Fixed,
-    Grid,
-    Part,
-    SystemPart,
-    Field,
-    Label,
-    UserControl,
-    ChartPart
+    Action,
+    Separator
 }

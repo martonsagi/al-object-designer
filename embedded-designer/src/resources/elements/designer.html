@@ -4,7 +4,7 @@
         <div id="card-designer-wrapper" show.bind="objectInfo.SubType == 'Card'">
             <div id="actions-placeholder">
                 <span repeat.for="action of objectInfo.Symbol.Actions" style="margin-bottom: 10px;">
-                    <actionelement action.bind="action"></actionelement>
+                    <action-element action.bind="action"></action-element>
                 </span>
             </div>
 
@@ -14,7 +14,12 @@
         </div>
 
         <div show.bind="objectInfo.SubType == 'List'">
-            <div id="actions-placeholder">Actions...</div>
+            <div id="actions-placeholder">
+                <span repeat.for="action of objectInfo.Symbol.Actions" style="margin-bottom: 10px;">
+                    <action-element action.bind="action"></action-element>
+                </span>
+            </div>
+
             <div style="margin-top: 10px;"></div>
             <table style="width: 100%">
                 <tr>

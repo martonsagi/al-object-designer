@@ -1,16 +1,17 @@
 <template bindable="control">
     <div sortable.bind="dragOptions">
-        <h2 if.bind="(control.ControlType == 'group' || control.ControlType == 'part') && control.Parent.ControlType != 'group'">${control.Caption}</h2>
-        <div if.bind="control.ControlType == 'group' && control.Parent.ControlType == 'group'" style="text-transform: uppercase; font-weight: 400; padding-bottom: 10px;">
-            ${control.Caption}
+        <h2 if.bind="(getControlType(control) == 'group' || getControlType(control) == 'part') && getControlType(control.Parent) != 'group'">${getCaption(control)}</h2>
+        <div if.bind="getControlType(control) == 'group' && getControlType(control.Parent) == 'group'" style="text-transform: uppercase; font-weight: 400; padding-bottom: 10px;">
+            ${getCaption(control)}
         </div>
-        <div if.bind="control.ControlType == 'part'" style="padding: 30px; border: 1px solid #ccc;">PagePart:
-            &quot;${control.SourceExpression}&quot;</div>
+        <div if.bind="getControlType(control) == 'part'" style="padding: 30px; border: 1px solid #ccc;">PagePart:
+            &quot;${control.SourceExpression}&quot;
+        </div>
         <div class="designer-input page-control ${item.Separator == true ? 'page-control-right' : ''}" repeat.for="item of control.Controls"
             style="margin-bottom: 9px;">
-            <div if.bind="item.ControlType == 'field'">
-                <a style="width: 200px; display: inline-block" click.delegate="clickOnField(item)">${item.Caption}</a><input
-                    style="width: 200px" type="text" value='[SourceExpr: "${item.SourceExpression}"]' disabled>
+            <div if.bind="getControlType(item) == 'field'">
+                <a style="width: 200px; display: inline-block" click.delegate="clickOnField(item)">${getCaption(item)}</a><input
+                    style="width: 200px" type="text" value='[SourceExpr: "${item.Name}"]' disabled>
             </div>
 
             <design-element control.bind="item"></design-element>

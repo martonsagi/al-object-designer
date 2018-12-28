@@ -1,8 +1,11 @@
+import * as vscode from 'vscode';
 import * as utils from './utils';
 import { ALObjectDesigner, ALSymbolPackage } from './ALModules';
 import ALObject = ALSymbolPackage.ALObject;
 import ObjectRegion = ALObjectDesigner.ParsedObjectRegion;
 import ObjectProperty = ALSymbolPackage.Property;
+import ParseMode = ALObjectDesigner.ParseMode;
+import { ALObjectCollector } from './ALObjectCollector';
 const balanced = require('balanced-match');
 
 export class ALObjectParser implements ALObjectDesigner.ObjectParser {
@@ -12,6 +15,7 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
     public name: string = "";
     public fields: Array<any> = [];
     public subType: string = "";
+    private _objectList: Array<ALObjectDesigner.CollectorItem> = [];
 
     private alTypes = [
         "Table",
@@ -37,7 +41,25 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
         await this.parseSourceObject();
     }
 
-    public async parse(filePath: string) {
+    public async parse(options: any, mode: ParseMode) {
+        let result: ALObject = new ALObject();
+
+        switch (mode) {
+            case ParseMode.File:
+                result = await this.parseFile(options);
+                break;
+            case ParseMode.Text:
+                result = await this.parseText(options);
+                break;
+            case ParseMode.Symbol:
+                result = await this.parseSymbol(options) || result;
+                break;
+        }
+
+        return result;
+    }
+
+    public async parseFile(filePath: string) {
         let fileContent: string = await utils.read(filePath) as string,
             result: ALObject = new ALObject();
 
@@ -53,6 +75,24 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
         //console.log(JSON.stringify(result));
 
         return result;
+    }
+
+    public async parseSymbol(objectInfo: ALObjectDesigner.CollectorItem) {
+        let collector = new ALObjectCollector();
+        this._objectList = await collector.discover();
+        let result = this._objectList.filter(f => {
+            return f.Id == objectInfo.Id && f.Type.toLowerCase() == objectInfo.Type.toLowerCase()
+        });
+
+        if (result.length > 0) {
+            let symbolData = result[0].SymbolData;
+            if (symbolData) {
+                let symbol = await collector.getSymbolReference(symbolData);
+                return symbol;
+            }
+        }
+
+        return null;
     }
 
     private recursiveMatch(match: any) {
@@ -191,7 +231,7 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
         if (separator == 0) {
             separator = count;
         }
-        
+
         for (let child of metadata.Children as Array<ObjectRegion>) {
             let control: any = {};
             switch (alObject.Type) {
@@ -221,6 +261,13 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
                         control.Name = utils.toUpperCaseFirst(child.Name as string);
                     }
                     break;
+
+                    let kind: any = ALSymbolPackage.ControlKind;
+                    if (container == 'Actions') {
+                        kind = ALSymbolPackage.ActionKind;
+                    }
+
+                    control.Kind = kind[utils.toUpperCaseFirst(control.ControlType)];
                 case 'table':
                     control.ControlType = child.Region;
                     control.SourceCodeAnchor = child.Source || '';
@@ -262,6 +309,10 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
 
     private async parseSourceObject() {
         //let debug = await this.parse(this.sourceObject.FsPath);
+
+        if (this.sourceObject.FsPath == '') {
+            return [];
+        }
 
         let file: any = await utils.read(this.sourceObject.FsPath);
         let typeRegex = /([a-z]+)\s([0-9]+)\s(.*)/m;
