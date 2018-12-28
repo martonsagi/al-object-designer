@@ -59,7 +59,7 @@ TODO: this is something I want for future releases. Many options are now hardcod
 ![alt](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/extension-al-object-designer/images/ALObjectDesigner_PageDesign.gif)
 
 ## Under the hood
-AL Object Designer is literally a single-page [Aurelia](https://aurelia.io/) app that is embedded into a VS Code WebView and exchanges data back and forth.
+AL Object Designer is a single-page [Aurelia](https://aurelia.io/) app that is embedded into a VS Code WebView and exchanges data back and forth.
 
 ----------------------------------------------
 
