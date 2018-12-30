@@ -60,16 +60,28 @@ export class ALCommandHandler implements ALObjectDesigner.CommandHandler {
     private async commandMoveSource(message: any) {
         // regex: field\(Code; Code\)\s+\{([^}]+)\}
 
-        let doc = vscode.workspace.textDocuments.find(f => f.uri.fsPath == message.FsPath) as vscode.TextDocument;
-        let anchor = message.EventData.SourceCodeAnchor;
-        anchor = anchor.replace(/\(/, '\\(').replace(/\)/, '\\)');
-        let text = doc.getText();
+        let editor = vscode.window.visibleTextEditors.find(f => f.document.uri.fsPath == message.FsPath) as vscode.TextEditor;
+        let info = message.EventData.SourceCodeAnchorInfo;
+        let anchor = info.anchor.replace(/\(/, '\\(').replace(/\)/, '\\)');
+        let text = editor.document.getText();
+        
         let regex = new RegExp(anchor+'\\s+\\{([^}]+)\\}', 'gm');
         let match = utils.getAllMatches(regex, text);
 
+        let itemIndex = text.indexOf(info.anchor);
+
         text = text.replace(regex, '');
 
-        // TODO: handle beofre/after sections
+        let prevIndex = text.indexOf(info.before);
+        let nextIndex = text.indexOf(info.after);        
+
+        let newText = utils.insertString(text, nextIndex, match[0][0]);
+
+        // TODO: handle before/after sections
+
+        editor.edit(edit => {
+            // TODO: handle VSCode manupilation
+        })        
         
         let i = 0;
     }

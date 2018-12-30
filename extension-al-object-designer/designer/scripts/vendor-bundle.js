@@ -6017,6 +6017,7 @@ define('app',["require", "exports", "aurelia-framework"], function (require, exp
             window.addEventListener('field-onmove', function (event) {
                 var message = Object.assign({}, _this.objectInfo);
                 message.SourceCodeAnchor = event.detail.anchor;
+                message.SourceCodeAnchorInfo = event.detail;
                 _this.sendCommand(message, 'MoveSource');
             });
         };
@@ -30419,66 +30420,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-define('resources/attributes/sortablex',["require", "exports", "aurelia-framework", "sortablejs"], function (require, exports, aurelia_framework_1, Sortable) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var SortablexCustomAttribute = (function () {
-        function SortablexCustomAttribute(element) {
-            this.element = element;
-        }
-        SortablexCustomAttribute.prototype.detached = function () {
-            this.sortable.destroy();
-        };
-        SortablexCustomAttribute.prototype.attached = function () {
-            if (!this.sortable) {
-                this.sortable = Sortable.create(this.element, {});
-            }
-        };
-        SortablexCustomAttribute.prototype.valueChanged = function (newValue) {
-            if (this.sortable) {
-                this.sortable.destroy();
-            }
-            this.sortable = Sortable.create(this.element, Object.assign({}, newValue || {}));
-            this.attachListeners();
-        };
-        SortablexCustomAttribute.prototype.attachListeners = function () {
-            var _this = this;
-            Sortable.utils.on(this.element, "add", function (event) { return _this.dispatch("sortablex-add", event); });
-            Sortable.utils.on(this.element, "choose", function (event) { return _this.dispatch("sortablex-choose", event); });
-            Sortable.utils.on(this.element, "end", function (event) { return _this.dispatch("sortablex-end", event); });
-            Sortable.utils.on(this.element, "filter", function (event) { return _this.dispatch("sortablex-filter", event); });
-            Sortable.utils.on(this.element, "move", function (event) { return _this.dispatch("sortablex-move", event); });
-            Sortable.utils.on(this.element, "remove", function (event) { return _this.dispatch("sortablex-remove", event); });
-            Sortable.utils.on(this.element, "sort", function (event) { return _this.dispatch("sortablex-sort", event); });
-            Sortable.utils.on(this.element, "start", function (event) { return _this.dispatch("sortablex-start", event); });
-            Sortable.utils.on(this.element, "update", function (event) { return _this.dispatch("sortablex-update", event); });
-        };
-        SortablexCustomAttribute.prototype.dispatch = function (name, data) {
-            this.element.dispatchEvent(new CustomEvent(name, {
-                bubbles: true,
-                detail: data,
-            }));
-        };
-        SortablexCustomAttribute = __decorate([
-            aurelia_framework_1.inject(Element),
-            __metadata("design:paramtypes", [Element])
-        ], SortablexCustomAttribute);
-        return SortablexCustomAttribute;
-    }());
-    exports.SortablexCustomAttribute = SortablexCustomAttribute;
-});
-
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
 define('resources/elements/action-element',["require", "exports", "aurelia-framework"], function (require, exports, aurelia_framework_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -30575,12 +30516,12 @@ define('resources/elements/design-element',["require", "exports", "aurelia-frame
         DesignElement.prototype.attached = function () {
         };
         DesignElement.prototype.clickOnField = function (event, item) {
+            console.log(event.detail);
             this.dispatch('field-onmove', {
                 'anchor': event.detail.item.dataset.anchor,
-                'before': '',
-                'after': ''
+                'before': event.detail.item.previousSibling && event.detail.item.previousSibling.dataset ? event.detail.item.previousSibling.dataset.anchor : null,
+                'after': event.detail.item.nextSibling && event.detail.item.nextSibling.dataset ? event.detail.item.nextSibling.dataset.anchor : null,
             });
-            console.log(event.detail);
         };
         DesignElement.prototype.dispatch = function (name, data) {
             window.dispatchEvent(new CustomEvent(name, {
@@ -30662,8 +30603,7 @@ define('resources/index',["require", "exports"], function (require, exports) {
             './elements/designer.html',
             './elements/design-element',
             './elements/action-element',
-            './elements/objects.html',
-            './attributes/sortablex'
+            './elements/objects.html'
         ]);
     }
     exports.configure = configure;
@@ -32616,7 +32556,6 @@ define('resources/index',["require", "exports"], function (require, exports) {
 	return Sortable;
 });
 define('text/text',{load: function(id){throw new Error("Dynamic load not allowed: " + id);}});
-define('attributes/sortablex',['resources/attributes/sortablex'],function(m){return m;});
 define('aurelia-binding',['aurelia-binding/dist/commonjs/aurelia-binding'],function(m){return m;});
 define('aurelia-bootstrapper',['aurelia-bootstrapper/dist/commonjs/aurelia-bootstrapper'],function(m){return m;});
 define('aurelia-dependency-injection',['aurelia-dependency-injection/dist/commonjs/aurelia-dependency-injection'],function(m){return m;});

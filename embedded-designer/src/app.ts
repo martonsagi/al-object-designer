@@ -68,6 +68,7 @@ export class App {
     window.addEventListener('field-onmove', (event: any) => {
       let message = Object.assign({}, this.objectInfo);
       message.SourceCodeAnchor = event.detail.anchor;
+      message.SourceCodeAnchorInfo = event.detail;
       this.sendCommand(message, 'MoveSource');
     });
   }
