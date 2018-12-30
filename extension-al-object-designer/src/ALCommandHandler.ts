@@ -43,6 +43,7 @@ export class ALCommandHandler implements ALObjectDesigner.CommandHandler {
                 await this.commandDesign(message);
                 break;
             case 'MoveSource':
+                showOpen = false;
                 await this.commandMoveSource(message);
                 break;
             case 'CopyEvent':
@@ -70,18 +71,28 @@ export class ALCommandHandler implements ALObjectDesigner.CommandHandler {
 
         let itemIndex = text.indexOf(info.anchor);
 
-        text = text.replace(regex, '');
+        //text = text.replace(regex, '');
 
         let prevIndex = text.indexOf(info.before);
-        let nextIndex = text.indexOf(info.after);        
+        let nextIndex = text.indexOf(info.after);   
+     
 
         let newText = utils.insertString(text, nextIndex, match[0][0]);
 
         // TODO: handle before/after sections
 
+        let x = editor.document.positionAt(itemIndex);
+        let y = editor.document.positionAt(itemIndex+match[0][0].length);
+        let range = new vscode.Range(x, y);
+        let newPos = editor.document.positionAt(nextIndex);
+
         editor.edit(edit => {
             // TODO: handle VSCode manupilation
-        })        
+            edit.insert(newPos, match[0][0]+'\n\n');
+            edit.delete(range);
+        });    
+
+        await editor.document.save();
         
         let i = 0;
     }
