@@ -11,16 +11,30 @@ export class DesignElement {
 
     constructor(element: Element) {
         this.element = element;
+    }
 
+    bind(bindingContext: Object,overrideContext: Object) {
         this.dragOptions = {
-            draggable: '.designer-input',
-            group: 'group',
-            disabled: true // turned on locally
+            draggable: '.draggable',
+            group: this.getControlType(this.control),
+            //disabled: this.getControlType(this.control) != 'field', // turned on locally
+            //bubbleScroll: true,
+            dragoverBubble: true,
+            //forceFallback: true
         };
     }
 
-    clickOnField(item) {
-        this.dispatch('field-onclick', item);
+    attached() {
+        
+    }
+
+    clickOnField(event, item) {
+        this.dispatch('field-onmove', {
+            'anchor': event.detail.item.dataset.anchor,
+            'before': '',
+            'after': ''
+        });
+        console.log(event.detail);
     }
 
     dispatch(name, data) {

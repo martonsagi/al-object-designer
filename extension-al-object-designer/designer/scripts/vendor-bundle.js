@@ -6014,8 +6014,10 @@ define('app',["require", "exports", "aurelia-framework"], function (require, exp
                         break;
                 }
             });
-            window.addEventListener('field-onclick', function (event) {
-                console.log(event);
+            window.addEventListener('field-onmove', function (event) {
+                var message = Object.assign({}, _this.objectInfo);
+                message.SourceCodeAnchor = event.detail.anchor;
+                _this.sendCommand(message, 'MoveSource');
             });
         };
         App.prototype.search = function (newQuery) {
@@ -30417,6 +30419,66 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+define('resources/attributes/sortablex',["require", "exports", "aurelia-framework", "sortablejs"], function (require, exports, aurelia_framework_1, Sortable) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var SortablexCustomAttribute = (function () {
+        function SortablexCustomAttribute(element) {
+            this.element = element;
+        }
+        SortablexCustomAttribute.prototype.detached = function () {
+            this.sortable.destroy();
+        };
+        SortablexCustomAttribute.prototype.attached = function () {
+            if (!this.sortable) {
+                this.sortable = Sortable.create(this.element, {});
+            }
+        };
+        SortablexCustomAttribute.prototype.valueChanged = function (newValue) {
+            if (this.sortable) {
+                this.sortable.destroy();
+            }
+            this.sortable = Sortable.create(this.element, Object.assign({}, newValue || {}));
+            this.attachListeners();
+        };
+        SortablexCustomAttribute.prototype.attachListeners = function () {
+            var _this = this;
+            Sortable.utils.on(this.element, "add", function (event) { return _this.dispatch("sortablex-add", event); });
+            Sortable.utils.on(this.element, "choose", function (event) { return _this.dispatch("sortablex-choose", event); });
+            Sortable.utils.on(this.element, "end", function (event) { return _this.dispatch("sortablex-end", event); });
+            Sortable.utils.on(this.element, "filter", function (event) { return _this.dispatch("sortablex-filter", event); });
+            Sortable.utils.on(this.element, "move", function (event) { return _this.dispatch("sortablex-move", event); });
+            Sortable.utils.on(this.element, "remove", function (event) { return _this.dispatch("sortablex-remove", event); });
+            Sortable.utils.on(this.element, "sort", function (event) { return _this.dispatch("sortablex-sort", event); });
+            Sortable.utils.on(this.element, "start", function (event) { return _this.dispatch("sortablex-start", event); });
+            Sortable.utils.on(this.element, "update", function (event) { return _this.dispatch("sortablex-update", event); });
+        };
+        SortablexCustomAttribute.prototype.dispatch = function (name, data) {
+            this.element.dispatchEvent(new CustomEvent(name, {
+                bubbles: true,
+                detail: data,
+            }));
+        };
+        SortablexCustomAttribute = __decorate([
+            aurelia_framework_1.inject(Element),
+            __metadata("design:paramtypes", [Element])
+        ], SortablexCustomAttribute);
+        return SortablexCustomAttribute;
+    }());
+    exports.SortablexCustomAttribute = SortablexCustomAttribute;
+});
+
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
 define('resources/elements/action-element',["require", "exports", "aurelia-framework"], function (require, exports, aurelia_framework_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -30502,14 +30564,23 @@ define('resources/elements/design-element',["require", "exports", "aurelia-frame
     var DesignElement = (function () {
         function DesignElement(element) {
             this.element = element;
-            this.dragOptions = {
-                draggable: '.designer-input',
-                group: 'group',
-                disabled: true
-            };
         }
-        DesignElement.prototype.clickOnField = function (item) {
-            this.dispatch('field-onclick', item);
+        DesignElement.prototype.bind = function (bindingContext, overrideContext) {
+            this.dragOptions = {
+                draggable: '.draggable',
+                group: this.getControlType(this.control),
+                dragoverBubble: true,
+            };
+        };
+        DesignElement.prototype.attached = function () {
+        };
+        DesignElement.prototype.clickOnField = function (event, item) {
+            this.dispatch('field-onmove', {
+                'anchor': event.detail.item.dataset.anchor,
+                'before': '',
+                'after': ''
+            });
+            console.log(event.detail);
         };
         DesignElement.prototype.dispatch = function (name, data) {
             window.dispatchEvent(new CustomEvent(name, {
@@ -30576,7 +30647,7 @@ define('resources/elements/design-element',["require", "exports", "aurelia-frame
 
 
 
-define('text!resources/elements/design-element.html',[],function(){return "<template bindable=\"control\">\r\n    <div sortable.bind=\"dragOptions\" style=\"overflow-y: auto\">\r\n        <h2 if.bind=\"(getControlType(control) == 'group' || getControlType(control) == 'part') && getControlType(control.Parent) != 'group'\">${getCaption(control)}</h2>\r\n        <div if.bind=\"getControlType(control) == 'group' && getControlType(control.Parent) == 'group'\" style=\"text-transform: uppercase; font-weight: 400; padding-bottom: 10px;\">\r\n            ${getCaption(control)}\r\n        </div>\r\n        <div if.bind=\"getControlType(control) == 'part'\" style=\"padding: 30px; border: 1px solid #ccc;\">PagePart:\r\n            &quot;${control.SourceExpression}&quot;\r\n        </div>\r\n        <div if.bind=\"getControlType(control) != 'repeater'\" class=\"designer-input page-control ${item.Separator == true ? 'page-control-right' : ''}\" repeat.for=\"item of control.Controls\"\r\n            style=\"margin-bottom: 9px;\">\r\n            <div if.bind=\"getControlType(item) == 'field'\">\r\n                <a style=\"width: 200px; display: inline-block\" click.delegate=\"clickOnField(item)\">${getCaption(item)}</a><input\r\n                    style=\"width: 200px\" type=\"text\" value='[\"${item.Name}\"]' disabled>\r\n            </div>\r\n\r\n            <design-element control.bind=\"item\"></design-element>\r\n        </div>\r\n\r\n        \r\n        <table style=\"width: 100%; margin-top: 10px;\" if.bind=\"getControlType(control) == 'repeater'\">\r\n            <tr>\r\n                <th repeat.for=\"field of control.Controls\" style=\"min-width: 150px; text-align: left;\">${getCaption(field)}</th>\r\n            </tr>\r\n            <tr repeat.for=\"i of 10\">\r\n                <td repeat.for=\"field of control.Controls\">\r\n                    <span if.bind=\"i == 0\">[&quot;${field.Name}&quot;]</span>&nbsp;\r\n                </td>\r\n            </tr>\r\n        </table>\r\n\r\n    </div>\r\n</template>";});
+define('text!resources/elements/design-element.html',[],function(){return "<template bindable=\"control\">\r\n    <div style=\"overflow-y: auto\">\r\n        <h2 if.bind=\"(getControlType(control) == 'group' || getControlType(control) == 'part') && getControlType(control.Parent) != 'group'\">${getCaption(control)}</h2>\r\n        <div if.bind=\"getControlType(control) == 'group' && getControlType(control.Parent) == 'group'\" style=\"text-transform: uppercase; font-weight: 400; padding-bottom: 10px;\">\r\n            ${getCaption(control)}\r\n        </div>\r\n        <div if.bind=\"getControlType(control) == 'part'\" style=\"padding: 30px; border: 1px solid #ccc;\">PagePart:\r\n            &quot;${control.SourceExpression}&quot;\r\n        </div>\r\n        <div sortable.bind=\"dragOptions\">\r\n            <div if.bind=\"getControlType(control) != 'repeater'\" \r\n                class=\"designer-input draggable page-control ${item.Separator == true ? 'page-control-right' : ''}\"\r\n                style=\"margin-bottom: 9px;\"                \r\n                sortable-end.trigger=\"clickOnField($event, item)\"\r\n                repeat.for=\"item of control.Controls\" data-anchor='${item.SourceCodeAnchor}'>                \r\n                <div if.bind=\"getControlType(item) == 'field'\">\r\n                    <a style=\"width: 200px; display: inline-block\">${getCaption(item)}</a><input\r\n                        style=\"width: 200px\" type=\"text\" value='[\"${item.Name}\"]' disabled>\r\n                </div>\r\n\r\n                <design-element control.bind=\"item\"></design-element>\r\n            </div>\r\n        </div>\r\n\r\n\r\n        <table style=\"width: 100%; margin-top: 10px;\" if.bind=\"getControlType(control) == 'repeater'\">\r\n            <tr>\r\n                <th repeat.for=\"field of control.Controls\" style=\"min-width: 150px; text-align: left;\">${getCaption(field)}</th>\r\n            </tr>\r\n            <tr repeat.for=\"i of 10\">\r\n                <td repeat.for=\"field of control.Controls\">\r\n                    <span if.bind=\"i == 0\">[&quot;${field.Name}&quot;]</span>&nbsp;\r\n                </td>\r\n            </tr>\r\n        </table>\r\n\r\n    </div>\r\n</template>";});
 define('text!resources/elements/designer.html',[],function(){return "<template>\r\n    <div class=\"content designer-content\" class=\"virtual-repeater-wrapper\">\r\n\r\n        <div id=\"card-designer-wrapper\">\r\n            <div id=\"actions-placeholder\">\r\n                <span repeat.for=\"action of objectInfo.Symbol.Actions\" style=\"margin-bottom: 10px;\">\r\n                    <action-element action.bind=\"action\"></action-element>\r\n                </span>\r\n            </div>\r\n\r\n            <div repeat.for=\"control of objectInfo.Symbol.Controls\">\r\n                <design-element control.bind=\"control\"></design-element>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</template>";});
 define('text!resources/elements/header.html',[],function(){return "<template>\r\n    <div class=\"header\" show.bind=\"mode == 'List'\">\r\n        <h1>AL</h1>\r\n        <h1>Object Designer</h1>\r\n        <h1 show.bind=\"loaded\">\r\n            <span textcontent.bind=\"count || 0\"></span> ${activeType} ${headerType}${count > 1 ? 's' : ''}\r\n        </h1>\r\n        <h1 style=\"float: right; padding: 6px 15px 5px 15px;\">\r\n            <input id=\"searchInput\" type=\"text\" id=\"searchVal\" placeholder=\"Search for ${headerType}s\" value.bind=\"query\"\r\n                keyup.delegate=\"search() & throttle:350\" />\r\n        </h1>\r\n        <h1 id=\"searchHeader\" style=\"float: right; padding-right: 15px; border-left: none; cursor: pointer\" click.delegate=\"filterType('', true)\">\r\n            ${query == '' ? 'Search' : 'Show All (X)'}\r\n        </h1>\r\n        <div style=\"clear: both;\"></div>\r\n    </div>\r\n\r\n    <div class=\"header\" show.bind=\"mode == 'Design'\">\r\n        <h1>AL</h1>\r\n        <h1>Object Designer</h1>\r\n        <h1>${objectInfo.Type} ${objectInfo.Id} ${objectInfo.Name}</h1>\r\n        <div style=\"clear: both;\"></div>\r\n    </div>\r\n</template>";});
 define('text!resources/elements/objects.html',[],function(){return "<template>\r\n    <div class=\"content\" class=\"virtual-repeater-wrapper\">\r\n\r\n        <div hidden.bind=\"loaded\">\r\n            <h1>Discovering objects...</h1>\r\n        </div>        \r\n\r\n        <table id=\"object-list\" style=\"width: 100%;\" show.bind=\"loaded\">\r\n            <tr>\r\n                <th style=\"text-align: left; width: 105px\">Type</th>\r\n                <th style=\"text-align: right; width: 100px\" class=\"search-col\">Id</th>\r\n                <th style=\"text-align: left; width: 40px;\"></th>\r\n                <th style=\"text-align: left;\" class=\"search-col\">Name</th>\r\n                <th show.bind=\"showEvents\" style=\"text-align: left;\">Event Name</th>\r\n                <th show.bind=\"showEvents\" style=\"text-align: left;\">Event Type</th>\r\n                <th hide.bind=\"showEvents\" style=\"text-align: left; min-width: 100px\" class=\"search-col\">Application</th>\r\n                <th hide.bind=\"showEvents\" style=\"text-align: right; width: 100px\">Version</th>\r\n                <th hide.bind=\"showEvents\" style=\"text-align: left; min-width: 100px\" class=\"search-col\">Publisher</th>\r\n            </tr>\r\n            <tr virtual-repeat.for=\"element of results\" class=\"virtual-repeated-item\" class.bind=\"selectedObject == element ? 'selected' : ''\"\r\n                mouseover.delegate=\"setContextBtnVisible(element)\" mouseout.delegate=\"setContextBtnVisible(null)\"\r\n                click.trigger=\"selectRow(element, $event.target)\">\r\n                <td style=\"text-align: left;\">${element.Type}</td>\r\n                <td style=\"text-align: right;\">${element.Id || ''}</td>\r\n                <td style=\"text-align: left;\" class=\"context-menu-td\" id.bind=\"selectedObject == element || hoverObject == element ? 'context-selected' : ''\">\r\n                    <a class=\"context-menu-btn\" show.bind=\"selectedObject == element || hoverObject == element\" class=\"context-menu\"\r\n                        click.trigger=\"setContextMenuVisible()\">&nbsp;\r\n                    </a>\r\n                    <ul show.bind=\"selectedObject == element && showMenu == true\" class=\"context-menu-ul\">\r\n                        <li click.trigger=\"sendCommand(element, 'Definition')\"><i class=\"fa fa-view\"></i> View</li>\r\n                        <li show.bind=\"element.CanExecute\" click.trigger=\"sendCommand(element, 'Run')\"><i class=\"fa fa-run\"></i>\r\n                            Run</li>\r\n                        <li show.bind=\"element.CanDesign\" click.trigger=\"openPageDesigner(element)\"><i class=\"fa fa-design\"></i>\r\n                            Design</li>\r\n                        <li show.bind=\"element.CanCreatePage\" click.trigger=\"sendCommand(element, 'NewCard')\"><i class=\"fa fa-list\"></i>\r\n                            New\r\n                            Card</li>\r\n                        <li show.bind=\"element.CanCreatePage\" click.trigger=\"sendCommand(element, 'NewList')\"><i class=\"fa fa-list\"></i>\r\n                            New\r\n                            List</li>\r\n                        <li show.bind=\"element.CanCreatePage\" click.trigger=\"sendCommand(element, 'NewReport')\"><i\r\n                                class=\"fa fa-report\"></i>\r\n                            New Report</li>\r\n                        <!-- li show.bind=\"element.CanCreatePage\" click.trigger=\"sendCommand(element, 'NewXmlPort')\"><i\r\n                                class=\"fa fa-plus\"></i>\r\n                            New XmlPort</li -->\r\n                        <li show.bind=\"element.CanCreatePage\" click.trigger=\"sendCommand(element, 'NewQuery')\"><i class=\"fa fa-plus\"></i>\r\n                            New Query</li>\r\n                    </ul>\r\n                </td>\r\n                <td style=\"text-align: left;\" class=\"td-name\"><a href=\"#click\" click.delegate=\"sendCommand(element, 'Definition')\">${element.Name\r\n                        || ''}</a>\r\n                </td>\r\n                <td show.bind=\"showEvents\" style=\"text-align: left;\"><a href=\"#click\" click.delegate=\"showEventParams(element)\">${element.EventName || ''}</a></td>\r\n                <td show.bind=\"showEvents\" style=\"text-align: left;\">${element.EventType || ''}</td>\r\n                <td hide.bind=\"showEvents\" style=\"text-align: left;\">${element.Application || ''}</td>\r\n                <td hide.bind=\"showEvents\" style=\"text-align: right;\">${element.Version || ''}</td>\r\n                <td hide.bind=\"showEvents\" style=\"text-align: left;\">${element.Publisher || ''}</td>\r\n            </tr>\r\n        </table>\r\n    </div>\r\n</template>";});
@@ -30591,7 +30662,8 @@ define('resources/index',["require", "exports"], function (require, exports) {
             './elements/designer.html',
             './elements/design-element',
             './elements/action-element',
-            './elements/objects.html'
+            './elements/objects.html',
+            './attributes/sortablex'
         ]);
     }
     exports.configure = configure;
@@ -32544,6 +32616,7 @@ define('resources/index',["require", "exports"], function (require, exports) {
 	return Sortable;
 });
 define('text/text',{load: function(id){throw new Error("Dynamic load not allowed: " + id);}});
+define('attributes/sortablex',['resources/attributes/sortablex'],function(m){return m;});
 define('aurelia-binding',['aurelia-binding/dist/commonjs/aurelia-binding'],function(m){return m;});
 define('aurelia-bootstrapper',['aurelia-bootstrapper/dist/commonjs/aurelia-bootstrapper'],function(m){return m;});
 define('aurelia-dependency-injection',['aurelia-dependency-injection/dist/commonjs/aurelia-dependency-injection'],function(m){return m;});

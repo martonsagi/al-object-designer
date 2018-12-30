@@ -42,6 +42,9 @@ export class ALCommandHandler implements ALObjectDesigner.CommandHandler {
             case 'Design':
                 await this.commandDesign(message);
                 break;
+            case 'MoveSource':
+                await this.commandMoveSource(message);
+                break;
             case 'CopyEvent':
                 showOpen = false;
                 await this.commandCopyEvent(message);
@@ -53,6 +56,24 @@ export class ALCommandHandler implements ALObjectDesigner.CommandHandler {
     }
 
     //#region Commands
+
+    private async commandMoveSource(message: any) {
+        // regex: field\(Code; Code\)\s+\{([^}]+)\}
+
+        let doc = vscode.workspace.textDocuments.find(f => f.uri.fsPath == message.FsPath) as vscode.TextDocument;
+        let anchor = message.EventData.SourceCodeAnchor;
+        anchor = anchor.replace(/\(/, '\\(').replace(/\)/, '\\)');
+        let text = doc.getText();
+        let regex = new RegExp(anchor+'\\s+\\{([^}]+)\\}', 'gm');
+        let match = utils.getAllMatches(regex, text);
+
+        text = text.replace(regex, '');
+
+        // TODO: handle beofre/after sections
+        
+        let i = 0;
+    }
+
     private async commandNewEmpty(message: any) {
         if (message.Command == 'NewEmpty') {
             let newDoc = await vscode.workspace.openTextDocument({ language: 'al', content: '' });
