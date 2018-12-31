@@ -46,6 +46,10 @@ export class ALCommandHandler implements ALObjectDesigner.CommandHandler {
                 showOpen = false;
                 await this.commandMoveSource(message);
                 break;
+            case 'SelectSource':
+                showOpen = false;
+                await this.commandSelectSource(message);
+                break;
             case 'CopyEvent':
                 showOpen = false;
                 await this.commandCopyEvent(message);
@@ -58,42 +62,63 @@ export class ALCommandHandler implements ALObjectDesigner.CommandHandler {
 
     //#region Commands
 
-    private async commandMoveSource(message: any) {
+    private async commandSelectSource(message: any) {
+        return await this.commandMoveSource(message, true);
+    }
+
+    private async commandMoveSource(message: any, selectOnly?: boolean) {
         // regex: field\(Code; Code\)\s+\{([^}]+)\}
 
         let editor = vscode.window.visibleTextEditors.find(f => f.document.uri.fsPath == message.FsPath) as vscode.TextEditor;
+        if (!editor) {
+            let newDoc = await vscode.workspace.openTextDocument(message.FsPath);
+            editor = await vscode.window.showTextDocument(newDoc, vscode.ViewColumn.One);
+        }
+
         let info = message.EventData.SourceCodeAnchorInfo;
         let anchor = info.anchor.replace(/\(/, '\\(').replace(/\)/, '\\)');
         let text = editor.document.getText();
-        
-        let regex = new RegExp(anchor+'\\s+\\{([^}]+)\\}', 'gm');
+
+        let regex = new RegExp(anchor + '\\s+\\{([^}]+)\\}', 'gm');
         let match = utils.getAllMatches(regex, text);
 
         let itemIndex = text.indexOf(info.anchor);
-
-        //text = text.replace(regex, '');
+        let x = editor.document.positionAt(itemIndex);
+        if (selectOnly === true) {
+            editor.selection = new vscode.Selection(x, x);
+            editor.revealRange(new vscode.Range(x, x), vscode.TextEditorRevealType.InCenter);
+            return;
+        }
 
         let prevIndex = text.indexOf(info.before);
-        let nextIndex = text.indexOf(info.after);   
-     
+        let nextIndex = text.indexOf(info.after);
+        let startLine = editor.document.lineAt(x.line);
+        let y = editor.document.positionAt(itemIndex + match[0][0].length);
+        let endLine = editor.document.lineAt(y.line);
+        let range = new vscode.Range(startLine.range.start, endLine.range.end);
+        let newPos = editor.document.positionAt(nextIndex || prevIndex);
 
-        let newText = utils.insertString(text, nextIndex, match[0][0]);
+        let linenum = range.start.line;
+        let checkLine = editor.document.lineAt(linenum - 1);
+        if (checkLine.isEmptyOrWhitespace) {
+            startLine = checkLine;
+        }
 
-        // TODO: handle before/after sections
+        linenum = range.end.line;
+        checkLine = editor.document.lineAt(linenum + 1);
+        if (checkLine.isEmptyOrWhitespace) {
+            endLine = checkLine;
+        }
 
-        let x = editor.document.positionAt(itemIndex);
-        let y = editor.document.positionAt(itemIndex+match[0][0].length);
-        let range = new vscode.Range(x, y);
-        let newPos = editor.document.positionAt(nextIndex);
+        range = new vscode.Range(startLine.range.start, endLine.range.end);
 
         editor.edit(edit => {
-            // TODO: handle VSCode manupilation
-            edit.insert(newPos, match[0][0]+'\n\n');
+            edit.insert(newPos, match[0][0] + '\n\n');
             edit.delete(range);
-        });    
+        });
 
         await editor.document.save();
-        
+
         let i = 0;
     }
 
@@ -225,17 +250,17 @@ export class ALCommandHandler implements ALObjectDesigner.CommandHandler {
     [EventSubscriber(ObjectType::${objEvent.Type}, ${objEvent.Type == 'Table' ? 'Database' : objEvent.Type}::"${objEvent.Name}", '${objEvent.EventName}', '', true, true)]
     local procedure "${objEvent.Name}_${objEvent.EventName}"`;
 
-    if (eventParams.length > 1) {
-        eventSnippet += `
+        if (eventParams.length > 1) {
+            eventSnippet += `
     (
         ${eventParams.join(';\r\n\t\t')}
     )`;
 
-    } else {
-        eventSnippet += `(${eventParams.join(';\r\n\t\t')})`;
-    }
-    
-    eventSnippet += `
+        } else {
+            eventSnippet += `(${eventParams.join(';\r\n\t\t')})`;
+        }
+
+        eventSnippet += `
     begin
 
     end;

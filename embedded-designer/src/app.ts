@@ -71,6 +71,13 @@ export class App {
       message.SourceCodeAnchorInfo = event.detail;
       this.sendCommand(message, 'MoveSource');
     });
+
+    window.addEventListener('field-onclick', (event: any) => {
+      let message = Object.assign({}, this.objectInfo);
+      message.SourceCodeAnchorInfo = event.detail;
+      this.sendCommand(message, 'SelectSource');
+    });
+
   }
 
   search(newQuery?: string) {

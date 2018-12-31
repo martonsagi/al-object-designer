@@ -28,12 +28,17 @@ export class DesignElement {
         
     }
 
-    clickOnField(event, item) {
-        console.log(event.detail);
+    onMoveField(event) {
         this.dispatch('field-onmove', {
             'anchor': event.detail.item.dataset.anchor,
             'before': event.detail.item.previousSibling && event.detail.item.previousSibling.dataset ? event.detail.item.previousSibling.dataset.anchor : null,
             'after': event.detail.item.nextSibling && event.detail.item.nextSibling.dataset ? event.detail.item.nextSibling.dataset.anchor : null,
+        });        
+    }
+
+    onClickField(item) {
+        this.dispatch('field-onclick', {
+            'anchor': item.SourceCodeAnchor
         });        
     }
 
