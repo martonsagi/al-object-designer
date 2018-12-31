@@ -1,5 +1,5 @@
 <template bindable="control">
-    <div style="overflow-y: auto" sortable-end.trigger="onMoveField($event, item)" data-anchor='${control.SourceCodeAnchor}'>
+    <div style="overflow-y: auto" sortable-end.trigger="onMoveField($event)" data-anchor='${control.SourceCodeAnchor}'>
         <h2 if.bind="(getControlType(control) == 'group' || getControlType(control) == 'part') && getControlType(control.Parent) != 'group'"
             click.delegate="onClickField(control)">${getCaption(control)}</h2>
         <div if.bind="getControlType(control) == 'group' && getControlType(control.Parent) == 'group'" style="text-transform: uppercase; font-weight: 400; padding-bottom: 10px;"
@@ -13,11 +13,11 @@
             <div if.bind="getControlType(control) != 'repeater'" 
                 class="designer-input draggable page-control ${item.Separator == true ? 'page-control-right' : ''}"
                 style="margin-bottom: 9px;"                
-                sortable-end.trigger="onMoveField($event, item)"
+                sortable-end.trigger="onMoveField($event)"
                 repeat.for="item of control.Controls" data-anchor='${item.SourceCodeAnchor}'>                
-                <div if.bind="getControlType(item) == 'field'" click.delegate="onClickField(item)">
-                    <a style="width: 200px; display: inline-block">${getCaption(item)}</a><input
-                        style="width: 200px" type="text" value='["${item.Name}"]' disabled>
+                <div class="field-row" if.bind="getControlType(item) == 'field'" click.delegate="onClickField(item)">
+                    <a style="width: 200px; display: inline-block">${getCaption(item)}</a>
+                    <input style="width: 200px" type="text" value='["${item.Name}"]' disabled>
                 </div>
 
                 <design-element control.bind="item"></design-element>
@@ -29,7 +29,7 @@
                 <th repeat.for="field of control.Controls" 
                     style="min-width: 150px; text-align: left;"
                     class="draggable"
-                    sortable-end.trigger="onMoveField($event, field)"
+                    sortable-end.trigger="onMoveField($event)"
                     data-anchor='${field.SourceCodeAnchor}'>
                     <span  click.delegate="onClickField(field)">${getCaption(field)}</span>
                 </th>
