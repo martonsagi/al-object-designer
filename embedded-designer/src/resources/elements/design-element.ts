@@ -29,10 +29,11 @@ export class DesignElement {
     }
 
     onMoveField(event) {
+        console.log(event.detail);
         this.dispatch('field-onmove', {
             'anchor': event.detail.item.dataset.anchor,
-            'before': event.detail.item.previousSibling && event.detail.item.previousSibling.dataset ? event.detail.item.previousSibling.dataset.anchor : null,
-            'after': event.detail.item.nextSibling && event.detail.item.nextSibling.dataset ? event.detail.item.nextSibling.dataset.anchor : null,
+            'before': event.detail.item.previousElementSibling && event.detail.item.previousElementSibling.dataset ? event.detail.item.previousElementSibling.dataset.anchor : null,
+            'after': event.detail.item.nextElementSibling && event.detail.item.nextElementSibling.dataset ? event.detail.item.nextElementSibling.dataset.anchor : null,
         });        
     }
 

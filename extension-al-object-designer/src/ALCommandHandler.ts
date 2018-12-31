@@ -6,6 +6,7 @@ import { ALPanel } from './ALPanel';
 import { ALObjectDesigner, ALSymbolPackage } from './ALModules';
 
 const clipboardy = require('clipboardy');
+const balanced = require('balanced-match');
 
 export class ALCommandHandler implements ALObjectDesigner.CommandHandler {
     message: any;
@@ -76,11 +77,7 @@ export class ALCommandHandler implements ALObjectDesigner.CommandHandler {
         }
 
         let info = message.EventData.SourceCodeAnchorInfo;
-        let anchor = info.anchor.replace(/\(/, '\\(').replace(/\)/, '\\)');
         let text = editor.document.getText();
-
-        let regex = new RegExp(anchor + '\\s+\\{([^}]+)\\}', 'gm');
-        let match = utils.getAllMatches(regex, text);
 
         let itemIndex = text.indexOf(info.anchor);
         let x = editor.document.positionAt(itemIndex);
@@ -90,13 +87,25 @@ export class ALCommandHandler implements ALObjectDesigner.CommandHandler {
             return;
         }
 
-        let prevIndex = text.indexOf(info.before);
-        let nextIndex = text.indexOf(info.after);
-        let startLine = editor.document.lineAt(x.line);
-        let y = editor.document.positionAt(itemIndex + match[0][0].length);
-        let endLine = editor.document.lineAt(y.line);
-        let range = new vscode.Range(startLine.range.start, endLine.range.end);
-        let newPos = editor.document.positionAt(nextIndex || prevIndex);
+        let endIndex = text.length-1,
+            region = text.substring(itemIndex, endIndex),
+            balancedMatch = balanced('{', '}', region),
+            prevIndex = text.indexOf(info.before),
+            nextIndex = text.indexOf(info.after),
+            startLine = editor.document.lineAt(x.line),
+            y = editor.document.positionAt(itemIndex + balancedMatch.end+1),
+            endLine = editor.document.lineAt(y.line),
+            range = new vscode.Range(startLine.range.start, endLine.range.end),
+            newPos: vscode.Position;
+
+        if (nextIndex != -1) {
+            newPos = editor.document.positionAt(nextIndex);
+        } else {
+            let region = text.substring(prevIndex, endIndex);
+            let balancedMatch = balanced('{', '}', region);
+    
+            newPos = editor.document.positionAt(prevIndex + balancedMatch.end+1);
+        }
 
         let linenum = range.start.line;
         let checkLine = editor.document.lineAt(linenum - 1);
@@ -111,9 +120,10 @@ export class ALCommandHandler implements ALObjectDesigner.CommandHandler {
         }
 
         range = new vscode.Range(startLine.range.start, endLine.range.end);
+        let movedText = editor.document.getText(range);
 
         editor.edit(edit => {
-            edit.insert(newPos, match[0][0] + '\n\n');
+            edit.insert(newPos, movedText);
             edit.delete(range);
         });
 

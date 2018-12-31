@@ -327,5 +327,6 @@ export module ALObjectDesigner {
         Type?: string;
         Properties?: Array<ALSymbolPackage.Property | null>;
         Source?: string = '';
+        SourceCode?: string = '';
     }
 }

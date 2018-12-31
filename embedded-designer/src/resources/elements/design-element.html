@@ -1,5 +1,5 @@
 <template bindable="control">
-    <div style="overflow-y: auto" sortable-end.trigger="onMoveField($event, item)">
+    <div style="overflow-y: auto" sortable-end.trigger="onMoveField($event, item)" data-anchor='${control.SourceCodeAnchor}'>
         <h2 if.bind="(getControlType(control) == 'group' || getControlType(control) == 'part') && getControlType(control.Parent) != 'group'"
             click.delegate="onClickField(control)">${getCaption(control)}</h2>
         <div if.bind="getControlType(control) == 'group' && getControlType(control.Parent) == 'group'" style="text-transform: uppercase; font-weight: 400; padding-bottom: 10px;"
