@@ -110,7 +110,7 @@ export class ALCommandHandler implements ALObjectDesigner.CommandHandler {
         let linenum = range.start.line;
         let checkLine = editor.document.lineAt(linenum - 1);
         if (checkLine.isEmptyOrWhitespace) {
-            startLine = checkLine;
+            //startLine = checkLine;
         }
 
         linenum = range.end.line;
@@ -123,7 +123,7 @@ export class ALCommandHandler implements ALObjectDesigner.CommandHandler {
         let movedText = editor.document.getText(range);
 
         editor.edit(edit => {
-            edit.insert(newPos, movedText);
+            edit.insert(newPos, movedText+'\n');
             edit.delete(range);
         });
 

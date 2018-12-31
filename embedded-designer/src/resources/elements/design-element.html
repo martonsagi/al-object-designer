@@ -24,10 +24,15 @@
             </div>
         </div>
 
-
         <table style="width: 100%; margin-top: 10px;" if.bind="getControlType(control) == 'repeater'">
-            <tr>
-                <th repeat.for="field of control.Controls" style="min-width: 150px; text-align: left;">${getCaption(field)}</th>
+            <tr sortable.bind="dragOptions">
+                <th repeat.for="field of control.Controls" 
+                    style="min-width: 150px; text-align: left;"
+                    class="draggable"
+                    sortable-end.trigger="onMoveField($event, field)"
+                    data-anchor='${field.SourceCodeAnchor}'>
+                    <span  click.delegate="onClickField(field)">${getCaption(field)}</span>
+                </th>
             </tr>
             <tr repeat.for="i of 10">
                 <td repeat.for="field of control.Controls">
