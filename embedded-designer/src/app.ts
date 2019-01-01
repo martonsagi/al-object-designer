@@ -11,6 +11,7 @@ export class App {
   activeType: string = "";
   count: number = 0;
   loaded: boolean = false;
+
   mode: string;
   customLinks: Array<any> = [];
   events: Array<any> = [];
@@ -35,9 +36,7 @@ export class App {
   dragOptions: any;
 
   constructor() {
-  }
-
-  activate(params, routeConfig, navigationInstruction) {
+    
   }
 
   attached() {
@@ -45,6 +44,7 @@ export class App {
     this.objectInfo = objectInfo;
     this.activeType = "";
     this.currentProject = false;
+    
     window.addEventListener('message', event => {
       this.loaded = false;
       const message = event.data; // The JSON data our extension sent
@@ -55,19 +55,32 @@ export class App {
           this.customLinks = message.customLinks;
           this.events = message.events;
           this.loaded = true;
-
           this.filterType("");
           break;
         case 'designer':
-          //this.objectInfo = [];
           this.objectInfo = message.objectInfo;
           break;
       }
+
+      this.loaded = true;
     });
 
-    window.addEventListener('field-onclick', event => {
-      console.log(event);
+    window.addEventListener('field-onmove', (event: any) => {
+      let message = Object.assign({}, this.objectInfo);
+      message.SourceCodeAnchor = event.detail.anchor;
+      message.SourceCodeAnchorInfo = event.detail;
+      this.sendCommand(message, 'MoveSource');
     });
+
+    window.addEventListener('field-onclick', (event: any) => {
+      let message = Object.assign({}, this.objectInfo);
+      message.SourceCodeAnchorInfo = event.detail;
+      this.sendCommand(message, 'SelectSource');
+    });
+
+    if (this.loaded !== true) {
+      this.refreshDesigner();
+    }
   }
 
   search(newQuery?: string) {

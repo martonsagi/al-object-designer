@@ -6,6 +6,7 @@ import { ALPanel } from './ALPanel';
 import { ALObjectDesigner, ALSymbolPackage } from './ALModules';
 
 const clipboardy = require('clipboardy');
+const balanced = require('balanced-match');
 
 export class ALCommandHandler implements ALObjectDesigner.CommandHandler {
     message: any;
@@ -42,6 +43,14 @@ export class ALCommandHandler implements ALObjectDesigner.CommandHandler {
             case 'Design':
                 await this.commandDesign(message);
                 break;
+            case 'MoveSource':
+                showOpen = false;
+                await this.commandMoveSource(message);
+                break;
+            case 'SelectSource':
+                showOpen = false;
+                await this.commandSelectSource(message);
+                break;
             case 'CopyEvent':
                 showOpen = false;
                 await this.commandCopyEvent(message);
@@ -53,6 +62,91 @@ export class ALCommandHandler implements ALObjectDesigner.CommandHandler {
     }
 
     //#region Commands
+
+    private async commandSelectSource(message: any) {
+        return await this.commandMoveSource(message, true);
+    }
+
+    private async commandMoveSource(message: any, selectOnly?: boolean) {
+        // regex: field\(Code; Code\)\s+\{([^}]+)\}
+
+        let editor = vscode.window.visibleTextEditors.find(f => f.document.uri.fsPath == message.FsPath) as vscode.TextEditor;
+        if (!editor) {
+            let newDoc = await vscode.workspace.openTextDocument(message.FsPath);
+            editor = await vscode.window.showTextDocument(newDoc, vscode.ViewColumn.One);
+        }
+
+        let info = message.EventData.SourceCodeAnchorInfo;
+        let text = editor.document.getText();
+
+        let itemIndex = text.indexOf(info.anchor);
+        let x = editor.document.positionAt(itemIndex);
+        if (selectOnly === true) {
+            editor.selection = new vscode.Selection(x, x);
+            editor.revealRange(new vscode.Range(x, x), vscode.TextEditorRevealType.InCenter);
+            return;
+        }
+
+        let endIndex = text.length - 1,
+            region = text.substring(itemIndex, endIndex),
+            balancedMatch = balanced('{', '}', region),
+            prevIndex = text.indexOf(info.before),
+            nextIndex = text.indexOf(info.after),
+            startLine = editor.document.lineAt(x.line),
+            y = editor.document.positionAt(itemIndex + balancedMatch.end + 1),
+            endLine = editor.document.lineAt(y.line),
+            range = new vscode.Range(startLine.range.start, endLine.range.end),
+            newPos: vscode.Position,
+            movedText: string = "",
+            movingBottom: boolean = nextIndex == -1;
+
+        if (movingBottom !== true) {
+            newPos = editor.document.positionAt(nextIndex);
+            newPos = new vscode.Position(newPos.line, 0);
+        } else {
+            let region = text.substring(prevIndex, endIndex);
+            let balancedMatch = balanced('{', '}', region);
+
+            newPos = editor.document.positionAt(prevIndex + balancedMatch.end + 1);
+            movedText += '\n';
+        }
+
+        /*let linenum = range.start.line;
+        let checkLine = editor.document.lineAt(linenum - 1);
+        if (checkLine.isEmptyOrWhitespace) {
+            startLine = checkLine;
+        }*/
+
+        let linenum = range.end.line,
+            checkLine = editor.document.lineAt(linenum + 1);
+        if (checkLine.isEmptyOrWhitespace && movingBottom !== true) {
+            endLine = checkLine;
+        }
+
+        range = new vscode.Range(startLine.range.start, endLine.range.end);
+        movedText += editor.document.getText(range);
+
+        if (movingBottom !== true) {
+            movedText += '\n';
+        }
+
+        linenum = range.start.line;
+        checkLine = editor.document.lineAt(linenum - 1);
+        if (checkLine.isEmptyOrWhitespace) {
+            startLine = checkLine;
+            range = new vscode.Range(startLine.range.start, endLine.range.end);
+        }
+
+        editor.edit(edit => {
+            edit.insert(newPos, movedText);
+            edit.delete(range);
+        });
+
+        await editor.document.save();
+
+        let i = 0;
+    }
+
     private async commandNewEmpty(message: any) {
         if (message.Command == 'NewEmpty') {
             let newDoc = await vscode.workspace.openTextDocument({ language: 'al', content: '' });
@@ -135,15 +229,9 @@ export class ALCommandHandler implements ALObjectDesigner.CommandHandler {
 
     private async commandDesign(message: any) {
         if (message.Command == 'Design') {
-            let parsedObj = new ALObjectParser(message);
-            if (message.FsPath == '') {
-                message.Symbol = await parsedObj.parse(message, ALObjectDesigner.ParseMode.Symbol);
-            } else {
-                await parsedObj.create();
-                message.ParsedObject = parsedObj.fields;
-                message.Symbol = await parsedObj.parse(message, ALObjectDesigner.ParseMode.File);
-            }
-            message.SubType = parsedObj.subType;
+            let parser = new ALObjectParser();
+            message = await parser.updateCollectorItem(message);
+
             await ALPanel.createOrShow(this.extensionPath, ALObjectDesigner.PanelMode.Design, message);
             return;
         }
@@ -181,17 +269,17 @@ export class ALCommandHandler implements ALObjectDesigner.CommandHandler {
     [EventSubscriber(ObjectType::${objEvent.Type}, ${objEvent.Type == 'Table' ? 'Database' : objEvent.Type}::"${objEvent.Name}", '${objEvent.EventName}', '', true, true)]
     local procedure "${objEvent.Name}_${objEvent.EventName}"`;
 
-    if (eventParams.length > 1) {
-        eventSnippet += `
+        if (eventParams.length > 1) {
+            eventSnippet += `
     (
         ${eventParams.join(';\r\n\t\t')}
     )`;
 
-    } else {
-        eventSnippet += `(${eventParams.join(';\r\n\t\t')})`;
-    }
-    
-    eventSnippet += `
+        } else {
+            eventSnippet += `(${eventParams.join(';\r\n\t\t')})`;
+        }
+
+        eventSnippet += `
     begin
 
     end;

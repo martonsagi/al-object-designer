@@ -286,6 +286,17 @@ tr.selected:hover td#context-selected {
     padding: 4px;
 }
 
+.dragging {
+       
+}
+
+.dragging input {
+    
+}
+
+.dropzone {
+    background: rgb(178, 233, 237) !important;
+}
 
 /*
  * http://fatopng.com/fontawesome-to-base64 :D

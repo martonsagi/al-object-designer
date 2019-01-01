@@ -264,6 +264,8 @@ export module ALObjectDesigner {
         Events?: Array<any>;
         EventParameters?: Array<ALSymbolPackage.Parameter>;
         SymbolData?: SymbolData;
+        Symbol: any;
+        SubType: string;
     }
 
     export interface TemplateItem {
@@ -327,5 +329,6 @@ export module ALObjectDesigner {
         Type?: string;
         Properties?: Array<ALSymbolPackage.Property | null>;
         Source?: string = '';
+        SourceCode?: string = '';
     }
 }

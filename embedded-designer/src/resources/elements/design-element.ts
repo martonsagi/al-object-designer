@@ -11,16 +11,62 @@ export class DesignElement {
 
     constructor(element: Element) {
         this.element = element;
+    }
 
+    bind(bindingContext: Object,overrideContext: Object) {
         this.dragOptions = {
-            draggable: '.designer-input',
-            group: 'group',
-            disabled: true // turned on locally
+            animation: 150,
+            swapThreshold: 0.5,
+            invertedSwapThreshold: 0.5,
+            draggable: '.draggable',
+            ghostClass: 'dragging',
+            chosenClass: 'dropzone',
+            dragClass: 'dragging',
+            //handle: 'drag-handle',
+            group: this.getControlType(this.control),
+            dragoverBubble: true,
         };
     }
 
-    clickOnField(item) {
-        this.dispatch('field-onclick', item);
+    attached() {
+        
+    }
+
+    onMoveField(event) {
+        let item = event.detail.item;
+        if (!item) {
+            return;
+        }
+
+        let dataset = item.dataset;
+        if (!dataset) {
+            return;
+        }
+
+        if (!dataset.anchor) {
+            return;
+        }
+
+        let prevSibling = item.previousElementSibling;
+        let nextSibling = item.nextElementSibling;
+
+        if (!prevSibling && !nextSibling) {
+            return;
+        }
+
+        let data = {
+            'anchor': dataset.anchor,
+            'before': prevSibling && prevSibling.dataset ? prevSibling.dataset.anchor : null,
+            'after': nextSibling && nextSibling.dataset ? nextSibling.dataset.anchor : null,
+        }
+
+        this.dispatch('field-onmove', data);        
+    }
+
+    onClickField(item) {
+        this.dispatch('field-onclick', {
+            'anchor': item.SourceCodeAnchor
+        });        
     }
 
     dispatch(name, data) {
@@ -67,7 +113,6 @@ export class DesignElement {
         }
     }
 }
-
 
 enum ControlKind {
     Area,

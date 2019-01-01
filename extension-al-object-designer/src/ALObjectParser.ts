@@ -10,38 +10,38 @@ const balanced = require('balanced-match');
 
 export class ALObjectParser implements ALObjectDesigner.ObjectParser {
 
-    protected sourceObject: any;
-    public type: string = "";
-    public name: string = "";
-    public fields: Array<any> = [];
-    public subType: string = "";
     private _objectList: Array<ALObjectDesigner.CollectorItem> = [];
 
-    private alTypes = [
-        "Table",
-        "Page",
-        "Report",
-        "Codeunit",
-        "Query",
-        "XmlPort",
-        "Profile",
-        "PageExtension",
-        "PageCustomization",
-        "TableExtension",
-        "ControlAddIn",
-        "Enum",
-        "DotNetPackage"
-    ];
-
-    public constructor(sourceObj?: any) {
-        this.sourceObject = sourceObj;
+    public constructor() {
     }
 
-    public async create() {
-        await this.parseSourceObject();
+    public static getSymbolProperty(symbol: ALSymbolPackage.ALObject, propertyName: string) {
+        let property = symbol.Properties ? symbol.Properties.find((f: ALSymbolPackage.Property) => {
+            return f.Name == propertyName
+        }) : null;
+
+        return property ? property.Value : null;
     }
 
-    public async parse(options: any, mode: ParseMode) {
+    public async updateCollectorItem(collectorItem: ALObjectDesigner.CollectorItem) {
+        collectorItem.Symbol = await this.parse(collectorItem);
+        let subType = ALObjectParser.getSymbolProperty(collectorItem.Symbol, 'PageType') || 'Card';
+        collectorItem.SubType = ["Document", "Card"].indexOf(subType) != -1 ? 'Card' : 'List';
+
+        return collectorItem;
+    }
+
+    public async parse(options: any, mode?: ParseMode) {
+        if (!mode) {
+            if (options instanceof String) {
+                mode = ParseMode.Text;
+            } else if (options.FsPath && options.FsPath.length > 0) {
+                mode = ParseMode.File;
+            } else {
+                mode = ParseMode.Symbol;
+            }
+        }
+
         let result: ALObject = new ALObject();
 
         switch (mode) {
@@ -304,38 +304,4 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
 
         return result;
     }
-
-    private async parseSourceObject() {
-        //let debug = await this.parse(this.sourceObject.FsPath);
-
-        if (this.sourceObject.FsPath == '') {
-            return [];
-        }
-
-        let file: any = await utils.read(this.sourceObject.FsPath);
-        let typeRegex = /([a-z]+)\s([0-9]+)\s(.*)/m;
-        let result = file.match(typeRegex);
-
-        if (result.length < 3) {
-            return;
-        }
-
-        this.type = result[1];
-        this.name = result[3].replace(/"/g, '');
-
-        if (this.type == 'table' || this.type == "page") {
-            let fieldRegex = /(field)\((.*)\)/gm;
-            let result: any = utils.getAllMatches(fieldRegex, file);
-            let pageType: any = utils.getAllMatches(/PageType\s=\s(.*);/g, file);
-            this.subType = pageType.length > 0 ? pageType[0][1] : '';
-
-            for (let i = 0; i < result.length; i++) {
-                const element = result[i];
-                let parts = element[2].split(";");
-                this.fields.push(parts[1].replace(/"/g, '').trim());
-            }
-        }
-    }
-
-
 }

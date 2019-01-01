@@ -5,7 +5,8 @@ import { ALCommandHandler } from './ALCommandHandler';
 import { ALObjectCollector } from './ALObjectCollector';
 import { ALTemplateCollector } from './ALTemplateCollector';
 import { ALObjectParser } from './ALObjectParser';
-import { ALObjectDesigner } from './ALModules';
+import { ALObjectDesigner, ALSymbolPackage } from './ALModules';
+import { ALObjectDesignerData } from './ALObjectDesignerData';
 
 /**
  * Manages AL Object Designer webview panel
@@ -52,7 +53,32 @@ export class ALPanel {
         });
 
         ALPanel.currentPanel = new ALPanel(panel, extensionPath, mode, objectInfo);
-        await ALPanel.currentPanel.update();
+        //await ALPanel.currentPanel.update();
+    }
+
+    public static async openDesigner(extensionPath: string) {
+        let path = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.document.uri.fsPath : '';
+        if (path == '') {
+            return;
+        }
+
+        let objectInfo: any = {
+            FsPath: path            
+        };
+
+        let parser = new ALObjectParser();
+        let symbol =  await parser.parse(objectInfo);
+        objectInfo.Symbol = symbol;
+        objectInfo.Id = symbol.Id;
+        objectInfo.Name = symbol.Name;
+        objectInfo.Type = symbol.Type;
+
+        // TODO: to be extended later
+        if (["page"].indexOf(symbol.Type.toLowerCase()) == -1) {
+            await vscode.window.showErrorMessage(`${objectInfo.Type} ${objectInfo.Id} ${objectInfo.Name} cannot be opened in Page Designer. :(`);
+        }
+
+        await ALPanel.createOrShow(extensionPath, ALObjectDesigner.PanelMode.Design, objectInfo);
     }
 
     private constructor(
@@ -67,7 +93,7 @@ export class ALPanel {
         this.panelMode = mode;
 
         // Set the webview's initial html content 
-        //this._update();
+        this._getHtmlForWebview().then(html => this._panel.webview.html = html);
 
         // Listen for when the panel is disposed
         // This happens when the user closes the panel or when the panel is closed programatically
@@ -124,7 +150,6 @@ export class ALPanel {
     }
 
     public async update() {
-        //this._panel.title = this.panelMode == "List" ? "AL Object Designer" : `AL Designer: ${this._panel.objectInfo.Type} ${this.objectInfo.Id} ${this.objectInfo.Name}`;        
         if (!this._panel.webview.html)
             this._panel.webview.html = await this._getHtmlForWebview();
 
@@ -143,23 +168,8 @@ export class ALPanel {
 
             await this._panel.webview.postMessage({ command: 'data', data: this.objectList, 'customLinks': links, 'events': this.eventList });
         } else {
-            let parsedObj = new ALObjectParser(this.objectInfo);
-            await parsedObj.create();
-            if (this.objectInfo.FsPath == '') {
-                this.objectInfo.Symbol = await parsedObj.parse(this.objectInfo, ALObjectDesigner.ParseMode.Symbol);
-                let type = this.objectInfo.Symbol.Properties.find((f: any) => {
-                    return f.Name == 'PageType'
-                });
-
-                if (type) {
-                    this.objectInfo.SubType = ["Document", "Card"].indexOf(type.Value) != -1 ? 'Card' : 'List';
-                }
-            } else {
-                this.objectInfo.Symbol = await parsedObj.parse(this.objectInfo, ALObjectDesigner.ParseMode.File);
-                this.objectInfo.SubType = ["Document", "Card"].indexOf(parsedObj.subType) != -1 ? 'Card' : 'List';
-            }   
-            
-            this.objectInfo.ParsedObject = parsedObj.fields;
+            let parser = new ALObjectParser();
+            this.objectInfo = await parser.updateCollectorItem(this.objectInfo);
 
             await this._panel.webview.postMessage({ command: 'designer', objectInfo: this.objectInfo });
         }

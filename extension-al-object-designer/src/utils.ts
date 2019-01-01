@@ -137,3 +137,10 @@ export async function getFirstCodeLine(file: string) {
         });
     });
 }
+
+export function insertString(inStr: string, index: number, str: string) {
+    if (index > 0)
+      return inStr.substring(0, index) + str + inStr.substring(index, inStr.length);
+    else
+      return str + inStr;
+  };

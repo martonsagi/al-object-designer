@@ -1,7 +1,10 @@
 <template>
     <div class="object-bar buttons">
         <div class="object-bar-line" show.bind="mode == 'Design'">
-            <h2>Design Mode (Experimental)</h2>
+            <span class="new-object-link"> + Field</span>
+            <span class="new-object-link">+ Action</span>
+            <span class="new-object-link">+ Group</span>
+            <span class="new-object-link">+ Part</span>
         </div>
         <div class="object-bar-line" show.bind="mode == 'List'">
             <button class.bind="activeType == '' && !currentProject ? 'selected' : ''" click.delegate="showAll()">All</button>
@@ -18,7 +21,7 @@
             <button class.bind="activeType == 'TableExtension' ? 'selected' : ''" click.delegate="filterType('TableExtension')"
                 id="filter-TableExtension">Table Ext.</button>
             <button class.bind="activeType == 'PageExtension' ? 'selected' : ''" click.delegate="filterType('PageExtension')"
-                id="filter-PageExtension">Page Ext.</button>            
+                id="filter-PageExtension">Page Ext.</button>
             <button class.bind="activeType == 'PageCustomization' ? 'selected' : ''" click.delegate="filterType('PageCustomization')"
                 id="filter-PageCustomization">Page Cust.</button>
             <span class="linebreaker"></span>
@@ -28,7 +31,8 @@
             <button class.bind="activeType == 'Profile' ? 'selected' : ''" click.delegate="filterType('Profile')" id="filter-Profile">Profiles</button>
         </div>
         <div class="object-bar-line" show.bind="mode == 'List'">
-            <button class.bind="showEvents ? 'selected' : ''" click.delegate="setEventsView()" title="Show Events" style="cursor: pointer">Events</button>
+            <button class.bind="showEvents ? 'selected' : ''" click.delegate="setEventsView()" title="Show Events"
+                style="cursor: pointer">Events</button>
             <span class="new-object-link" click.delegate="refreshDesigner()" title="Create a new Object" style="cursor: pointer">Refresh</span>
             <span class="new-object-link" click.delegate="addNewObject('empty')" title="Create a new Object" style="cursor: pointer">+
                 New Object</span>

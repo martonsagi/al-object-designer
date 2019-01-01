@@ -1,26 +1,38 @@
 <template bindable="control">
-    <div sortable.bind="dragOptions" style="overflow-y: auto">
-        <h2 if.bind="(getControlType(control) == 'group' || getControlType(control) == 'part') && getControlType(control.Parent) != 'group'">${getCaption(control)}</h2>
-        <div if.bind="getControlType(control) == 'group' && getControlType(control.Parent) == 'group'" style="text-transform: uppercase; font-weight: 400; padding-bottom: 10px;">
+    <div style="overflow-y: auto" sortable-end.trigger="onMoveField($event)" data-anchor='${control.SourceCodeAnchor}'>
+        <h2 if.bind="(getControlType(control) == 'group' || getControlType(control) == 'part') && getControlType(control.Parent) != 'group'"
+            click.delegate="onClickField(control)">${getCaption(control)}</h2>
+        <div if.bind="getControlType(control) == 'group' && getControlType(control.Parent) == 'group'" style="text-transform: uppercase; font-weight: 400; padding-bottom: 10px;"
+            click.delegate="onClickField(control)">
             ${getCaption(control)}
         </div>
         <div if.bind="getControlType(control) == 'part'" style="padding: 30px; border: 1px solid #ccc;">PagePart:
             &quot;${control.SourceExpression}&quot;
         </div>
-        <div if.bind="getControlType(control) != 'repeater'" class="designer-input page-control ${item.Separator == true ? 'page-control-right' : ''}" repeat.for="item of control.Controls"
-            style="margin-bottom: 9px;">
-            <div if.bind="getControlType(item) == 'field'">
-                <a style="width: 200px; display: inline-block" click.delegate="clickOnField(item)">${getCaption(item)}</a><input
-                    style="width: 200px" type="text" value='["${item.Name}"]' disabled>
-            </div>
+        <div sortable.bind="dragOptions">
+            <div if.bind="getControlType(control) != 'repeater'" 
+                class="designer-input draggable page-control ${item.Separator == true ? 'page-control-right' : ''}"
+                style="margin-bottom: 9px;"                
+                sortable-end.trigger="onMoveField($event)"
+                repeat.for="item of control.Controls" data-anchor='${item.SourceCodeAnchor}'>                
+                <div class="field-row" if.bind="getControlType(item) == 'field'" click.delegate="onClickField(item)">
+                    <a style="width: 200px; display: inline-block">${getCaption(item)}</a>
+                    <input style="width: 200px" type="text" value='["${item.Name}"]' disabled>
+                </div>
 
-            <design-element control.bind="item"></design-element>
+                <design-element control.bind="item"></design-element>
+            </div>
         </div>
 
-        
         <table style="width: 100%; margin-top: 10px;" if.bind="getControlType(control) == 'repeater'">
-            <tr>
-                <th repeat.for="field of control.Controls" style="min-width: 150px; text-align: left;">${getCaption(field)}</th>
+            <tr sortable.bind="dragOptions">
+                <th repeat.for="field of control.Controls" 
+                    style="min-width: 150px; text-align: left;"
+                    class="draggable"
+                    sortable-end.trigger="onMoveField($event)"
+                    data-anchor='${field.SourceCodeAnchor}'>
+                    <span  click.delegate="onClickField(field)">${getCaption(field)}</span>
+                </th>
             </tr>
             <tr repeat.for="i of 10">
                 <td repeat.for="field of control.Controls">

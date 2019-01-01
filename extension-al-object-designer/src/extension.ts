@@ -9,8 +9,11 @@ import { ALObjectDesigner } from './ALModules';
 // this method is called when your extension is activated
 export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand('extension.openALWindow', async () => {
-        let panelMode =  ALObjectDesigner.PanelMode.List;
         await ALPanel.createOrShow(context.extensionPath, ALObjectDesigner.PanelMode.List);
+    }));
+
+    context.subscriptions.push(vscode.commands.registerCommand('extension.openALDesignWindow', async () => {
+        await ALPanel.openDesigner(context.extensionPath);
     }));
 }
 
