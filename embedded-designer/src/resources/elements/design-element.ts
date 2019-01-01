@@ -56,8 +56,8 @@ export class DesignElement {
 
         let data = {
             'anchor': dataset.anchor,
-            'before': prevSibling.dataset ? prevSibling.dataset.anchor : null,
-            'after': nextSibling.dataset ? nextSibling.dataset.anchor : null,
+            'before': prevSibling && prevSibling.dataset ? prevSibling.dataset.anchor : null,
+            'after': nextSibling && nextSibling.dataset ? nextSibling.dataset.anchor : null,
         }
 
         this.dispatch('field-onmove', data);        

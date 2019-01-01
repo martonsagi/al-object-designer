@@ -124,7 +124,6 @@ export class ALPanel {
     }
 
     public async update() {
-        //this._panel.title = this.panelMode == "List" ? "AL Object Designer" : `AL Designer: ${this._panel.objectInfo.Type} ${this.objectInfo.Id} ${this.objectInfo.Name}`;        
         if (!this._panel.webview.html)
             this._panel.webview.html = await this._getHtmlForWebview();
 
@@ -143,23 +142,8 @@ export class ALPanel {
 
             await this._panel.webview.postMessage({ command: 'data', data: this.objectList, 'customLinks': links, 'events': this.eventList });
         } else {
-            let parsedObj = new ALObjectParser(this.objectInfo);
-            await parsedObj.create();
-            if (this.objectInfo.FsPath == '') {
-                this.objectInfo.Symbol = await parsedObj.parse(this.objectInfo, ALObjectDesigner.ParseMode.Symbol);
-                let type = this.objectInfo.Symbol.Properties.find((f: any) => {
-                    return f.Name == 'PageType'
-                });
-
-                if (type) {
-                    this.objectInfo.SubType = ["Document", "Card"].indexOf(type.Value) != -1 ? 'Card' : 'List';
-                }
-            } else {
-                this.objectInfo.Symbol = await parsedObj.parse(this.objectInfo, ALObjectDesigner.ParseMode.File);
-                this.objectInfo.SubType = ["Document", "Card"].indexOf(parsedObj.subType) != -1 ? 'Card' : 'List';
-            }   
-            
-            this.objectInfo.ParsedObject = parsedObj.fields;
+            let parser = new ALObjectParser();
+            this.objectInfo = await parser.updateCollectorItem(this.objectInfo);
 
             await this._panel.webview.postMessage({ command: 'designer', objectInfo: this.objectInfo });
         }

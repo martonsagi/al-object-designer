@@ -214,15 +214,9 @@ export class ALCommandHandler implements ALObjectDesigner.CommandHandler {
 
     private async commandDesign(message: any) {
         if (message.Command == 'Design') {
-            let parsedObj = new ALObjectParser(message);
-            if (message.FsPath == '') {
-                message.Symbol = await parsedObj.parse(message, ALObjectDesigner.ParseMode.Symbol);
-            } else {
-                await parsedObj.create();
-                message.ParsedObject = parsedObj.fields;
-                message.Symbol = await parsedObj.parse(message, ALObjectDesigner.ParseMode.File);
-            }
-            message.SubType = parsedObj.subType;
+            let parser = new ALObjectParser();
+            message = await parser.updateCollectorItem(message);
+
             await ALPanel.createOrShow(this.extensionPath, ALObjectDesigner.PanelMode.Design, message);
             return;
         }
