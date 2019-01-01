@@ -52,7 +52,7 @@ export class ALPanel {
         });
 
         ALPanel.currentPanel = new ALPanel(panel, extensionPath, mode, objectInfo);
-        await ALPanel.currentPanel.update();
+        //await ALPanel.currentPanel.update();
     }
 
     private constructor(
@@ -67,7 +67,7 @@ export class ALPanel {
         this.panelMode = mode;
 
         // Set the webview's initial html content 
-        //this._update();
+        this._getHtmlForWebview().then(html => this._panel.webview.html = html);
 
         // Listen for when the panel is disposed
         // This happens when the user closes the panel or when the panel is closed programatically

@@ -5990,8 +5990,6 @@ define('app',["require", "exports", "aurelia-framework"], function (require, exp
             this.headerType = 'object';
             this.showMenu = false;
         }
-        App.prototype.activate = function (params, routeConfig, navigationInstruction) {
-        };
         App.prototype.attached = function () {
             var _this = this;
             this.mode = panelMode;
@@ -6013,6 +6011,7 @@ define('app',["require", "exports", "aurelia-framework"], function (require, exp
                         _this.objectInfo = message.objectInfo;
                         break;
                 }
+                _this.loaded = true;
             });
             window.addEventListener('field-onmove', function (event) {
                 var message = Object.assign({}, _this.objectInfo);
@@ -6025,6 +6024,9 @@ define('app',["require", "exports", "aurelia-framework"], function (require, exp
                 message.SourceCodeAnchorInfo = event.detail;
                 _this.sendCommand(message, 'SelectSource');
             });
+            if (this.loaded !== true) {
+                this.refreshDesigner();
+            }
         };
         App.prototype.search = function (newQuery) {
             var _this = this;
@@ -30494,7 +30496,7 @@ define('resources/elements/action-element',["require", "exports", "aurelia-frame
 
 
 
-define('text!resources/elements/action-element.html',[],function(){return "<template bindable=\"action\">\r\n    <span if.bind=\"getActionType(action) == 'group'\"><strong>${getCaption(action)}: </strong></span>\r\n    <span class=\"designer-input\" repeat.for=\"item of action.Actions\" style=\"margin-bottom: 9px;\">\r\n        <span if.bind=\"getActionType(item) == 'action'\">\r\n            <a style=\"display: inline-block; margin-right: 10px;\">${getCaption(item)}</a>\r\n        </span>        \r\n        <action-element action.bind=\"item\"></action-element>\r\n        <br  if.bind=\"getActionType(item) == 'group'\">\r\n    </span>\r\n</template>";});
+define('text!resources/elements/action-element.html',[],function(){return "<template bindable=\"action\">\r\n    <span if.bind=\"getActionType(action) == 'group'\"><strong>${getCaption(action)}: </strong></span>\r\n    <span class=\"designer-input\" repeat.for=\"item of action.Actions\" style=\"margin-bottom: 9px;\">\r\n        <span if.bind=\"getActionType(item) == 'action'\">\r\n            <a style=\"display: inline-block; margin-right: 10px;\">${getCaption(item)}</a>\r\n        </span>        \r\n        <action-element action.bind=\"item\"></action-element>\r\n        <br if.bind=\"getActionType(item) == 'group'\">\r\n    </span>\r\n</template>";});
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
