@@ -87,43 +87,58 @@ export class ALCommandHandler implements ALObjectDesigner.CommandHandler {
             return;
         }
 
-        let endIndex = text.length-1,
+        let endIndex = text.length - 1,
             region = text.substring(itemIndex, endIndex),
             balancedMatch = balanced('{', '}', region),
             prevIndex = text.indexOf(info.before),
             nextIndex = text.indexOf(info.after),
             startLine = editor.document.lineAt(x.line),
-            y = editor.document.positionAt(itemIndex + balancedMatch.end+1),
+            y = editor.document.positionAt(itemIndex + balancedMatch.end + 1),
             endLine = editor.document.lineAt(y.line),
             range = new vscode.Range(startLine.range.start, endLine.range.end),
-            newPos: vscode.Position;
+            newPos: vscode.Position,
+            movedText: string = "",
+            movingBottom: boolean = nextIndex == -1;
 
-        if (nextIndex != -1) {
+        if (movingBottom !== true) {
             newPos = editor.document.positionAt(nextIndex);
+            newPos = new vscode.Position(newPos.line, 0);
         } else {
             let region = text.substring(prevIndex, endIndex);
             let balancedMatch = balanced('{', '}', region);
-    
-            newPos = editor.document.positionAt(prevIndex + balancedMatch.end+1);
+
+            newPos = editor.document.positionAt(prevIndex + balancedMatch.end + 1);
+            movedText += '\n';
         }
 
-        let linenum = range.start.line;
+        /*let linenum = range.start.line;
         let checkLine = editor.document.lineAt(linenum - 1);
         if (checkLine.isEmptyOrWhitespace) {
-            //startLine = checkLine;
-        }
+            startLine = checkLine;
+        }*/
 
-        linenum = range.end.line;
-        checkLine = editor.document.lineAt(linenum + 1);
-        if (checkLine.isEmptyOrWhitespace) {
+        let linenum = range.end.line,
+            checkLine = editor.document.lineAt(linenum + 1);
+        if (checkLine.isEmptyOrWhitespace && movingBottom !== true) {
             endLine = checkLine;
         }
 
         range = new vscode.Range(startLine.range.start, endLine.range.end);
-        let movedText = editor.document.getText(range);
+        movedText += editor.document.getText(range);
+
+        if (movingBottom !== true) {
+            movedText += '\n';
+        }
+
+        linenum = range.start.line;
+        checkLine = editor.document.lineAt(linenum - 1);
+        if (checkLine.isEmptyOrWhitespace) {
+            startLine = checkLine;
+            range = new vscode.Range(startLine.range.start, endLine.range.end);
+        }
 
         editor.edit(edit => {
-            edit.insert(newPos, movedText+'\n');
+            edit.insert(newPos, movedText);
             edit.delete(range);
         });
 

@@ -5,7 +5,8 @@ import { ALCommandHandler } from './ALCommandHandler';
 import { ALObjectCollector } from './ALObjectCollector';
 import { ALTemplateCollector } from './ALTemplateCollector';
 import { ALObjectParser } from './ALObjectParser';
-import { ALObjectDesigner } from './ALModules';
+import { ALObjectDesigner, ALSymbolPackage } from './ALModules';
+import { ALObjectDesignerData } from './ALObjectDesignerData';
 
 /**
  * Manages AL Object Designer webview panel
@@ -53,6 +54,31 @@ export class ALPanel {
 
         ALPanel.currentPanel = new ALPanel(panel, extensionPath, mode, objectInfo);
         //await ALPanel.currentPanel.update();
+    }
+
+    public static async openDesigner(extensionPath: string) {
+        let path = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.document.uri.fsPath : '';
+        if (path == '') {
+            return;
+        }
+
+        let objectInfo: any = {
+            FsPath: path            
+        };
+
+        let parser = new ALObjectParser();
+        let symbol =  await parser.parse(objectInfo);
+        objectInfo.Symbol = symbol;
+        objectInfo.Id = symbol.Id;
+        objectInfo.Name = symbol.Name;
+        objectInfo.Type = symbol.Type;
+
+        // TODO: to be extended later
+        if (["page"].indexOf(symbol.Type.toLowerCase()) == -1) {
+            await vscode.window.showErrorMessage(`${objectInfo.Type} ${objectInfo.Id} ${objectInfo.Name} cannot be opened in Page Designer. :(`);
+        }
+
+        await ALPanel.createOrShow(extensionPath, ALObjectDesigner.PanelMode.Design, objectInfo);
     }
 
     private constructor(
