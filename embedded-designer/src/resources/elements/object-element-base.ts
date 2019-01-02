@@ -11,9 +11,7 @@ export class ObjectElementBase {
 
     constructor(element: Element) {
         this.element = element;
-    }
 
-    bind(bindingContext: Object,overrideContext: Object) {
         this.dragOptions = {
             animation: 150,
             swapThreshold: 0.5,
@@ -22,10 +20,13 @@ export class ObjectElementBase {
             ghostClass: 'dragging',
             chosenClass: 'dropzone',
             dragClass: 'dragging',
-            //handle: 'drag-handle',
-            group: this.getControlType(this.control),
+            //handle: 'drag-handle',            
             dragoverBubble: true,
         };
+    }
+
+    bind(bindingContext: Object,overrideContext: Object) {
+        this.dragOptions.group = this.getControlType(this.control);
     }
 
     attached() {

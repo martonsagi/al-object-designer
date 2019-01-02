@@ -10,6 +10,10 @@ export class ActionElement extends ObjectElementBase {
         super(element);
     }
 
+    bind(bindingContext: Object,overrideContext: Object) {
+        this.dragOptions.group = `actions`;
+    }
+
     getControlKind(index: number) {
         return ActionKind[index];
     }

@@ -30448,6 +30448,9 @@ define('resources/elements/action-element',["require", "exports", "aurelia-frame
         function ActionElement(element) {
             return _super.call(this, element) || this;
         }
+        ActionElement.prototype.bind = function (bindingContext, overrideContext) {
+            this.dragOptions.group = "actions";
+        };
         ActionElement.prototype.getControlKind = function (index) {
             return ActionKind[index];
         };
@@ -30538,8 +30541,6 @@ define('resources/elements/object-element-base',["require", "exports", "aurelia-
     var ObjectElementBase = (function () {
         function ObjectElementBase(element) {
             this.element = element;
-        }
-        ObjectElementBase.prototype.bind = function (bindingContext, overrideContext) {
             this.dragOptions = {
                 animation: 150,
                 swapThreshold: 0.5,
@@ -30548,9 +30549,11 @@ define('resources/elements/object-element-base',["require", "exports", "aurelia-
                 ghostClass: 'dragging',
                 chosenClass: 'dropzone',
                 dragClass: 'dragging',
-                group: this.getControlType(this.control),
                 dragoverBubble: true,
             };
+        }
+        ObjectElementBase.prototype.bind = function (bindingContext, overrideContext) {
+            this.dragOptions.group = this.getControlType(this.control);
         };
         ObjectElementBase.prototype.attached = function () {
         };
