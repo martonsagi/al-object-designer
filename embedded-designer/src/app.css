@@ -73,7 +73,6 @@ div.designer-content {
     padding-top: 110px !important;
 }
 
-
 th {
     font-family: webclient-standard, device-standard, "Segoe UI", "Segoe WP", Segoe, Tahoma, Helvetica, Arial, sans-serif !important;
     font-weight: 400 !important;
@@ -267,7 +266,7 @@ tr.selected:hover td#context-selected {
     font-size: 16px;
     line-height: 1em;
     color: #444;
-    border-color: #888;
+    border-color: #ccc;
     border-width: 1px 0;
     border-style: solid;
     margin-bottom: 5px;

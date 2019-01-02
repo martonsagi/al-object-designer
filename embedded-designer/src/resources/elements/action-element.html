@@ -1,14 +1,14 @@
 <template bindable="control">
-    <ul class="action-${getControlType(control)}" sortable.bind="dragOptions" sortable-end.trigger="onMoveField($event)"
+    <span class="actionbar action-${getControlType(control)}" sortable.bind="dragOptions" sortable-end.trigger="onMoveField($event)"
         data-anchor='${control.SourceCodeAnchor}'>
-        <li class="designer-input draggable" repeat.for="item of control.Actions" style="margin-bottom: 9px;"
-            sortable-end.trigger="onMoveField($event)" data-anchor='${item.SourceCodeAnchor}'>
+        <span class="designer-input draggable" repeat.for="item of control.Actions" sortable-end.trigger="onMoveField($event)"
+            data-anchor='${item.SourceCodeAnchor}'>
             <span if.bind="getControlType(item) == 'action'" click.delegate="onClickField(item)">
                 <a style="display: inline-block; margin-right: 10px;">${getCaption(item)}</a>
             </span>
             <span if.bind="getControlType(item) == 'group'" click.delegate="onClickField(item)"><strong>${getCaption(item)}:
                 </strong></span>
             <action-element control.bind="item"></action-element>
-        </li>
-    </ul>
+        </span>
+    </span>
 </template>
