@@ -5,8 +5,7 @@ import { ALCommandHandler } from './ALCommandHandler';
 import { ALObjectCollector } from './ALObjectCollector';
 import { ALTemplateCollector } from './ALTemplateCollector';
 import { ALObjectParser } from './ALObjectParser';
-import { ALObjectDesigner, ALSymbolPackage } from './ALModules';
-import { ALObjectDesignerData } from './ALObjectDesignerData';
+import { ALObjectDesigner } from './ALModules';
 
 /**
  * Manages AL Object Designer webview panel
@@ -16,7 +15,7 @@ export class ALPanel {
      * Track the currently panel. Only allow a single panel to exist at a time.
      */
     public static currentPanel: ALPanel | undefined;
-    private panelMode: ALObjectDesigner.PanelMode = ALObjectDesigner.PanelMode.List; // List, Designer
+    public panelMode: ALObjectDesigner.PanelMode = ALObjectDesigner.PanelMode.List; // List, Designer
     public objectInfo: any;
     public objectList?: Array<ALObjectDesigner.CollectorItem>;
     public eventList?: Array<ALObjectDesigner.CollectorItem>;
@@ -27,12 +26,14 @@ export class ALPanel {
     private readonly _extensionPath: string;
     private _disposables: vscode.Disposable[] = [];
 
-    public static async createOrShow(extensionPath: string, mode: ALObjectDesigner.PanelMode, objectInfo?: any) {
+    public static async open(extensionPath: string, mode: ALObjectDesigner.PanelMode, objectInfo?: any) {
         const column = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
 
         // If we already have a panel, show it.
-        if (ALPanel.currentPanel && (mode == "List")) {
-            ALPanel.currentPanel._panel.reveal(column);
+        if (ALPanel.currentPanel 
+            && ALPanel.currentPanel.panelMode == ALObjectDesigner.PanelMode.List 
+            && mode == ALObjectDesigner.PanelMode.List) {
+            ALPanel.currentPanel._panel.reveal(vscode.ViewColumn.One);
             return;
         }
 
@@ -78,7 +79,7 @@ export class ALPanel {
             await vscode.window.showErrorMessage(`${objectInfo.Type} ${objectInfo.Id} ${objectInfo.Name} cannot be opened in Page Designer. :(`);
         }
 
-        await ALPanel.createOrShow(extensionPath, ALObjectDesigner.PanelMode.Design, objectInfo);
+        await ALPanel.open(extensionPath, ALObjectDesigner.PanelMode.Design, objectInfo);
     }
 
     private constructor(

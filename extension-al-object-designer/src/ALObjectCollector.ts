@@ -3,8 +3,7 @@ import * as path from 'path';
 import * as utils from './utils';
 import { ALSymbolPackage, ALObjectDesigner } from './ALModules';
 import { ALObjectCollectorCache } from './ALObjectCollectorCache';
-
-let firstBy = require('thenby');
+const firstBy = require('thenby');
 
 export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
 

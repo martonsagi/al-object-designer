@@ -1,10 +1,13 @@
-<template bindable="action">
-    <span if.bind="getActionType(action) == 'group'"><strong>${getCaption(action)}: </strong></span>
-    <span class="designer-input" repeat.for="item of action.Actions" style="margin-bottom: 9px;">
-        <span if.bind="getActionType(item) == 'action'">
-            <a style="display: inline-block; margin-right: 10px;">${getCaption(item)}</a>
-        </span>        
-        <action-element action.bind="item"></action-element>
-        <br if.bind="getActionType(item) == 'group'">
+<template bindable="control">
+    <span sortable.bind="dragOptions" sortable-end.trigger="onMoveField($event)" data-anchor='${control.SourceCodeAnchor}'>
+        <span if.bind="getControlType(control) == 'group'" click.delegate="onClickField(control)"><strong>${getCaption(control)}: </strong></span>
+        <span class="designer-input draggable" repeat.for="item of control.Actions" style="margin-bottom: 9px;"
+            sortable-end.trigger="onMoveField($event)" data-anchor='${item.SourceCodeAnchor}'>
+            <span if.bind="getControlType(item) == 'action'" click.delegate="onClickField(item)">
+                <a style="display: inline-block; margin-right: 10px;">${getCaption(item)}</a>
+            </span>
+            <action-element control.bind="item"></action-element>
+            <br if.bind="getControlType(item) == 'group'">
+        </span>
     </span>
 </template>

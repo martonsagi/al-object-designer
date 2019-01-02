@@ -1,4 +1,3 @@
-import * as vscode from 'vscode';
 import * as utils from './utils';
 import { ALObjectDesigner, ALSymbolPackage } from './ALModules';
 import ALObject = ALSymbolPackage.ALObject;

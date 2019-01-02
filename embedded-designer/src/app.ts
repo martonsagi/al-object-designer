@@ -222,7 +222,7 @@ export class App {
   }
 
   addNewCustomObject(link) {
-    this.sendCommand({ FsPath: link.path }, 'NewEmptyCustom');
+    this.sendCommand({ FsPath: link.path }, 'NewCustomSnippet');
   }
 
   refreshDesigner() {

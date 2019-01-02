@@ -2,8 +2,7 @@ import { workspace } from 'vscode';
 import * as path from 'path';
 import * as utils from './utils';
 import { ALObjectDesigner } from './ALModules';
-
-let firstBy = require('thenby');
+const firstBy = require('thenby');
 
 export class ALTemplateCollector implements ALObjectDesigner.TemplateCollector {
     protected extensionPath: string = '';

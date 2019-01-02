@@ -6138,7 +6138,7 @@ define('app',["require", "exports", "aurelia-framework"], function (require, exp
             this.sendCommand({ Type: type }, 'NewEmpty');
         };
         App.prototype.addNewCustomObject = function (link) {
-            this.sendCommand({ FsPath: link.path }, 'NewEmptyCustom');
+            this.sendCommand({ FsPath: link.path }, 'NewCustomSnippet');
         };
         App.prototype.refreshDesigner = function () {
             this.loaded = false;
@@ -30418,6 +30418,19 @@ define('main',["require", "exports", "./environment"], function (require, export
 
 
 
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -30427,63 +30440,27 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-define('resources/elements/action-element',["require", "exports", "aurelia-framework"], function (require, exports, aurelia_framework_1) {
+define('resources/elements/action-element',["require", "exports", "aurelia-framework", "./object-element-base"], function (require, exports, aurelia_framework_1, object_element_base_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var ActionElement = (function () {
+    var ActionElement = (function (_super) {
+        __extends(ActionElement, _super);
         function ActionElement(element) {
-            this.element = element;
-            this.dragOptions = {
-                draggable: '.designer-input',
-                group: 'group',
-                disabled: true
-            };
+            return _super.call(this, element) || this;
         }
-        ActionElement.prototype.dispatch = function (name, data) {
-            window.dispatchEvent(new CustomEvent(name, {
-                bubbles: true,
-                detail: data
-            }));
-        };
-        ActionElement.prototype.getActionType = function (item) {
-            if (!item) {
-                return;
-            }
-            if (item.ControlType) {
-                return item.ControlType;
-            }
-            if (item.Kind) {
-                var kind = ActionKind[item.Kind];
-                return kind.toLowerCase();
-            }
-        };
-        ActionElement.prototype.getCaption = function (item) {
-            if (!item) {
-                return;
-            }
-            if (item.Caption && item.Caption != '') {
-                return item.Caption;
-            }
-            var caption = item.Properties.filter(function (f) {
-                return f.Name == 'CaptionML' || f.Name == 'Caption';
-            });
-            if (caption.length > 0) {
-                return caption[0].Value.substr(4);
-            }
-            else {
-                return item.Name;
-            }
+        ActionElement.prototype.getControlKind = function (index) {
+            return ActionKind[index];
         };
         __decorate([
             aurelia_framework_1.bindable,
             __metadata("design:type", Object)
-        ], ActionElement.prototype, "action", void 0);
+        ], ActionElement.prototype, "control", void 0);
         ActionElement = __decorate([
             aurelia_framework_1.autoinject,
             __metadata("design:paramtypes", [Element])
         ], ActionElement);
         return ActionElement;
-    }());
+    }(object_element_base_1.ObjectElementBase));
     exports.ActionElement = ActionElement;
     var ActionKind;
     (function (ActionKind) {
@@ -30496,7 +30473,20 @@ define('resources/elements/action-element',["require", "exports", "aurelia-frame
 
 
 
-define('text!resources/elements/action-element.html',[],function(){return "<template bindable=\"action\">\r\n    <span if.bind=\"getActionType(action) == 'group'\"><strong>${getCaption(action)}: </strong></span>\r\n    <span class=\"designer-input\" repeat.for=\"item of action.Actions\" style=\"margin-bottom: 9px;\">\r\n        <span if.bind=\"getActionType(item) == 'action'\">\r\n            <a style=\"display: inline-block; margin-right: 10px;\">${getCaption(item)}</a>\r\n        </span>        \r\n        <action-element action.bind=\"item\"></action-element>\r\n        <br if.bind=\"getActionType(item) == 'group'\">\r\n    </span>\r\n</template>";});
+define('text!resources/elements/action-element.html',[],function(){return "<template bindable=\"control\">\r\n    <span sortable.bind=\"dragOptions\" sortable-end.trigger=\"onMoveField($event)\" data-anchor='${control.SourceCodeAnchor}'>\r\n        <span if.bind=\"getControlType(control) == 'group'\" click.delegate=\"onClickField(control)\"><strong>${getCaption(control)}: </strong></span>\r\n        <span class=\"designer-input draggable\" repeat.for=\"item of control.Actions\" style=\"margin-bottom: 9px;\"\r\n            sortable-end.trigger=\"onMoveField($event)\" data-anchor='${item.SourceCodeAnchor}'>\r\n            <span if.bind=\"getControlType(item) == 'action'\" click.delegate=\"onClickField(item)\">\r\n                <a style=\"display: inline-block; margin-right: 10px;\">${getCaption(item)}</a>\r\n            </span>\r\n            <action-element control.bind=\"item\"></action-element>\r\n            <br if.bind=\"getControlType(item) == 'group'\">\r\n        </span>\r\n    </span>\r\n</template>";});
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -30506,14 +30496,49 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-define('resources/elements/design-element',["require", "exports", "aurelia-framework"], function (require, exports, aurelia_framework_1) {
+define('resources/elements/design-element',["require", "exports", "aurelia-framework", "./object-element-base"], function (require, exports, aurelia_framework_1, object_element_base_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var DesignElement = (function () {
+    var DesignElement = (function (_super) {
+        __extends(DesignElement, _super);
         function DesignElement(element) {
+            return _super.call(this, element) || this;
+        }
+        __decorate([
+            aurelia_framework_1.bindable,
+            __metadata("design:type", Object)
+        ], DesignElement.prototype, "control", void 0);
+        DesignElement = __decorate([
+            aurelia_framework_1.autoinject,
+            __metadata("design:paramtypes", [Element])
+        ], DesignElement);
+        return DesignElement;
+    }(object_element_base_1.ObjectElementBase));
+    exports.DesignElement = DesignElement;
+});
+
+
+
+define('text!resources/elements/design-element.html',[],function(){return "<template bindable=\"control\">\r\n    <div style=\"overflow-y: auto\" sortable-end.trigger=\"onMoveField($event)\" data-anchor='${control.SourceCodeAnchor}'>\r\n        <h2 if.bind=\"(getControlType(control) == 'group' || getControlType(control) == 'part') && getControlType(control.Parent) != 'group'\"\r\n            click.delegate=\"onClickField(control)\">${getCaption(control)}</h2>\r\n        <div if.bind=\"getControlType(control) == 'group' && getControlType(control.Parent) == 'group'\" style=\"text-transform: uppercase; font-weight: 400; padding-bottom: 10px;\"\r\n            click.delegate=\"onClickField(control)\">\r\n            ${getCaption(control)}\r\n        </div>\r\n        <div if.bind=\"getControlType(control) == 'part'\" style=\"padding: 30px; border: 1px solid #ccc;\">PagePart:\r\n            &quot;${control.SourceExpression}&quot;\r\n        </div>\r\n        <div sortable.bind=\"dragOptions\">\r\n            <div if.bind=\"getControlType(control) != 'repeater'\" \r\n                class=\"designer-input draggable page-control ${item.Separator == true ? 'page-control-right' : ''}\"\r\n                style=\"margin-bottom: 9px;\"                \r\n                sortable-end.trigger=\"onMoveField($event)\"\r\n                repeat.for=\"item of control.Controls\" data-anchor='${item.SourceCodeAnchor}'>                \r\n                <div class=\"field-row\" if.bind=\"getControlType(item) == 'field'\" click.delegate=\"onClickField(item)\">\r\n                    <a style=\"width: 200px; display: inline-block\">${getCaption(item)}</a>\r\n                    <input style=\"width: 200px\" type=\"text\" value='[\"${item.Name}\"]' disabled>\r\n                </div>\r\n\r\n                <design-element control.bind=\"item\"></design-element>\r\n            </div>\r\n        </div>\r\n\r\n        <table style=\"width: 100%; margin-top: 10px;\" if.bind=\"getControlType(control) == 'repeater'\">\r\n            <tr sortable.bind=\"dragOptions\">\r\n                <th repeat.for=\"field of control.Controls\" \r\n                    style=\"min-width: 150px; text-align: left;\"\r\n                    class=\"draggable\"\r\n                    sortable-end.trigger=\"onMoveField($event)\"\r\n                    data-anchor='${field.SourceCodeAnchor}'>\r\n                    <span  click.delegate=\"onClickField(field)\">${getCaption(field)}</span>\r\n                </th>\r\n            </tr>\r\n            <tr repeat.for=\"i of 10\">\r\n                <td repeat.for=\"field of control.Controls\">\r\n                    <span if.bind=\"i == 0\">[&quot;${field.Name}&quot;]</span>&nbsp;\r\n                </td>\r\n            </tr>\r\n        </table>\r\n\r\n    </div>\r\n</template>";});
+define('text!resources/elements/designer.html',[],function(){return "<template>\r\n    <div class=\"content designer-content\" class=\"virtual-repeater-wrapper\">\r\n\r\n        <div id=\"card-designer-wrapper\">\r\n            <div id=\"actions-placeholder\">\r\n                <span repeat.for=\"action of objectInfo.Symbol.Actions\" style=\"margin-bottom: 10px;\">\r\n                    <action-element control.bind=\"action\"></action-element>\r\n                </span>\r\n            </div>\r\n\r\n            <div repeat.for=\"control of objectInfo.Symbol.Controls\">\r\n                <design-element control.bind=\"control\"></design-element>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</template>";});
+define('text!resources/elements/header.html',[],function(){return "<template>\r\n    <div class=\"header\" show.bind=\"mode == 'List'\">\r\n        <h1>AL</h1>\r\n        <h1>Object Designer</h1>\r\n        <h1 show.bind=\"loaded\">\r\n            <span textcontent.bind=\"count || 0\"></span> ${activeType} ${headerType}${count > 1 ? 's' : ''}\r\n        </h1>\r\n        <h1 style=\"float: right; padding: 6px 15px 5px 15px;\">\r\n            <input id=\"searchInput\" type=\"text\" id=\"searchVal\" placeholder=\"Search for ${headerType}s\" value.bind=\"query\"\r\n                keyup.delegate=\"search() & throttle:350\" />\r\n        </h1>\r\n        <h1 id=\"searchHeader\" style=\"float: right; padding-right: 15px; border-left: none; cursor: pointer\" click.delegate=\"filterType('', true)\">\r\n            ${query == '' ? 'Search' : 'Show All (X)'}\r\n        </h1>\r\n        <div style=\"clear: both;\"></div>\r\n    </div>\r\n\r\n    <div class=\"header\" show.bind=\"mode == 'Design'\">\r\n        <h1>AL</h1>\r\n        <h1>Object Designer</h1>\r\n        <h1>${objectInfo.Type} ${objectInfo.Id} ${objectInfo.Name}</h1>\r\n        <div style=\"clear: both;\"></div>\r\n    </div>\r\n</template>";});
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+define('resources/elements/object-element-base',["require", "exports", "aurelia-framework"], function (require, exports, aurelia_framework_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var ObjectElementBase = (function () {
+        function ObjectElementBase(element) {
             this.element = element;
         }
-        DesignElement.prototype.bind = function (bindingContext, overrideContext) {
+        ObjectElementBase.prototype.bind = function (bindingContext, overrideContext) {
             this.dragOptions = {
                 animation: 150,
                 swapThreshold: 0.5,
@@ -30526,9 +30551,9 @@ define('resources/elements/design-element',["require", "exports", "aurelia-frame
                 dragoverBubble: true,
             };
         };
-        DesignElement.prototype.attached = function () {
+        ObjectElementBase.prototype.attached = function () {
         };
-        DesignElement.prototype.onMoveField = function (event) {
+        ObjectElementBase.prototype.onMoveField = function (event) {
             var item = event.detail.item;
             if (!item) {
                 return;
@@ -30552,18 +30577,18 @@ define('resources/elements/design-element',["require", "exports", "aurelia-frame
             };
             this.dispatch('field-onmove', data);
         };
-        DesignElement.prototype.onClickField = function (item) {
+        ObjectElementBase.prototype.onClickField = function (item) {
             this.dispatch('field-onclick', {
                 'anchor': item.SourceCodeAnchor
             });
         };
-        DesignElement.prototype.dispatch = function (name, data) {
+        ObjectElementBase.prototype.dispatch = function (name, data) {
             window.dispatchEvent(new CustomEvent(name, {
                 bubbles: true,
                 detail: data
             }));
         };
-        DesignElement.prototype.getControlType = function (item) {
+        ObjectElementBase.prototype.getControlType = function (item) {
             if (!item) {
                 return;
             }
@@ -30571,11 +30596,11 @@ define('resources/elements/design-element',["require", "exports", "aurelia-frame
                 return item.ControlType;
             }
             if (item.Kind) {
-                var kind = ControlKind[item.Kind];
+                var kind = this.getControlKind(item.Kind);
                 return kind.toLowerCase();
             }
         };
-        DesignElement.prototype.getCaption = function (item) {
+        ObjectElementBase.prototype.getCaption = function (item) {
             if (!item) {
                 return;
             }
@@ -30592,17 +30617,20 @@ define('resources/elements/design-element',["require", "exports", "aurelia-frame
                 return item.Name;
             }
         };
+        ObjectElementBase.prototype.getControlKind = function (index) {
+            return ControlKind[index];
+        };
         __decorate([
             aurelia_framework_1.bindable,
             __metadata("design:type", Object)
-        ], DesignElement.prototype, "control", void 0);
-        DesignElement = __decorate([
+        ], ObjectElementBase.prototype, "control", void 0);
+        ObjectElementBase = __decorate([
             aurelia_framework_1.autoinject,
             __metadata("design:paramtypes", [Element])
-        ], DesignElement);
-        return DesignElement;
+        ], ObjectElementBase);
+        return ObjectElementBase;
     }());
-    exports.DesignElement = DesignElement;
+    exports.ObjectElementBase = ObjectElementBase;
     var ControlKind;
     (function (ControlKind) {
         ControlKind[ControlKind["Area"] = 0] = "Area";
@@ -30622,10 +30650,7 @@ define('resources/elements/design-element',["require", "exports", "aurelia-frame
 
 
 
-define('text!resources/elements/design-element.html',[],function(){return "<template bindable=\"control\">\r\n    <div style=\"overflow-y: auto\" sortable-end.trigger=\"onMoveField($event)\" data-anchor='${control.SourceCodeAnchor}'>\r\n        <h2 if.bind=\"(getControlType(control) == 'group' || getControlType(control) == 'part') && getControlType(control.Parent) != 'group'\"\r\n            click.delegate=\"onClickField(control)\">${getCaption(control)}</h2>\r\n        <div if.bind=\"getControlType(control) == 'group' && getControlType(control.Parent) == 'group'\" style=\"text-transform: uppercase; font-weight: 400; padding-bottom: 10px;\"\r\n            click.delegate=\"onClickField(control)\">\r\n            ${getCaption(control)}\r\n        </div>\r\n        <div if.bind=\"getControlType(control) == 'part'\" style=\"padding: 30px; border: 1px solid #ccc;\">PagePart:\r\n            &quot;${control.SourceExpression}&quot;\r\n        </div>\r\n        <div sortable.bind=\"dragOptions\">\r\n            <div if.bind=\"getControlType(control) != 'repeater'\" \r\n                class=\"designer-input draggable page-control ${item.Separator == true ? 'page-control-right' : ''}\"\r\n                style=\"margin-bottom: 9px;\"                \r\n                sortable-end.trigger=\"onMoveField($event)\"\r\n                repeat.for=\"item of control.Controls\" data-anchor='${item.SourceCodeAnchor}'>                \r\n                <div class=\"field-row\" if.bind=\"getControlType(item) == 'field'\" click.delegate=\"onClickField(item)\">\r\n                    <a style=\"width: 200px; display: inline-block\">${getCaption(item)}</a>\r\n                    <input style=\"width: 200px\" type=\"text\" value='[\"${item.Name}\"]' disabled>\r\n                </div>\r\n\r\n                <design-element control.bind=\"item\"></design-element>\r\n            </div>\r\n        </div>\r\n\r\n        <table style=\"width: 100%; margin-top: 10px;\" if.bind=\"getControlType(control) == 'repeater'\">\r\n            <tr sortable.bind=\"dragOptions\">\r\n                <th repeat.for=\"field of control.Controls\" \r\n                    style=\"min-width: 150px; text-align: left;\"\r\n                    class=\"draggable\"\r\n                    sortable-end.trigger=\"onMoveField($event)\"\r\n                    data-anchor='${field.SourceCodeAnchor}'>\r\n                    <span  click.delegate=\"onClickField(field)\">${getCaption(field)}</span>\r\n                </th>\r\n            </tr>\r\n            <tr repeat.for=\"i of 10\">\r\n                <td repeat.for=\"field of control.Controls\">\r\n                    <span if.bind=\"i == 0\">[&quot;${field.Name}&quot;]</span>&nbsp;\r\n                </td>\r\n            </tr>\r\n        </table>\r\n\r\n    </div>\r\n</template>";});
-define('text!resources/elements/designer.html',[],function(){return "<template>\r\n    <div class=\"content designer-content\" class=\"virtual-repeater-wrapper\">\r\n\r\n        <div id=\"card-designer-wrapper\">\r\n            <div id=\"actions-placeholder\">\r\n                <span repeat.for=\"action of objectInfo.Symbol.Actions\" style=\"margin-bottom: 10px;\">\r\n                    <action-element action.bind=\"action\"></action-element>\r\n                </span>\r\n            </div>\r\n\r\n            <div repeat.for=\"control of objectInfo.Symbol.Controls\">\r\n                <design-element control.bind=\"control\"></design-element>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</template>";});
-define('text!resources/elements/header.html',[],function(){return "<template>\r\n    <div class=\"header\" show.bind=\"mode == 'List'\">\r\n        <h1>AL</h1>\r\n        <h1>Object Designer</h1>\r\n        <h1 show.bind=\"loaded\">\r\n            <span textcontent.bind=\"count || 0\"></span> ${activeType} ${headerType}${count > 1 ? 's' : ''}\r\n        </h1>\r\n        <h1 style=\"float: right; padding: 6px 15px 5px 15px;\">\r\n            <input id=\"searchInput\" type=\"text\" id=\"searchVal\" placeholder=\"Search for ${headerType}s\" value.bind=\"query\"\r\n                keyup.delegate=\"search() & throttle:350\" />\r\n        </h1>\r\n        <h1 id=\"searchHeader\" style=\"float: right; padding-right: 15px; border-left: none; cursor: pointer\" click.delegate=\"filterType('', true)\">\r\n            ${query == '' ? 'Search' : 'Show All (X)'}\r\n        </h1>\r\n        <div style=\"clear: both;\"></div>\r\n    </div>\r\n\r\n    <div class=\"header\" show.bind=\"mode == 'Design'\">\r\n        <h1>AL</h1>\r\n        <h1>Object Designer</h1>\r\n        <h1>${objectInfo.Type} ${objectInfo.Id} ${objectInfo.Name}</h1>\r\n        <div style=\"clear: both;\"></div>\r\n    </div>\r\n</template>";});
-define('text!resources/elements/objects.html',[],function(){return "<template>\r\n    <div class=\"content\" class=\"virtual-repeater-wrapper\">\r\n\r\n        <div hidden.bind=\"loaded\">\r\n            <h1>Discovering objects...</h1>\r\n        </div>        \r\n\r\n        <table id=\"object-list\" style=\"width: 100%;\" show.bind=\"loaded\">\r\n            <tr>\r\n                <th style=\"text-align: left; width: 105px\">Type</th>\r\n                <th style=\"text-align: right; width: 100px\" class=\"search-col\">Id</th>\r\n                <th style=\"text-align: left; width: 40px;\"></th>\r\n                <th style=\"text-align: left;\" class=\"search-col\">Name</th>\r\n                <th show.bind=\"showEvents\" style=\"text-align: left;\">Event Name</th>\r\n                <th show.bind=\"showEvents\" style=\"text-align: left;\">Event Type</th>\r\n                <th hide.bind=\"showEvents\" style=\"text-align: left; min-width: 100px\" class=\"search-col\">Application</th>\r\n                <th hide.bind=\"showEvents\" style=\"text-align: right; width: 100px\">Version</th>\r\n                <th hide.bind=\"showEvents\" style=\"text-align: left; min-width: 100px\" class=\"search-col\">Publisher</th>\r\n            </tr>\r\n            <tr virtual-repeat.for=\"element of results\" class=\"virtual-repeated-item\" class.bind=\"selectedObject == element ? 'selected' : ''\"\r\n                mouseover.delegate=\"setContextBtnVisible(element)\" mouseout.delegate=\"setContextBtnVisible(null)\"\r\n                click.trigger=\"selectRow(element, $event.target)\">\r\n                <td style=\"text-align: left;\">${element.Type}</td>\r\n                <td style=\"text-align: right;\">${element.Id || ''}</td>\r\n                <td style=\"text-align: left;\" class=\"context-menu-td\" id.bind=\"selectedObject == element || hoverObject == element ? 'context-selected' : ''\">\r\n                    <a class=\"context-menu-btn\" show.bind=\"selectedObject == element || hoverObject == element\" class=\"context-menu\"\r\n                        click.trigger=\"setContextMenuVisible()\">&nbsp;\r\n                    </a>\r\n                    <ul show.bind=\"selectedObject == element && showMenu == true\" class=\"context-menu-ul\">\r\n                        <li click.trigger=\"sendCommand(element, 'Definition')\"><i class=\"fa fa-view\"></i> View</li>\r\n                        <li show.bind=\"element.CanExecute\" click.trigger=\"sendCommand(element, 'Run')\"><i class=\"fa fa-run\"></i>\r\n                            Run</li>\r\n                        <li show.bind=\"element.CanDesign\" click.trigger=\"openPageDesigner(element)\"><i class=\"fa fa-design\"></i>\r\n                            Design</li>\r\n                        <li show.bind=\"element.CanCreatePage\" click.trigger=\"sendCommand(element, 'NewCard')\"><i class=\"fa fa-list\"></i>\r\n                            New\r\n                            Card</li>\r\n                        <li show.bind=\"element.CanCreatePage\" click.trigger=\"sendCommand(element, 'NewList')\"><i class=\"fa fa-list\"></i>\r\n                            New\r\n                            List</li>\r\n                        <li show.bind=\"element.CanCreatePage\" click.trigger=\"sendCommand(element, 'NewReport')\"><i\r\n                                class=\"fa fa-report\"></i>\r\n                            New Report</li>\r\n                        <!-- li show.bind=\"element.CanCreatePage\" click.trigger=\"sendCommand(element, 'NewXmlPort')\"><i\r\n                                class=\"fa fa-plus\"></i>\r\n                            New XmlPort</li -->\r\n                        <li show.bind=\"element.CanCreatePage\" click.trigger=\"sendCommand(element, 'NewQuery')\"><i class=\"fa fa-plus\"></i>\r\n                            New Query</li>\r\n                    </ul>\r\n                </td>\r\n                <td style=\"text-align: left;\" class=\"td-name\"><a href=\"#click\" click.delegate=\"sendCommand(element, 'Definition')\">${element.Name\r\n                        || ''}</a>\r\n                </td>\r\n                <td show.bind=\"showEvents\" style=\"text-align: left;\"><a href=\"#click\" click.delegate=\"showEventParams(element)\">${element.EventName || ''}</a></td>\r\n                <td show.bind=\"showEvents\" style=\"text-align: left;\">${element.EventType || ''}</td>\r\n                <td hide.bind=\"showEvents\" style=\"text-align: left;\">${element.Application || ''}</td>\r\n                <td hide.bind=\"showEvents\" style=\"text-align: right;\">${element.Version || ''}</td>\r\n                <td hide.bind=\"showEvents\" style=\"text-align: left;\">${element.Publisher || ''}</td>\r\n            </tr>\r\n        </table>\r\n    </div>\r\n</template>";});
+define('text!resources/elements/objects.html',[],function(){return "<template>\r\n    <div class=\"content\" class=\"virtual-repeater-wrapper\">\r\n\r\n        <div hidden.bind=\"loaded\">\r\n            <h1>Discovering objects...</h1>\r\n        </div>        \r\n\r\n        <table id=\"object-list\" style=\"width: 100%;\" show.bind=\"loaded\">\r\n            <tr>\r\n                <th style=\"text-align: left; width: 105px\">Type</th>\r\n                <th style=\"text-align: right; width: 100px\" class=\"search-col\">Id</th>\r\n                <th style=\"text-align: left; width: 40px;\"></th>\r\n                <th style=\"text-align: left;\" class=\"search-col\">Name</th>\r\n                <th show.bind=\"showEvents\" style=\"text-align: left;\">Event Name</th>\r\n                <th show.bind=\"showEvents\" style=\"text-align: left;\">Event Type</th>\r\n                <th hide.bind=\"showEvents\" style=\"text-align: left; min-width: 100px\" class=\"search-col\">Application</th>\r\n                <th hide.bind=\"showEvents\" style=\"text-align: right; width: 100px\">Version</th>\r\n                <th hide.bind=\"showEvents\" style=\"text-align: left; min-width: 100px\" class=\"search-col\">Publisher</th>\r\n            </tr>\r\n            <tr virtual-repeat.for=\"element of results\" class=\"virtual-repeated-item\" class.bind=\"selectedObject == element ? 'selected' : ''\"\r\n                mouseover.delegate=\"setContextBtnVisible(element)\" mouseout.delegate=\"setContextBtnVisible(null)\"\r\n                click.trigger=\"selectRow(element, $event.target)\">\r\n                <td style=\"text-align: left;\">${element.Type}</td>\r\n                <td style=\"text-align: right;\">${element.Id || ''}</td>\r\n                <td style=\"text-align: left;\" class=\"context-menu-td\" id.bind=\"selectedObject == element || hoverObject == element ? 'context-selected' : ''\">\r\n                    <a class=\"context-menu-btn\" show.bind=\"selectedObject == element || hoverObject == element\" class=\"context-menu\"\r\n                        click.trigger=\"setContextMenuVisible()\">&nbsp;\r\n                    </a>\r\n                    <ul show.bind=\"selectedObject == element && showMenu == true\" class=\"context-menu-ul\">\r\n                        <li click.trigger=\"sendCommand(element, 'Definition')\"><i class=\"fa fa-view\"></i> View</li>\r\n                        <li show.bind=\"showEvents\" click.trigger=\"showEventParams(element)\"><i class=\"fa fa-run\"></i>\r\n                            Copy Event</li>\r\n                        <li show.bind=\"element.CanExecute\" click.trigger=\"sendCommand(element, 'Run')\"><i class=\"fa fa-run\"></i>\r\n                            Run</li>\r\n                        <li show.bind=\"element.CanDesign\" click.trigger=\"openPageDesigner(element)\"><i class=\"fa fa-design\"></i>\r\n                            Design</li>\r\n                        <li show.bind=\"element.CanCreatePage\" click.trigger=\"sendCommand(element, 'NewCard')\"><i class=\"fa fa-list\"></i>\r\n                            New\r\n                            Card</li>\r\n                        <li show.bind=\"element.CanCreatePage\" click.trigger=\"sendCommand(element, 'NewList')\"><i class=\"fa fa-list\"></i>\r\n                            New\r\n                            List</li>\r\n                        <li show.bind=\"element.CanCreatePage\" click.trigger=\"sendCommand(element, 'NewReport')\"><i\r\n                                class=\"fa fa-report\"></i>\r\n                            New Report</li>\r\n                        <!-- li show.bind=\"element.CanCreatePage\" click.trigger=\"sendCommand(element, 'NewXmlPort')\"><i\r\n                                class=\"fa fa-plus\"></i>\r\n                            New XmlPort</li -->\r\n                        <li show.bind=\"element.CanCreatePage\" click.trigger=\"sendCommand(element, 'NewQuery')\"><i class=\"fa fa-plus\"></i>\r\n                            New Query</li>\r\n                    </ul>\r\n                </td>\r\n                <td style=\"text-align: left;\" class=\"td-name\"><a href=\"#click\" click.delegate=\"sendCommand(element, 'Definition')\">${element.Name\r\n                        || ''}</a>\r\n                </td>\r\n                <td show.bind=\"showEvents\" style=\"text-align: left;\"><a href=\"#click\" click.delegate=\"showEventParams(element)\">${element.EventName || ''}</a></td>\r\n                <td show.bind=\"showEvents\" style=\"text-align: left;\">${element.EventType || ''}</td>\r\n                <td hide.bind=\"showEvents\" style=\"text-align: left;\">${element.Application || ''}</td>\r\n                <td hide.bind=\"showEvents\" style=\"text-align: right;\">${element.Version || ''}</td>\r\n                <td hide.bind=\"showEvents\" style=\"text-align: left;\">${element.Publisher || ''}</td>\r\n            </tr>\r\n        </table>\r\n    </div>\r\n</template>";});
 define('text!resources/elements/toolbar.html',[],function(){return "<template>\r\n    <div class=\"object-bar buttons\">\r\n        <div class=\"object-bar-line\" show.bind=\"mode == 'Design'\">\r\n            <span class=\"new-object-link\"> + Field</span>\r\n            <span class=\"new-object-link\">+ Action</span>\r\n            <span class=\"new-object-link\">+ Group</span>\r\n            <span class=\"new-object-link\">+ Part</span>\r\n        </div>\r\n        <div class=\"object-bar-line\" show.bind=\"mode == 'List'\">\r\n            <button class.bind=\"activeType == '' && !currentProject ? 'selected' : ''\" click.delegate=\"showAll()\">All</button>\r\n            <button class.bind=\"activeType == 'Table' ? 'selected' : ''\" click.delegate=\"filterType('Table')\" id=\"filter-Table\">Tables</button>\r\n            <button class.bind=\"activeType == 'Page' ? 'selected' : ''\" click.delegate=\"filterType('Page')\" id=\"filter-Page\">Pages</button>\r\n            <button class.bind=\"activeType == 'Report' ? 'selected' : ''\" click.delegate=\"filterType('Report')\" id=\"filter-Report\">Reports</button>\r\n            <span class=\"linebreaker\"></span>\r\n            <button class.bind=\"activeType == 'Codeunit' ? 'selected' : ''\" click.delegate=\"filterType('Codeunit')\" id=\"filter-Codeunit\">Codeunits</button>\r\n            <button class.bind=\"activeType == 'Query' ? 'selected' : ''\" click.delegate=\"filterType('Query')\" id=\"filter-Query\">Queries</button>\r\n            <button class.bind=\"activeType == 'XmlPort' ? 'selected' : ''\" click.delegate=\"filterType('XmlPort')\" id=\"filter-XmlPort\">XmlPorts</button>\r\n        </div>\r\n        <div class=\"object-bar-line\" show.bind=\"mode == 'List'\">\r\n            <button class.bind=\"currentProject ? 'selected' : ''\" click.delegate=\"setCurrentProjectFilter()\">Workspace</button>\r\n            <button class.bind=\"activeType == 'TableExtension' ? 'selected' : ''\" click.delegate=\"filterType('TableExtension')\"\r\n                id=\"filter-TableExtension\">Table Ext.</button>\r\n            <button class.bind=\"activeType == 'PageExtension' ? 'selected' : ''\" click.delegate=\"filterType('PageExtension')\"\r\n                id=\"filter-PageExtension\">Page Ext.</button>\r\n            <button class.bind=\"activeType == 'PageCustomization' ? 'selected' : ''\" click.delegate=\"filterType('PageCustomization')\"\r\n                id=\"filter-PageCustomization\">Page Cust.</button>\r\n            <span class=\"linebreaker\"></span>\r\n            <button class.bind=\"activeType == 'ControlAddIn' ? 'selected' : ''\" click.delegate=\"filterType('ControlAddIn')\"\r\n                id=\"filter-ControlAddIn\">Control Add.</button>\r\n            <button class.bind=\"activeType == 'Enum' ? 'selected' : ''\" click.delegate=\"filterType('Enum')\" id=\"filter-Enum\">Enums</button>\r\n            <button class.bind=\"activeType == 'Profile' ? 'selected' : ''\" click.delegate=\"filterType('Profile')\" id=\"filter-Profile\">Profiles</button>\r\n        </div>\r\n        <div class=\"object-bar-line\" show.bind=\"mode == 'List'\">\r\n            <button class.bind=\"showEvents ? 'selected' : ''\" click.delegate=\"setEventsView()\" title=\"Show Events\"\r\n                style=\"cursor: pointer\">Events</button>\r\n            <span class=\"new-object-link\" click.delegate=\"refreshDesigner()\" title=\"Create a new Object\" style=\"cursor: pointer\">Refresh</span>\r\n            <span class=\"new-object-link\" click.delegate=\"addNewObject('empty')\" title=\"Create a new Object\" style=\"cursor: pointer\">+\r\n                New Object</span>\r\n            <span repeat.for=\"link of customLinks\" class=\"new-object-link\" click.delegate=\"addNewCustomObject(link)\"\r\n                title=\"link.description\" style=\"cursor: pointer\">${link.title}</span>\r\n        </div>\r\n    </div>\r\n</template>";});
 define('resources/index',["require", "exports"], function (require, exports) {
     "use strict";
@@ -32674,6 +32699,7 @@ define('elements/design-element',['resources/elements/design-element'],function(
 define('text!elements/design-element.html',['text!resources/elements/design-element.html'],function(m){return m;});
 define('text!elements/designer.html',['text!resources/elements/designer.html'],function(m){return m;});
 define('text!elements/header.html',['text!resources/elements/header.html'],function(m){return m;});
+define('elements/object-element-base',['resources/elements/object-element-base'],function(m){return m;});
 define('text!elements/objects.html',['text!resources/elements/objects.html'],function(m){return m;});
 define('text!elements/toolbar.html',['text!resources/elements/toolbar.html'],function(m){return m;});
 define('resources',['resources/index'],function(m){return m;});

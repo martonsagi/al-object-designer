@@ -316,11 +316,6 @@ export module ALObjectDesigner {
         parse(options: any, mode: ParseMode): Promise<ALSymbolPackage.ALObject>;
     }
 
-    export interface ObjectDesignerData {
-        setFromFile(filePath: string): void;
-        setFromSymbol(alObject: ALSymbolPackage.ALObject): void;
-    }
-
     export class ParsedObjectRegion {
         Region: string = '';
         Name?: string = '';

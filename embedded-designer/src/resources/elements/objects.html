@@ -28,6 +28,8 @@
                     </a>
                     <ul show.bind="selectedObject == element && showMenu == true" class="context-menu-ul">
                         <li click.trigger="sendCommand(element, 'Definition')"><i class="fa fa-view"></i> View</li>
+                        <li show.bind="showEvents" click.trigger="showEventParams(element)"><i class="fa fa-run"></i>
+                            Copy Event</li>
                         <li show.bind="element.CanExecute" click.trigger="sendCommand(element, 'Run')"><i class="fa fa-run"></i>
                             Run</li>
                         <li show.bind="element.CanDesign" click.trigger="openPageDesigner(element)"><i class="fa fa-design"></i>
