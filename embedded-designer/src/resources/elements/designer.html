@@ -1,5 +1,6 @@
 <template>
-    <div class="content designer-content" class="virtual-repeater-wrapper">
+    <compose view="resources/elements/design-toolbar.html" show.bind="objectInfo.FsPath != ''"></compose>
+    <div class="content designer-content ${objectInfo.FsPath != '' ? 'designer-toolbar-padding' : ''}">
 
         <div id="card-designer-wrapper">
             <div id="actions-placeholder">

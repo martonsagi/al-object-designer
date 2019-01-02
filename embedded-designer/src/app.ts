@@ -231,16 +231,6 @@ export class App {
   }
 
   openPageDesigner(element) {
-    /*let commands = [
-      {
-        Type: element.Type,
-        Id: element.Id,
-        Name: element.Name,
-        FsPath: element.FsPath,
-        Command: 'Design'
-      }
-    ];*/
-
     this.sendCommand(element, 'Design');
   }
 

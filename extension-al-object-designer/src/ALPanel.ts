@@ -72,7 +72,7 @@ export class ALPanel {
         objectInfo.Symbol = symbol;
         objectInfo.Id = symbol.Id;
         objectInfo.Name = symbol.Name;
-        objectInfo.Type = symbol.Type;
+        objectInfo.Type = utils.toUpperCaseFirst(symbol.Type);
 
         // TODO: to be extended later
         if (["page"].indexOf(symbol.Type.toLowerCase()) == -1) {

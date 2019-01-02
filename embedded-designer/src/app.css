@@ -66,8 +66,13 @@ div.content {
 }
 
 div.designer-content {
-    padding-top: 150px;
+    padding-top: 50px;    
 }
+
+.designer-toolbar-padding {
+    padding-top: 110px !important;
+}
+
 
 th {
     font-family: webclient-standard, device-standard, "Segoe UI", "Segoe WP", Segoe, Tahoma, Helvetica, Arial, sans-serif !important;
@@ -240,8 +245,9 @@ tr.selected:hover td#context-selected {
 }
 
 #card-designer-wrapper {
-    padding: 30px;
+    padding: 50px;
     background: #fff;
+    box-shadow: 0 0 200px rgba(16,16,16,.4);
 }
 
 #card-designer-wrapper h2 {
@@ -252,7 +258,7 @@ tr.selected:hover td#context-selected {
     margin-bottom: 10px;
 }
 
-#card-designer-wrapper h2:first {
+#card-designer-wrapper h2 {
     border-bottom-width: 2px;
 }
 
@@ -273,6 +279,16 @@ tr.selected:hover td#context-selected {
 
 .page-control-right {
 
+}
+
+.control-group,
+.control-part {
+    padding: 5px;
+    border: 1px dashed #ccc;
+}
+
+.control-group .control-group {
+    padding: 5px 0;
 }
 
 .designer-input {
@@ -356,9 +372,8 @@ tr.selected:hover td#context-selected {
     }
 
     div.designer-content {
-        padding-top: 150px;
+        padding-top: 50px;        
     }
-
   }
 
 @media only screen and (max-width: 610px) {

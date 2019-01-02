@@ -1,5 +1,5 @@
 <template bindable="control">
-    <div style="overflow-y: auto" sortable-end.trigger="onMoveField($event)" data-anchor='${control.SourceCodeAnchor}'>
+    <div class="control-${getControlType(control)}" style="overflow-y: auto" sortable-end.trigger="onMoveField($event)" data-anchor='${control.SourceCodeAnchor}'>
         <h2 if.bind="(getControlType(control) == 'group' || getControlType(control) == 'part') && getControlType(control.Parent) != 'group'"
             click.delegate="onClickField(control)">${getCaption(control)}</h2>
         <div if.bind="getControlType(control) == 'group' && getControlType(control.Parent) == 'group'" style="text-transform: uppercase; font-weight: 400; padding-bottom: 10px;"
@@ -27,11 +27,12 @@
         <table style="width: 100%; margin-top: 10px;" if.bind="getControlType(control) == 'repeater'">
             <tr sortable.bind="dragOptions">
                 <th repeat.for="field of control.Controls" 
-                    style="min-width: 150px; text-align: left;"
+                    style="min-width: 150px; text-align: left; cursor: pointer;"
                     class="draggable"
                     sortable-end.trigger="onMoveField($event)"
-                    data-anchor='${field.SourceCodeAnchor}'>
-                    <span  click.delegate="onClickField(field)">${getCaption(field)}</span>
+                    data-anchor='${field.SourceCodeAnchor}'
+                    click.delegate="onClickField(field)">
+                    <span>${getCaption(field)}</span>
                 </th>
             </tr>
             <tr repeat.for="i of 10">
