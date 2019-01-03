@@ -58,15 +58,19 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
         let dalFiles: Array<any> = [];
 
         for (let wkspace of fpaths) {
-            let fpath: any = path.join(wkspace.uri.fsPath, '.alpackages', path.sep);
-            let items: any = await utils.readDir(fpath);
-            items = items.filter((f: string) => f.endsWith('.app'));
+            let fpath: any = path.join(wkspace.uri.fsPath, '.alpackages', path.sep),
+                checkPath = await utils.folderExists(fpath);
 
-            let files = items.map((f: any) => {
-                return path.join(fpath, f);
-            });
+            if (checkPath === true) {
+                let items: any = await utils.readDir(fpath);
+                items = items.filter((f: string) => f.endsWith('.app'));
 
-            dalFiles = dalFiles.concat(files);
+                let files = items.map((f: any) => {
+                    return path.join(fpath, f);
+                });
+
+                dalFiles = dalFiles.concat(files);
+            }
         }
 
         for (let i = 0; i < dalFiles.length; i++) {
