@@ -18,13 +18,27 @@ C/Side Object Designer was something that the new AL development environment lac
 * **Generate new objects** from tables: card/list pages, report, query.
 * **Built-in snippets**: generate new dictionary or entry tables using a single click.
 * **Custom snippets**: use your own snippets placed in `<project root>/.altemplates` folder
-* **Design view** for Pages (experimental): card/list layout is rendered for local pages. card/document Symbols are also supported.
+* **Design view** for Pages (alpha): card/list layout is rendered for local pages. Card/Document Symbols are also supported.
 
-![alt](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/extension-al-object-designer/images/preview1.PNG)
+![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/extension-al-object-designer/images/preview1.PNG)
 
 ## Requirements
 
 'Run Object' function is based on commands from [CRS AL Language Extension](https://marketplace.visualstudio.com/items?itemName=waldo.crs-al-language-extension). It's made by Waldo so you should install it anyway. ;)
+
+## VS Commands
+* **AL Object Designer**: opens Object Overview
+* **AL Page Designer**: opens Page Designer directly for currently edited AL Object (Page)
+
+![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/extension-al-object-designer/images/commands.png)
+
+## Page Designer
+This extension has a limited ability to view a rendered page layout without deployment, or move existing fields/actions on screen using drag&drop.
+Supported page types:
+* Card types: Card, Document
+* List types: types other than Card/Document are regarded as List
+
+Rendered layout is very similar to Business Central pages, although not an exact copy as I'm not using Office Fabric UI.
 
 ## Extension Settings
 
@@ -32,31 +46,30 @@ TODO: this is something I want for future releases. Many options are now hardcod
 
 ## Known Issues
 
-* **Solved:** ~~Page generation works only with local table objects. You cannot generate new page from standard objects (symbols).~~
 * Design feature works only with pages, the window is empty when selecting page extensions.
-* View (Go to definition) is activate for all object types, however, it will not work with Control Add-ins for example. 
+* View (Go to definition) is active for all object types, however, it will not work with Control Add-ins for example. 
 * Event listing does not include events defined in local objects.
 * It might be too bright for dark themes. 
 
 ## Preview
 
 ### Searching for "Item Ledger Entry" table
-![alt](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/extension-al-object-designer/images/preview2.PNG)
+![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/extension-al-object-designer/images/preview2.PNG)
 
 ### Find Page "Sales Order" as a dynosaur would :)
-![alt](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/extension-al-object-designer/images/preview3.PNG)
+![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/extension-al-object-designer/images/preview3.PNG)
 
 ### Filter to workspace and check the context menu for more options
-![alt](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/extension-al-object-designer/images/preview4.PNG)
+![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/extension-al-object-designer/images/preview4.PNG)
 
 ### Browse events
-![alt](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/extension-al-object-designer/images/preview5.PNG)
+![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/extension-al-object-designer/images/preview5.PNG)
 
 ### Copy/Paste Events
-![alt](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/extension-al-object-designer/images/ALObjectDesigner_ObjectEventCopyPaste.gif)
+![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/extension-al-object-designer/images/ALObjectDesigner_ObjectEventCopyPaste.gif)
 
-### Real-time Page Designer (pre-alpha :-) )
-![alt](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/extension-al-object-designer/images/ALObjectDesigner_PageDesign.gif)
+### Real-time Page Designer (alpha)
+![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/extension-al-object-designer/images/ALObjectDesigner_PageDesign.gif)
 
 ## Under the hood
 AL Object Designer is a single-page [Aurelia](https://aurelia.io/) app that is embedded into a VS Code WebView and exchanges data back and forth.

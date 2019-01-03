@@ -32,6 +32,14 @@ C/Side Object Designer was something that the new AL development environment lac
 
 ![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/extension-al-object-designer/images/commands.png)
 
+## Page Designer
+This extension has a limited ability to view a rendered page layout without deployment, or move existing fields/actions on screen using drag&drop.
+Supported page types:
+* Card types: Card, Document
+* List types: types other than Card/Document are regarded as List
+
+Rendered layout is very similar to Business Central pages, although not an exact copy as I'm not using Office Fabric UI.
+
 ## Extension Settings
 
 TODO: this is something I want for future releases. Many options are now hardcoded but should be customizable for the best experience.
@@ -39,7 +47,7 @@ TODO: this is something I want for future releases. Many options are now hardcod
 ## Known Issues
 
 * Design feature works only with pages, the window is empty when selecting page extensions.
-* View (Go to definition) is activate for all object types, however, it will not work with Control Add-ins for example. 
+* View (Go to definition) is active for all object types, however, it will not work with Control Add-ins for example. 
 * Event listing does not include events defined in local objects.
 * It might be too bright for dark themes. 
 
