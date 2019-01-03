@@ -20,7 +20,7 @@ C/Side Object Designer was something that the new AL development environment lac
 * **Custom snippets**: use your own snippets placed in `<project root>/.altemplates` folder
 * **Design view** for Pages (alpha): card/list layout is rendered for local pages. Card/Document Symbols are also supported.
 
-![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/extension-al-object-designer/images/preview1.PNG)
+![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/media/images/preview1.PNG)
 
 ## Requirements
 
@@ -28,9 +28,9 @@ C/Side Object Designer was something that the new AL development environment lac
 
 ## VS Commands
 * **AL Object Designer**: opens Object Overview
-* **AL Page Designer**: opens Page Designer directly for currently edited AL Object (Page)
+* **AL Page Designer**: opens up Page Designer for currently edited AL Object (Page)
 
-![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/extension-al-object-designer/images/commands.png)
+![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/media/images/commands.png)
 
 ## Page Designer
 This extension has a limited ability to view a rendered page layout without deployment, or move existing fields/actions on screen using drag&drop.
@@ -54,22 +54,22 @@ TODO: this is something I want for future releases. Many options are now hardcod
 ## Preview
 
 ### Searching for "Item Ledger Entry" table
-![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/extension-al-object-designer/images/preview2.PNG)
+![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/media/images/preview2.PNG)
 
 ### Find Page "Sales Order" as a dynosaur would :)
-![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/extension-al-object-designer/images/preview3.PNG)
+![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/media/images/preview3.PNG)
 
 ### Filter to workspace and check the context menu for more options
-![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/extension-al-object-designer/images/preview4.PNG)
+![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/media/images/preview4.PNG)
 
 ### Browse events
-![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/extension-al-object-designer/images/preview5.PNG)
+![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/media/images/preview5.PNG)
 
 ### Copy/Paste Events
-![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/extension-al-object-designer/images/ALObjectDesigner_ObjectEventCopyPaste.gif)
+![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/media/images/ALObjectDesigner_ObjectEventCopyPaste.gif)
 
 ### Real-time Page Designer (alpha)
-![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/extension-al-object-designer/images/ALObjectDesigner_PageDesign.gif)
+![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/media/images/ALObjectDesigner_PageDesign.gif)
 
 ## Under the hood
 AL Object Designer is a single-page [Aurelia](https://aurelia.io/) app that is embedded into a VS Code WebView and exchanges data back and forth.

@@ -1,6 +1,16 @@
 # Change Log
 All notable changes to the "al-object-designer" extension.
 
+## 0.0.5 - 2019-01-03
+- New VS Command: 'AL Page Designer' - opens up Page Designer for currently edited AL Object (Page)
+- Page Designer: 
+    - Clicking on a field, group or part navigates to related source code section. Source file is automatically opened if needed.
+    - Drag&drop support for fields, groups, parts, and actions
+    - Updated style to make it more similar to Business Central
+- Internal changes
+    - Images folder: big gif videos have been moved outside of extension source in order to decrease extension size.
+    - Internal commands have been refactored into separate classes.
+
 ## 0.0.4 - 2018-12-28
 - `Object Parser` internal feature: generate symbol structure from source files.
 - Page Designer and page generation now use Symbol definitions / `Object Parser`
