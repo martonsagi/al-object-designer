@@ -160,6 +160,8 @@ export module ALSymbolPackage {
         Caption?: string;
         SourceCodeAnchor?: string = '';
         Parent?: PageControlBase;
+        GroupName?: string = '';
+        FsPath?: string = '';
     }
 
     export class PageControl extends PageControlBase {

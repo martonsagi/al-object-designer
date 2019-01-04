@@ -10,6 +10,7 @@ const balanced = require('balanced-match');
 export class ALObjectParser implements ALObjectDesigner.ObjectParser {
 
     private _objectList: Array<ALObjectDesigner.CollectorItem> = [];
+    private _filePath: string = '';
 
     public constructor() {
     }
@@ -36,6 +37,7 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
                 mode = ParseMode.Text;
             } else if (options.FsPath && options.FsPath.length > 0) {
                 mode = ParseMode.File;
+                this._filePath = options.FsPath;
             } else {
                 mode = ParseMode.Symbol;
             }
@@ -62,6 +64,7 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
         let fileContent: string = await utils.read(filePath) as string,
             result: ALObject = new ALObject();
 
+        this._filePath = filePath;
         result = await this.parseText(fileContent);
         return result;
     }
@@ -70,6 +73,7 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
         let fileContent: string = await utils.read(filePath) as string,
             result: ALObject = new ALObject();
 
+        this._filePath = filePath;
         result = this.parseTextBase(fileContent);
         return result;
     }
@@ -206,6 +210,7 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
         result.Name = metadata.Name as string;
         result.Type = metadata.Type as string;
         result.Properties = metadata.Properties as Array<ObjectProperty>;
+        result.FsPath = this._filePath;
 
         return result;
     }
@@ -216,6 +221,7 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
         switch (result.Type) {
             case 'page':
                 let obj = result as ALSymbolPackage.Page;
+                
                 obj.Controls = [];
                 obj.Actions = [];
                 for (let child of metadata.Children as Array<ObjectRegion>) {
@@ -232,7 +238,7 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
                     Name: sourceTable, 
                     Type: 'Table'
                 } as ALObjectDesigner.CollectorItem;
-                result.SourceTable = await this.parseSymbol(sourceTableInfo);        
+                result.SourceTable = await this.parseSymbol(sourceTableInfo);
                 break;
             case 'table':
                 let table = result as ALSymbolPackage.Table;
@@ -298,8 +304,7 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
                         }
                     } else {
                         control.Name = utils.toUpperCaseFirst(child.Name as string);
-                    }
-                    break;
+                    }                    
 
                     let kind: any = ALSymbolPackage.ControlKind;
                     if (container == 'Actions') {
@@ -307,6 +312,9 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
                     }
 
                     control.Kind = kind[utils.toUpperCaseFirst(control.ControlType)];
+                    control.GroupName = alObject.Name;
+                    control.FsPath = alObject.FsPath;
+                    break;
                 case 'table':
                     control.ControlType = child.Region;
                     control.SourceCodeAnchor = child.Source || '';

@@ -11,13 +11,15 @@ export class SourceCommandBase extends ALCommandBase {
 
     async execute(message: any) {
         let selectOnly = message.Command == 'SelectSource';
+        let info = message.EventData.SourceCodeAnchorInfo;
+        message.FsPath = info.fsPath || message.FsPath;
+
         let editor = vscode.window.visibleTextEditors.find(f => f.document.uri.fsPath == message.FsPath) as vscode.TextEditor;
         if (!editor) {
             let newDoc = await vscode.workspace.openTextDocument(message.FsPath);
             editor = await vscode.window.showTextDocument(newDoc, vscode.ViewColumn.One);
         }
 
-        let info = message.EventData.SourceCodeAnchorInfo;
         let text = editor.document.getText();
 
         let itemIndex = text.indexOf(info.anchor);

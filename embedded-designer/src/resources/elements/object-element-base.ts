@@ -28,7 +28,7 @@ export class ObjectElementBase {
     }
 
     bind(bindingContext: Object,overrideContext: Object) {
-        this.dragOptions.group = this.getControlType(this.control);
+        this.dragOptions.group = `${this.control.GroupName}-${this.getControlType(this.control)}`;
     }
 
     attached() {
@@ -59,6 +59,7 @@ export class ObjectElementBase {
 
         let data = {
             'anchor': dataset.anchor,
+            'fsPath': dataset.fsPath,
             'before': prevSibling && prevSibling.dataset ? prevSibling.dataset.anchor : null,
             'after': nextSibling && nextSibling.dataset ? nextSibling.dataset.anchor : null,
         }
@@ -68,7 +69,8 @@ export class ObjectElementBase {
 
     onClickField(item) {
         this.dispatch('field-onclick', {
-            'anchor': item.SourceCodeAnchor
+            'anchor': item.SourceCodeAnchor,
+            'fsPath': item.FsPath,
         });        
     }
 
