@@ -68,7 +68,7 @@ export class ALPanel {
         };
 
         let parser = new ALObjectParser();
-        let symbol =  await parser.parse(objectInfo);
+        let symbol =  await parser.parseFileBase(objectInfo.FsPath);
         objectInfo.Symbol = symbol;
         objectInfo.Id = symbol.Id;
         objectInfo.Name = symbol.Name;

@@ -9,6 +9,8 @@ export class ObjectElementBase {
 
     dragOptions: any;
 
+    @bindable embedded: boolean;
+
     constructor(element: Element) {
         this.element = element;
 

@@ -1,4 +1,4 @@
-<template bindable="control">
+<template>
     <div class="control-${getControlType(control)}" style="overflow-y: auto" sortable-end.trigger="onMoveField($event)" data-anchor='${control.SourceCodeAnchor}'>
         <h2 if.bind="(getControlType(control) == 'group' || getControlType(control) == 'part') && getControlType(control.Parent) != 'group'"
             click.delegate="onClickField(control)">${getCaption(control)}</h2>
@@ -8,6 +8,10 @@
         </div>
         <div if.bind="getControlType(control) == 'part'" style="padding: 30px; border: 1px solid #ccc;">PagePart:
             &quot;${control.SourceExpression}&quot;
+
+            <div repeat.for="partControl of control.Symbol.Controls">
+                <design-element control.bind="partControl" embedded="true"></design-element>
+            </div>
         </div>
         <div sortable.bind="dragOptions">
             <div if.bind="getControlType(control) != 'repeater'" 
@@ -20,7 +24,7 @@
                     <input style="width: 200px" type="text" value='["${item.Name}"]' disabled>
                 </div>
 
-                <design-element control.bind="item"></design-element>
+                <design-element control.bind="item" embedded.bind="embedded"></design-element>
             </div>
         </div>
 
@@ -35,9 +39,14 @@
                     <span>${getCaption(field)}</span>
                 </th>
             </tr>
-            <tr repeat.for="i of 10">
+            <tr if.bind="embedded == false" repeat.for="i of 10">
                 <td repeat.for="field of control.Controls">
                     <span if.bind="i == 0">[&quot;${field.Name}&quot;]</span>&nbsp;
+                </td>
+            </tr>
+            <tr if.bind="embedded">
+                <td repeat.for="field of control.Controls">
+                    <span>[&quot;${field.Name}&quot;]</span>&nbsp;
                 </td>
             </tr>
         </table>

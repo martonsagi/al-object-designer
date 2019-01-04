@@ -28,6 +28,7 @@ export module ALSymbolPackage {
         Variables?: Array<Variable>;
         Methods?: Array<Method>;
         FsPath?: string;
+        SourceTable?: Table;
     }
 
     export interface Table extends ALObject {
@@ -165,6 +166,7 @@ export module ALSymbolPackage {
         Controls?: Array<PageControl>;
         Parent?: PageControl;
         Kind: ControlKind = 0;
+        Symbol?: Page;
     }
 
     export class PageAction extends PageControlBase {

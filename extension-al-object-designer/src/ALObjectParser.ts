@@ -66,10 +66,26 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
         return result;
     }
 
+    public async parseFileBase(filePath: string) {
+        let fileContent: string = await utils.read(filePath) as string,
+            result: ALObject = new ALObject();
+
+        result = this.parseTextBase(fileContent);
+        return result;
+    }
+
     public async parseText(fileContent: string) {
         let result: ALObject = new ALObject();
         let matches: Array<any> = this.recursiveMatch({ body: fileContent });
-        result = this.generateSymbol(matches[0]);
+        result = await this.generateSymbol(matches[0]);
+
+        return result;
+    }
+
+    public parseTextBase(fileContent: string) {
+        let result: ALObject = new ALObject();
+        let matches: Array<any> = this.recursiveMatch({ body: fileContent });
+        result = this.generateSymbolBase(matches[0]);
 
         return result;
     }
@@ -78,7 +94,8 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
         let collector = new ALObjectCollector();
         this._objectList = await collector.discover();
         let result = this._objectList.find(f => {
-            return f.Id == objectInfo.Id && f.Type.toLowerCase() == objectInfo.Type.toLowerCase()
+            return (f.Id == objectInfo.Id && f.Type.toLowerCase() == objectInfo.Type.toLowerCase())
+                || (f.Name == objectInfo.Name && f.Type.toLowerCase() == objectInfo.Type.toLowerCase());
         });
 
         if (result) {
@@ -86,6 +103,9 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
             if (symbolData) {
                 let symbol = await collector.getSymbolReference(symbolData);
                 return symbol;
+            } else {
+                let localSymbol = await this.parse(result);
+                return localSymbol;
             }
         }
 
@@ -180,12 +200,18 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
         };
     }
 
-    private generateSymbol(metadata: ObjectRegion): ALObject {
+    private generateSymbolBase(metadata: ObjectRegion): ALObject {
         let result = new ALObject();
         result.Id = metadata.Id as number;
         result.Name = metadata.Name as string;
         result.Type = metadata.Type as string;
         result.Properties = metadata.Properties as Array<ObjectProperty>;
+
+        return result;
+    }
+
+    private async generateSymbol(metadata: ObjectRegion): Promise<ALObject> {
+        let result = this.generateSymbolBase(metadata);
 
         switch (result.Type) {
             case 'page':
@@ -195,10 +221,18 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
                 for (let child of metadata.Children as Array<ObjectRegion>) {
                     let isActions = child.Region == 'actions';
                     let container = isActions ? "Actions" : "Controls";
-                    obj[container] = this.processSymbol(obj, container, child);
+                    obj[container] = await this.processSymbol(obj, container, child);
                 }
 
                 result = obj;
+
+                let sourceTable: string = ALObjectParser.getSymbolProperty(result, 'SourceTable') as string;
+                sourceTable = sourceTable.replace(/"/g, '').trim();
+                let sourceTableInfo = {
+                    Name: sourceTable, 
+                    Type: 'Table'
+                } as ALObjectDesigner.CollectorItem;
+                result.SourceTable = await this.parseSymbol(sourceTableInfo);        
                 break;
             case 'table':
                 let table = result as ALSymbolPackage.Table;
@@ -209,7 +243,7 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
                     let isGroup = ['fields', 'keys'].indexOf(child.Region) != -1;
                     if (isGroup) {
                         let container = utils.toUpperCaseFirst(child.Region);
-                        table[container] = this.processSymbol(table, container, child);
+                        table[container] = await this.processSymbol(table, container, child);
                     }
                 }
 
@@ -220,7 +254,7 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
         return result;
     }
 
-    private processSymbol(alObject: ALObject, container: string, metadata: ObjectRegion, parent?: ALSymbolPackage.PageControlBase): any {
+    private async processSymbol(alObject: ALObject, container: string, metadata: ObjectRegion, parent?: ALSymbolPackage.PageControlBase): Promise<any> {
         let result: any = [];
         let i = 0;
         let count = (metadata.Children || []).length;
@@ -254,6 +288,14 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
                         let fieldData = (child.Name as string).split(';');
                         control.Name = fieldData[0].trim();
                         control.SourceExpression = fieldData[1].trim();
+
+                        if (control.ControlType == 'part' && container == 'Controls') {
+                            let item = {
+                                Name: control.SourceExpression, 
+                                Type: 'Page'
+                            } as ALObjectDesigner.CollectorItem;
+                            control.Symbol = await this.parseSymbol(item);
+                        }
                     } else {
                         control.Name = utils.toUpperCaseFirst(child.Name as string);
                     }
@@ -297,7 +339,7 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
             } else {
                 control.Caption = control.Name.replace(/"/g, '').trim();
             }
-            control[container] = this.processSymbol(alObject, container, child, control);
+            control[container] = await this.processSymbol(alObject, container, child, control);
             result.push(control);
         }
 
