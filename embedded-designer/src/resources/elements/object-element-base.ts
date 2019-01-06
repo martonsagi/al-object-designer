@@ -1,18 +1,22 @@
 import { bindable, autoinject, bindingMode } from 'aurelia-framework';
+const vsSettings = (window as any).vsSettings;
 
 @autoinject
 export class ObjectElementBase {
 
     @bindable control: any;
 
+    @bindable embedded: boolean;
+
     element: Element;
 
     dragOptions: any;
 
-    @bindable embedded: boolean;
+    vsSettings: any;
 
     constructor(element: Element) {
         this.element = element;
+        this.vsSettings = vsSettings;
 
         this.dragOptions = {
             animation: 150,

@@ -25,6 +25,7 @@ export class ALPanel {
     private readonly _panel: vscode.WebviewPanel;
     private readonly _extensionPath: string;
     private _disposables: vscode.Disposable[] = [];
+    private _vsSettings: any;
 
     public static async open(extensionPath: string, mode: ALObjectDesigner.PanelMode, objectInfo?: any) {
         const column = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
@@ -92,6 +93,7 @@ export class ALPanel {
         this._extensionPath = extensionPath;
         this.objectInfo = objectInfo;
         this.panelMode = mode;
+        this._vsSettings = utils.getVsConfig();
 
         // Set the webview's initial html content 
         this._getHtmlForWebview().then(html => this._panel.webview.html = html);
@@ -154,7 +156,7 @@ export class ALPanel {
         if (!this._panel.webview.html)
             this._panel.webview.html = await this._getHtmlForWebview();
 
-        if (this.panelMode == "List") {
+        if (this.panelMode == ALObjectDesigner.PanelMode.List) {
             let objectCollector = new ALObjectCollector();
             this.objectList = await objectCollector.discover();
             this.eventList = objectCollector.events;
@@ -187,6 +189,8 @@ export class ALPanel {
         content = content.replace('scripts/vendor-bundle.js', appJsSrc);
         content = content.replace('${panelMode}', this.panelMode);
         content = content.replace('${objectInfo}', JSON.stringify(this.objectInfo));
+        content = content.replace('${vsSettings}', JSON.stringify(this._vsSettings));
+
 
         return content;
     }

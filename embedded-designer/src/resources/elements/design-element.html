@@ -13,7 +13,7 @@
         <div if.bind="getControlType(control) == 'part'" style="padding: 30px; border: 1px solid #ccc;">PagePart:
             &quot;${control.SourceExpression}&quot;
 
-            <div repeat.for="partControl of control.Symbol.Controls">
+            <div if.bind="vsSettings.renderPageParts" repeat.for="partControl of control.Symbol.Controls">
                 <design-element control.bind="partControl" embedded="true"></design-element>
             </div>
         </div>

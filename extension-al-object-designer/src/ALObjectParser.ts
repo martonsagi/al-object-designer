@@ -11,8 +11,10 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
 
     private _objectList: Array<ALObjectDesigner.CollectorItem> = [];
     private _filePath: string = '';
+    private _vsSettings: any;
 
     public constructor() {
+        this._vsSettings = utils.getVsConfig();
     }
 
     public static getSymbolProperty(symbol: ALSymbolPackage.ALObject, propertyName: string) {
@@ -221,7 +223,7 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
         switch (result.Type) {
             case 'page':
                 let obj = result as ALSymbolPackage.Page;
-                
+
                 obj.Controls = [];
                 obj.Actions = [];
                 for (let child of metadata.Children as Array<ObjectRegion>) {
@@ -235,7 +237,7 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
                 let sourceTable: string = ALObjectParser.getSymbolProperty(result, 'SourceTable') as string;
                 sourceTable = sourceTable.replace(/"/g, '').trim();
                 let sourceTableInfo = {
-                    Name: sourceTable, 
+                    Name: sourceTable,
                     Type: 'Table'
                 } as ALObjectDesigner.CollectorItem;
                 result.SourceTable = await this.parseSymbol(sourceTableInfo);
@@ -296,15 +298,17 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
                         control.SourceExpression = fieldData[1].trim();
 
                         if (control.ControlType == 'part' && container == 'Controls') {
-                            let item = {
-                                Name: control.SourceExpression, 
-                                Type: 'Page'
-                            } as ALObjectDesigner.CollectorItem;
-                            control.Symbol = await this.parseSymbol(item);
+                            if (this._vsSettings.renderPageParts === true) {
+                                let item = {
+                                    Name: control.SourceExpression,
+                                    Type: 'Page'
+                                } as ALObjectDesigner.CollectorItem;
+                                control.Symbol = await this.parseSymbol(item);
+                            }
                         }
                     } else {
                         control.Name = utils.toUpperCaseFirst(child.Name as string);
-                    }                    
+                    }
 
                     let kind: any = ALSymbolPackage.ControlKind;
                     if (container == 'Actions') {
@@ -327,6 +331,7 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
                             case 'field':
                                 control.Id = fieldData[0].trim();
                                 control.Name = fieldData[1].trim();
+                                control.TypeDefinition = { Name: fieldData[2].trim() };
                                 break;
                             case 'key':
                                 control.Name = fieldData[0].trim();

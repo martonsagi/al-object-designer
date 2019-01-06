@@ -1,3 +1,4 @@
+import * as vscode from 'vscode';
 const JSZip = require("jszip");
 const fs = require('fs-extra');
 const path = require('path');
@@ -144,3 +145,8 @@ export function insertString(inStr: string, index: number, str: string) {
     else
       return str + inStr;
   };
+
+export function getVsConfig() {
+    let result = vscode.workspace.getConfiguration('alObjectDesigner');
+    return result;
+}

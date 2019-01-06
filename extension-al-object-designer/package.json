@@ -33,7 +33,8 @@
     ],
     "activationEvents": [
         "onCommand:extension.openALWindow",
-        "onCommand:extension.openALDesignWindow"
+        "onCommand:extension.openALDesignWindow",
+        "*"
     ],
     "icon": "images/icon.png",
     "main": "./out/extension",
@@ -47,7 +48,25 @@
                 "command": "extension.openALDesignWindow",
                 "title": "AL Page Designer"
             }
-        ]
+        ],
+        "menus": {
+            "editor/title": [{
+                "when": "resourceLangId == al",
+                "command": "extension.openALDesignWindow",
+                "group": "navigation"
+            }]
+        },
+        "configuration": {
+            "type": "object",
+            "title": "AL Object Designer configuration",
+            "properties": {
+                "alObjectDesigner.renderPageParts": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Render PageParts in AL Page Designer."
+                }
+            }
+        }
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",
