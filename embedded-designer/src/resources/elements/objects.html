@@ -11,6 +11,8 @@
                 <th style="text-align: right; width: 100px" class="search-col">Id</th>
                 <th style="text-align: left; width: 40px;"></th>
                 <th style="text-align: left;" class="search-col">Name</th>
+                <th show.bind="showExtensions" style="text-align: right;" class="search-col">Extends Id</th>
+                <th show.bind="showExtensions" style="text-align: left;" class="search-col">Extends</th>
                 <th show.bind="showEvents" style="text-align: left;">Event Name</th>
                 <th show.bind="showEvents" style="text-align: left;">Event Type</th>
                 <th hide.bind="showEvents" style="text-align: left; min-width: 100px" class="search-col">Application</th>
@@ -53,6 +55,8 @@
                 <td style="text-align: left;" class="td-name"><a href="#click" click.delegate="sendCommand(element, 'Definition')">${element.Name
                         || ''}</a>
                 </td>
+                <td show.bind="showExtensions" style="text-align: right;">$element.TargetObjectId}</td>
+                <td show.bind="showExtensions" style="text-align: left;">${element.TargetObject}</td>
                 <td show.bind="showEvents" style="text-align: left;"><a href="#click" click.delegate="showEventParams(element)">${element.EventName || ''}</a></td>
                 <td show.bind="showEvents" style="text-align: left;">${element.EventType || ''}</td>
                 <td hide.bind="showEvents" style="text-align: left;">${element.Application || ''}</td>

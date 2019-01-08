@@ -167,6 +167,26 @@ export class ALPanel {
                 console.log(`Cannot load templates: ${e}`);
             }
 
+            // search for object extended by the PageExtension/PageCustomization/TableExtension and update the TargetObjectId accordingly
+            for(var i = 0; i < this.objectList.length; i++)
+            {
+                if (this.objectList[i].TargetObject && this.objectList[i].TargetObject != "") {
+                    var targettype = "";
+                    var targetObject = this.objectList[i].TargetObject;
+                    if ((this.objectList[i].Type === "PageExtension") || (this.objectList[i].Type === "PageCustomization") ) { // PageExt/PageCust
+                        targettype = "Page";
+                    } else if (this.objectList[i].Type === "TableExtension") { // TableExt
+                        targettype = "Table";
+                    }
+                    
+                    var extendedObject = this.objectList.find(function(el : ALObjectDesigner.CollectorItem) { 
+                        return (el.Type === targettype) && (el.Name === targetObject );});
+                    if (extendedObject) {
+                        this.objectList[i].TargetObjectId = extendedObject.Id;
+                    }
+                }
+            }
+
             await this._panel.webview.postMessage({ command: 'data', data: this.objectList, 'customLinks': links, 'events': this.eventList });
         } else {
             let parser = new ALObjectParser();

@@ -16,6 +16,7 @@ export class App {
   customLinks: Array<any> = [];
   events: Array<any> = [];
   showEvents: boolean = false;
+  showExtensions : boolean = false;
   headerType: string = 'object';
 
   @observable
@@ -99,8 +100,10 @@ export class App {
         (f.Id.toString().indexOf(this.query.toLowerCase()) != -1
           || f.Publisher.toLowerCase().indexOf(this.query.toLowerCase()) != -1
           || f.Version.toLowerCase().indexOf(this.query.toLowerCase()) != -1
-          || this.searchParts(this.query, `${f.Type}${f.Id}`) == true
-          || this.searchParts(this.query, this.showEvents ? `${f.Name} ${f.EventName}` : f.Name) == true)
+        /*  || this.searchParts(this.query, '${f.Type}${f.Id}') == true */
+          || f.TargetObjectId.toString().indexOf(this.query.toLowerCase()) != -1
+          || this.searchParts(this.query, f.TargetObject) == true
+          || this.searchParts(this.query, this.showEvents ? '${f.Name} ${f.EventName}' : f.Name) == true)
       );
 
     this.count = this.results.length;
@@ -111,9 +114,11 @@ export class App {
       this.activeType = "";
       if (reset === true || this.currentProject)
         this.query = "";
+      this.showExtensions = true;
       this.search("");
     } else {
       this.activeType = type;
+      this.showExtensions = this.activeType === "PageExtension" || this.activeType === "TableExtension" || this.activeType === "PageCustomization";
       this.search("");
     }
 
