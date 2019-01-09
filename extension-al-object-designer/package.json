@@ -2,7 +2,7 @@
     "name": "al-object-designer",
     "displayName": "AL Object Designer",
     "description": "Object Designer optimized for (Dynamics 365 Business Central) AL Language development.",
-    "version": "0.0.6-alpha.2",
+    "version": "0.0.6-alpha.3",
     "publisher": "martonsagi",
     "license": "MIT",
     "author": {
@@ -54,6 +54,10 @@
                 "when": "resourceLangId == al",
                 "command": "extension.openALDesignWindow",
                 "group": "navigation"
+            }],
+            "explorer/context": [{
+                "command": "extension.openALWindow",
+                "group": "2_workspace"
             }]
         },
         "configuration": {
