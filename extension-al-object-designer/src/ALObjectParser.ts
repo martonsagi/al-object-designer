@@ -235,7 +235,7 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
                 result = obj;
 
                 let sourceTable: string = ALObjectParser.getSymbolProperty(result, 'SourceTable') as string;
-                sourceTable = sourceTable.replace(/"/g, '').trim();
+                sourceTable = sourceTable ? sourceTable.replace(/"/g, '').trim() : sourceTable;
                 let sourceTableInfo = {
                     Name: sourceTable,
                     Type: 'Table'

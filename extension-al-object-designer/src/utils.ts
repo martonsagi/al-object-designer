@@ -134,8 +134,6 @@ export async function getFirstCodeLine(file: string) {
             if (fline.length > 0 && fline[0] != '/') {
                 resolve(fline);
                 lineReader.close(); 
-            } else {
-                resolve('');
             }
         });
 
