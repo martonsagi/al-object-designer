@@ -6,6 +6,8 @@ export class DesignElement extends ObjectElementBase {
     
     @bindable control: any;
 
+    @bindable embedded: boolean = false;
+
     constructor(element: Element) {
         super(element);
     }

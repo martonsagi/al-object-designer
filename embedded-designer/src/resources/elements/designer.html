@@ -2,6 +2,10 @@
     <compose view="resources/elements/design-toolbar.html" show.bind="objectInfo.FsPath != ''"></compose>
     <div class="content designer-content ${objectInfo.FsPath != '' ? 'designer-toolbar-padding' : ''}">
 
+        <ul style="display: none;">
+            <li repeat.for="field of objectInfo.Symbol.SourceTable.Fields">${field.Name}, ${field.TypeDefinition.Name}</li>
+        </ul>
+
         <div id="card-designer-wrapper">
             <div id="actions-placeholder">
                 <div repeat.for="action of objectInfo.Symbol.Actions">

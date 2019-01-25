@@ -1,3 +1,4 @@
+import * as vscode from 'vscode';
 const JSZip = require("jszip");
 const fs = require('fs-extra');
 const path = require('path');
@@ -133,7 +134,13 @@ export async function getFirstCodeLine(file: string) {
             if (fline.length > 0 && fline[0] != '/') {
                 resolve(fline);
                 lineReader.close(); 
+            } else {
+                resolve('');
             }
+        });
+
+        lineReader.on('close', () => {
+            resolve('');
         });
     });
 }
@@ -144,3 +151,8 @@ export function insertString(inStr: string, index: number, str: string) {
     else
       return str + inStr;
   };
+
+export function getVsConfig() {
+    let result = vscode.workspace.getConfiguration('alObjectDesigner');
+    return result;
+}

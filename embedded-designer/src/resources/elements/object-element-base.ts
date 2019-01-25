@@ -1,16 +1,22 @@
 import { bindable, autoinject, bindingMode } from 'aurelia-framework';
+const vsSettings = (window as any).vsSettings;
 
 @autoinject
 export class ObjectElementBase {
 
     @bindable control: any;
 
+    @bindable embedded: boolean;
+
     element: Element;
 
     dragOptions: any;
 
+    vsSettings: any;
+
     constructor(element: Element) {
         this.element = element;
+        this.vsSettings = vsSettings;
 
         this.dragOptions = {
             animation: 150,
@@ -26,7 +32,7 @@ export class ObjectElementBase {
     }
 
     bind(bindingContext: Object,overrideContext: Object) {
-        this.dragOptions.group = this.getControlType(this.control);
+        this.dragOptions.group = `${this.control.GroupName}-${this.getControlType(this.control)}`;
     }
 
     attached() {
@@ -57,6 +63,7 @@ export class ObjectElementBase {
 
         let data = {
             'anchor': dataset.anchor,
+            'fsPath': dataset.fsPath,
             'before': prevSibling && prevSibling.dataset ? prevSibling.dataset.anchor : null,
             'after': nextSibling && nextSibling.dataset ? nextSibling.dataset.anchor : null,
         }
@@ -66,7 +73,8 @@ export class ObjectElementBase {
 
     onClickField(item) {
         this.dispatch('field-onclick', {
-            'anchor': item.SourceCodeAnchor
+            'anchor': item.SourceCodeAnchor,
+            'fsPath': item.FsPath,
         });        
     }
 

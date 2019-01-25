@@ -94,7 +94,11 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
         tasks.push(this._CheckObjectInProject(objs));
 
         let res = await Promise.all(tasks);
-        let projectFiles = res.pop();
+        let projectFiles = [];
+        if (dalFiles.length > 0) {
+            projectFiles = res.pop();
+        }
+        
         for (let arr of res) {
             objs = objs.concat(arr);
         }

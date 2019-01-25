@@ -1,5 +1,9 @@
-<template bindable="control">
-    <div class="control-${getControlType(control)}" style="overflow-y: auto" sortable-end.trigger="onMoveField($event)" data-anchor='${control.SourceCodeAnchor}'>
+<template>
+    <div 
+        class="control-${getControlType(control)}" 
+        style="overflow-y: auto" sortable-end.trigger="onMoveField($event)" 
+        data-anchor='${control.SourceCodeAnchor}'
+        data-fs-path='${control.FsPath}'>
         <h2 if.bind="(getControlType(control) == 'group' || getControlType(control) == 'part') && getControlType(control.Parent) != 'group'"
             click.delegate="onClickField(control)">${getCaption(control)}</h2>
         <div if.bind="getControlType(control) == 'group' && getControlType(control.Parent) == 'group'" style="text-transform: uppercase; font-weight: 400; padding-bottom: 10px;"
@@ -8,19 +12,25 @@
         </div>
         <div if.bind="getControlType(control) == 'part'" style="padding: 30px; border: 1px solid #ccc;">PagePart:
             &quot;${control.SourceExpression}&quot;
+
+            <div if.bind="vsSettings.renderPageParts" repeat.for="partControl of control.Symbol.Controls">
+                <design-element control.bind="partControl" embedded="true"></design-element>
+            </div>
         </div>
         <div sortable.bind="dragOptions">
             <div if.bind="getControlType(control) != 'repeater'" 
+                repeat.for="item of control.Controls" 
+                sortable-end.trigger="onMoveField($event)"
                 class="designer-input draggable page-control ${item.Separator == true ? 'page-control-right' : ''}"
                 style="margin-bottom: 9px;"                
-                sortable-end.trigger="onMoveField($event)"
-                repeat.for="item of control.Controls" data-anchor='${item.SourceCodeAnchor}'>                
+                data-anchor='${item.SourceCodeAnchor}'
+                data-fs-path='${item.FsPath}'>
                 <div class="field-row" if.bind="getControlType(item) == 'field'" click.delegate="onClickField(item)">
                     <a style="width: 200px; display: inline-block">${getCaption(item)}</a>
                     <input style="width: 200px" type="text" value='["${item.Name}"]' disabled>
                 </div>
 
-                <design-element control.bind="item"></design-element>
+                <design-element control.bind="item" embedded.bind="embedded"></design-element>
             </div>
         </div>
 
@@ -31,13 +41,19 @@
                     class="draggable"
                     sortable-end.trigger="onMoveField($event)"
                     data-anchor='${field.SourceCodeAnchor}'
+                    data-fs-path='${field.FsPath}'
                     click.delegate="onClickField(field)">
                     <span>${getCaption(field)}</span>
                 </th>
             </tr>
-            <tr repeat.for="i of 10">
+            <tr if.bind="embedded == false" repeat.for="i of 10">
                 <td repeat.for="field of control.Controls">
                     <span if.bind="i == 0">[&quot;${field.Name}&quot;]</span>&nbsp;
+                </td>
+            </tr>
+            <tr if.bind="embedded">
+                <td repeat.for="field of control.Controls">
+                    <span>[&quot;${field.Name}&quot;]</span>&nbsp;
                 </td>
             </tr>
         </table>

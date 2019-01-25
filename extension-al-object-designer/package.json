@@ -2,7 +2,7 @@
     "name": "al-object-designer",
     "displayName": "AL Object Designer",
     "description": "Object Designer optimized for (Dynamics 365 Business Central) AL Language development.",
-    "version": "0.0.5",
+    "version": "0.0.6-alpha.4",
     "publisher": "martonsagi",
     "license": "MIT",
     "author": {
@@ -33,7 +33,8 @@
     ],
     "activationEvents": [
         "onCommand:extension.openALWindow",
-        "onCommand:extension.openALDesignWindow"
+        "onCommand:extension.openALDesignWindow",
+        "*"
     ],
     "icon": "images/icon.png",
     "main": "./out/extension",
@@ -47,7 +48,29 @@
                 "command": "extension.openALDesignWindow",
                 "title": "AL Page Designer"
             }
-        ]
+        ],
+        "menus": {
+            "editor/title": [{
+                "when": "resourceLangId == al",
+                "command": "extension.openALDesignWindow",
+                "group": "navigation"
+            }],
+            "explorer/context": [{
+                "command": "extension.openALWindow",
+                "group": "2_workspace"
+            }]
+        },
+        "configuration": {
+            "type": "object",
+            "title": "AL Object Designer configuration",
+            "properties": {
+                "alObjectDesigner.renderPageParts": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Render PageParts in AL Page Designer."
+                }
+            }
+        }
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",

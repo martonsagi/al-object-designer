@@ -5976,6 +5976,7 @@ define('app',["require", "exports", "aurelia-framework"], function (require, exp
     var vscode = window.vscode;
     var panelMode = window.panelMode;
     var objectInfo = window.objectInfo;
+    var vsSettings = window.vsSettings;
     var App = (function () {
         function App() {
             this.data = [];
@@ -5996,6 +5997,7 @@ define('app',["require", "exports", "aurelia-framework"], function (require, exp
             this.objectInfo = objectInfo;
             this.activeType = "";
             this.currentProject = false;
+            this.vsSettings = vsSettings;
             window.addEventListener('message', function (event) {
                 _this.loaded = false;
                 var message = event.data;
@@ -30505,12 +30507,18 @@ define('resources/elements/design-element',["require", "exports", "aurelia-frame
     var DesignElement = (function (_super) {
         __extends(DesignElement, _super);
         function DesignElement(element) {
-            return _super.call(this, element) || this;
+            var _this = _super.call(this, element) || this;
+            _this.embedded = false;
+            return _this;
         }
         __decorate([
             aurelia_framework_1.bindable,
             __metadata("design:type", Object)
         ], DesignElement.prototype, "control", void 0);
+        __decorate([
+            aurelia_framework_1.bindable,
+            __metadata("design:type", Boolean)
+        ], DesignElement.prototype, "embedded", void 0);
         DesignElement = __decorate([
             aurelia_framework_1.autoinject,
             __metadata("design:paramtypes", [Element])
@@ -30522,9 +30530,9 @@ define('resources/elements/design-element',["require", "exports", "aurelia-frame
 
 
 
-define('text!resources/elements/design-element.html',[],function(){return "<template bindable=\"control\">\r\n    <div class=\"control-${getControlType(control)}\" style=\"overflow-y: auto\" sortable-end.trigger=\"onMoveField($event)\" data-anchor='${control.SourceCodeAnchor}'>\r\n        <h2 if.bind=\"(getControlType(control) == 'group' || getControlType(control) == 'part') && getControlType(control.Parent) != 'group'\"\r\n            click.delegate=\"onClickField(control)\">${getCaption(control)}</h2>\r\n        <div if.bind=\"getControlType(control) == 'group' && getControlType(control.Parent) == 'group'\" style=\"text-transform: uppercase; font-weight: 400; padding-bottom: 10px;\"\r\n            click.delegate=\"onClickField(control)\">\r\n            ${getCaption(control)}\r\n        </div>\r\n        <div if.bind=\"getControlType(control) == 'part'\" style=\"padding: 30px; border: 1px solid #ccc;\">PagePart:\r\n            &quot;${control.SourceExpression}&quot;\r\n        </div>\r\n        <div sortable.bind=\"dragOptions\">\r\n            <div if.bind=\"getControlType(control) != 'repeater'\" \r\n                class=\"designer-input draggable page-control ${item.Separator == true ? 'page-control-right' : ''}\"\r\n                style=\"margin-bottom: 9px;\"                \r\n                sortable-end.trigger=\"onMoveField($event)\"\r\n                repeat.for=\"item of control.Controls\" data-anchor='${item.SourceCodeAnchor}'>                \r\n                <div class=\"field-row\" if.bind=\"getControlType(item) == 'field'\" click.delegate=\"onClickField(item)\">\r\n                    <a style=\"width: 200px; display: inline-block\">${getCaption(item)}</a>\r\n                    <input style=\"width: 200px\" type=\"text\" value='[\"${item.Name}\"]' disabled>\r\n                </div>\r\n\r\n                <design-element control.bind=\"item\"></design-element>\r\n            </div>\r\n        </div>\r\n\r\n        <table style=\"width: 100%; margin-top: 10px;\" if.bind=\"getControlType(control) == 'repeater'\">\r\n            <tr sortable.bind=\"dragOptions\">\r\n                <th repeat.for=\"field of control.Controls\" \r\n                    style=\"min-width: 150px; text-align: left; cursor: pointer;\"\r\n                    class=\"draggable\"\r\n                    sortable-end.trigger=\"onMoveField($event)\"\r\n                    data-anchor='${field.SourceCodeAnchor}'\r\n                    click.delegate=\"onClickField(field)\">\r\n                    <span>${getCaption(field)}</span>\r\n                </th>\r\n            </tr>\r\n            <tr repeat.for=\"i of 10\">\r\n                <td repeat.for=\"field of control.Controls\">\r\n                    <span if.bind=\"i == 0\">[&quot;${field.Name}&quot;]</span>&nbsp;\r\n                </td>\r\n            </tr>\r\n        </table>\r\n\r\n    </div>\r\n</template>";});
+define('text!resources/elements/design-element.html',[],function(){return "<template>\r\n    <div \r\n        class=\"control-${getControlType(control)}\" \r\n        style=\"overflow-y: auto\" sortable-end.trigger=\"onMoveField($event)\" \r\n        data-anchor='${control.SourceCodeAnchor}'\r\n        data-fs-path='${control.FsPath}'>\r\n        <h2 if.bind=\"(getControlType(control) == 'group' || getControlType(control) == 'part') && getControlType(control.Parent) != 'group'\"\r\n            click.delegate=\"onClickField(control)\">${getCaption(control)}</h2>\r\n        <div if.bind=\"getControlType(control) == 'group' && getControlType(control.Parent) == 'group'\" style=\"text-transform: uppercase; font-weight: 400; padding-bottom: 10px;\"\r\n            click.delegate=\"onClickField(control)\">\r\n            ${getCaption(control)}\r\n        </div>\r\n        <div if.bind=\"getControlType(control) == 'part'\" style=\"padding: 30px; border: 1px solid #ccc;\">PagePart:\r\n            &quot;${control.SourceExpression}&quot;\r\n\r\n            <div if.bind=\"vsSettings.renderPageParts\" repeat.for=\"partControl of control.Symbol.Controls\">\r\n                <design-element control.bind=\"partControl\" embedded=\"true\"></design-element>\r\n            </div>\r\n        </div>\r\n        <div sortable.bind=\"dragOptions\">\r\n            <div if.bind=\"getControlType(control) != 'repeater'\" \r\n                repeat.for=\"item of control.Controls\" \r\n                sortable-end.trigger=\"onMoveField($event)\"\r\n                class=\"designer-input draggable page-control ${item.Separator == true ? 'page-control-right' : ''}\"\r\n                style=\"margin-bottom: 9px;\"                \r\n                data-anchor='${item.SourceCodeAnchor}'\r\n                data-fs-path='${item.FsPath}'>\r\n                <div class=\"field-row\" if.bind=\"getControlType(item) == 'field'\" click.delegate=\"onClickField(item)\">\r\n                    <a style=\"width: 200px; display: inline-block\">${getCaption(item)}</a>\r\n                    <input style=\"width: 200px\" type=\"text\" value='[\"${item.Name}\"]' disabled>\r\n                </div>\r\n\r\n                <design-element control.bind=\"item\" embedded.bind=\"embedded\"></design-element>\r\n            </div>\r\n        </div>\r\n\r\n        <table style=\"width: 100%; margin-top: 10px;\" if.bind=\"getControlType(control) == 'repeater'\">\r\n            <tr sortable.bind=\"dragOptions\">\r\n                <th repeat.for=\"field of control.Controls\" \r\n                    style=\"min-width: 150px; text-align: left; cursor: pointer;\"\r\n                    class=\"draggable\"\r\n                    sortable-end.trigger=\"onMoveField($event)\"\r\n                    data-anchor='${field.SourceCodeAnchor}'\r\n                    data-fs-path='${field.FsPath}'\r\n                    click.delegate=\"onClickField(field)\">\r\n                    <span>${getCaption(field)}</span>\r\n                </th>\r\n            </tr>\r\n            <tr if.bind=\"embedded == false\" repeat.for=\"i of 10\">\r\n                <td repeat.for=\"field of control.Controls\">\r\n                    <span if.bind=\"i == 0\">[&quot;${field.Name}&quot;]</span>&nbsp;\r\n                </td>\r\n            </tr>\r\n            <tr if.bind=\"embedded\">\r\n                <td repeat.for=\"field of control.Controls\">\r\n                    <span>[&quot;${field.Name}&quot;]</span>&nbsp;\r\n                </td>\r\n            </tr>\r\n        </table>\r\n\r\n    </div>\r\n</template>";});
 define('text!resources/elements/design-toolbar.html',[],function(){return "<template>\r\n    <div class=\"object-bar buttons\">\r\n        <div class=\"object-bar-line\" show.bind=\"mode == 'Design'\">\r\n            <span class=\"new-object-link\"> + Field</span>\r\n            <span class=\"new-object-link\">+ Action</span>\r\n            <span class=\"new-object-link\">+ Group</span>\r\n            <span class=\"new-object-link\">+ Part</span>\r\n        </div>\r\n    </div>\r\n</template>";});
-define('text!resources/elements/designer.html',[],function(){return "<template>\r\n    <compose view=\"resources/elements/design-toolbar.html\" show.bind=\"objectInfo.FsPath != ''\"></compose>\r\n    <div class=\"content designer-content ${objectInfo.FsPath != '' ? 'designer-toolbar-padding' : ''}\">\r\n\r\n        <div id=\"card-designer-wrapper\">\r\n            <div id=\"actions-placeholder\">\r\n                <div repeat.for=\"action of objectInfo.Symbol.Actions\">\r\n                    <action-element control.bind=\"action\"></action-element>\r\n                </div>\r\n            </div>\r\n\r\n            <div repeat.for=\"control of objectInfo.Symbol.Controls\">\r\n                <design-element control.bind=\"control\"></design-element>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</template>";});
+define('text!resources/elements/designer.html',[],function(){return "<template>\r\n    <compose view=\"resources/elements/design-toolbar.html\" show.bind=\"objectInfo.FsPath != ''\"></compose>\r\n    <div class=\"content designer-content ${objectInfo.FsPath != '' ? 'designer-toolbar-padding' : ''}\">\r\n\r\n        <ul style=\"display: none;\">\r\n            <li repeat.for=\"field of objectInfo.Symbol.SourceTable.Fields\">${field.Name}, ${field.TypeDefinition.Name}</li>\r\n        </ul>\r\n\r\n        <div id=\"card-designer-wrapper\">\r\n            <div id=\"actions-placeholder\">\r\n                <div repeat.for=\"action of objectInfo.Symbol.Actions\">\r\n                    <action-element control.bind=\"action\"></action-element>\r\n                </div>\r\n            </div>\r\n\r\n            <div repeat.for=\"control of objectInfo.Symbol.Controls\">\r\n                <design-element control.bind=\"control\"></design-element>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</template>";});
 define('text!resources/elements/header.html',[],function(){return "<template>\r\n    <div class=\"header\" show.bind=\"mode == 'List'\">\r\n        <h1>AL</h1>\r\n        <h1>Object Designer</h1>\r\n        <h1 show.bind=\"loaded\">\r\n            <span textcontent.bind=\"count || 0\"></span> ${activeType} ${headerType}${count > 1 ? 's' : ''}\r\n        </h1>\r\n        <h1 style=\"float: right; padding: 6px 15px 5px 15px;\">\r\n            <input id=\"searchInput\" type=\"text\" id=\"searchVal\" placeholder=\"Search for ${headerType}s\" value.bind=\"query\"\r\n                keyup.delegate=\"search() & throttle:350\" />\r\n        </h1>\r\n        <h1 id=\"searchHeader\" style=\"float: right; padding-right: 15px; border-left: none; cursor: pointer\" click.delegate=\"filterType('', true)\">\r\n            ${query == '' ? 'Search' : 'Show All (X)'}\r\n        </h1>\r\n        <div style=\"clear: both;\"></div>\r\n    </div>\r\n\r\n    <div class=\"header\" show.bind=\"mode == 'Design'\">\r\n        <h1>AL</h1>\r\n        <h1>Object Designer</h1>\r\n        <h1>${objectInfo.Type} ${objectInfo.Id} ${objectInfo.Name}</h1>\r\n        <div style=\"clear: both;\"></div>\r\n    </div>\r\n</template>";});
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -30538,9 +30546,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 define('resources/elements/object-element-base',["require", "exports", "aurelia-framework"], function (require, exports, aurelia_framework_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    var vsSettings = window.vsSettings;
     var ObjectElementBase = (function () {
         function ObjectElementBase(element) {
             this.element = element;
+            this.vsSettings = vsSettings;
             this.dragOptions = {
                 animation: 150,
                 swapThreshold: 0.5,
@@ -30553,7 +30563,7 @@ define('resources/elements/object-element-base',["require", "exports", "aurelia-
             };
         }
         ObjectElementBase.prototype.bind = function (bindingContext, overrideContext) {
-            this.dragOptions.group = this.getControlType(this.control);
+            this.dragOptions.group = this.control.GroupName + "-" + this.getControlType(this.control);
         };
         ObjectElementBase.prototype.attached = function () {
         };
@@ -30576,6 +30586,7 @@ define('resources/elements/object-element-base',["require", "exports", "aurelia-
             }
             var data = {
                 'anchor': dataset.anchor,
+                'fsPath': dataset.fsPath,
                 'before': prevSibling && prevSibling.dataset ? prevSibling.dataset.anchor : null,
                 'after': nextSibling && nextSibling.dataset ? nextSibling.dataset.anchor : null,
             };
@@ -30583,7 +30594,8 @@ define('resources/elements/object-element-base',["require", "exports", "aurelia-
         };
         ObjectElementBase.prototype.onClickField = function (item) {
             this.dispatch('field-onclick', {
-                'anchor': item.SourceCodeAnchor
+                'anchor': item.SourceCodeAnchor,
+                'fsPath': item.FsPath,
             });
         };
         ObjectElementBase.prototype.dispatch = function (name, data) {
@@ -30628,6 +30640,10 @@ define('resources/elements/object-element-base',["require", "exports", "aurelia-
             aurelia_framework_1.bindable,
             __metadata("design:type", Object)
         ], ObjectElementBase.prototype, "control", void 0);
+        __decorate([
+            aurelia_framework_1.bindable,
+            __metadata("design:type", Boolean)
+        ], ObjectElementBase.prototype, "embedded", void 0);
         ObjectElementBase = __decorate([
             aurelia_framework_1.autoinject,
             __metadata("design:paramtypes", [Element])

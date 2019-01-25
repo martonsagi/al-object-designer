@@ -1,6 +1,7 @@
 const vscode = (window as any).vscode;
 const panelMode = (window as any).panelMode;
 const objectInfo = (window as any).objectInfo;
+const vsSettings = (window as any).vsSettings;
 import { observable } from 'aurelia-framework';
 
 export class App {
@@ -17,6 +18,8 @@ export class App {
   events: Array<any> = [];
   showEvents: boolean = false;
   headerType: string = 'object';
+
+  vsSettings: any;
 
   @observable
   objectInfo: any;
@@ -44,6 +47,7 @@ export class App {
     this.objectInfo = objectInfo;
     this.activeType = "";
     this.currentProject = false;
+    this.vsSettings = vsSettings;
     
     window.addEventListener('message', event => {
       this.loaded = false;
