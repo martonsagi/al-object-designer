@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to the "al-object-designer" extension.
 
+## 0.0.5-update-1 - 2019-10-21
+- Bugfix: objects without ID were not shown on Object Designer list, e.g. Profiles
+
 ## 0.0.5 - 2019-01-03
 - New VS Command: 'AL Page Designer' - opens up Page Designer for currently edited AL Object (Page)
 - Page Designer: 
