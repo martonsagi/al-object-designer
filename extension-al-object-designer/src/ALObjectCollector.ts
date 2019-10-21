@@ -137,6 +137,11 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
             let line: string = await utils.getFirstCodeLine(file);
             let parts = line.split(" ");
 
+            if (parts.length == 2) {
+                parts[2] = parts[1];
+                parts[1] = '0';
+            }
+
             if (parts.length > 2) {
                 let objType = parts[0],
                     objId = parts[1];
