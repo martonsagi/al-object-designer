@@ -130,10 +130,10 @@ export async function getFirstCodeLine(file: string) {
             input: require('fs').createReadStream(file),
         });
 
-        lineReader.on('line', (fline: string) => { 
+        lineReader.on('line', (fline: string) => {
             if (fline.length > 0 && fline[0] != '/') {
                 resolve(fline);
-                lineReader.close(); 
+                lineReader.close();
             }
         });
 
@@ -143,12 +143,22 @@ export async function getFirstCodeLine(file: string) {
     });
 }
 
+export async function getObjectHeaders(filePath: string) {
+    let fileContent: string = await read(filePath) as string;
+    let pattern = /^([a-z]+)\s([0-9]+|.*?)\s?(.*)/gm;
+    let matches = getAllMatches(pattern, fileContent);
+
+    let result = matches.map(m => m[0]);
+
+    return result;
+}
+
 export function insertString(inStr: string, index: number, str: string) {
     if (index > 0)
-      return inStr.substring(0, index) + str + inStr.substring(index, inStr.length);
+        return inStr.substring(0, index) + str + inStr.substring(index, inStr.length);
     else
-      return str + inStr;
-  };
+        return str + inStr;
+};
 
 export function getVsConfig() {
     let result = vscode.workspace.getConfiguration('alObjectDesigner');

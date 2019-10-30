@@ -98,7 +98,7 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
         if (dalFiles.length > 0) {
             projectFiles = res.pop();
         }
-        
+
         for (let arr of res) {
             objs = objs.concat(arr);
         }
@@ -134,46 +134,50 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
 
         for (let item of result) {
             let file = item.fsPath;
-            let line: string = await utils.getFirstCodeLine(file);
-            let parts = line.split(" ");
+            //let line: string = await utils.getFirstCodeLine(file);
+            let lines = await utils.getObjectHeaders(file);
 
-            if (parts.length == 2) {
-                parts[2] = parts[1];
-                parts[1] = '0';
-            }
+            for (let line of lines) {
+                let parts = line.split(" ");
 
-            if (parts.length > 2) {
-                let objType = parts[0],
-                    objId = parts[1];
+                if (parts.length == 2) {
+                    parts[2] = parts[1];
+                    parts[1] = '0';
+                }
 
-                let ucType = utils.toUpperCaseFirst(objType);
-                let extendIndex = parts.indexOf('extends');
-                let nameEndIndex = extendIndex != -1 ? extendIndex : parts.length;
-                let name: string = parts.slice(2, nameEndIndex).join(" ").trim();
-                name = utils.replaceAll(name, '"', '');
-                ucType = ucType.replace('extension', 'Extension');
+                if (parts.length > 2) {
+                    let objType = parts[0],
+                        objId = parts[1];
 
-                let targetObj = extendIndex != -1 ? parts.slice(extendIndex + 1, parts.length).join(" ").trim() : "";
-                targetObj = utils.replaceAll(targetObj, '"', '');
+                    let ucType = utils.toUpperCaseFirst(objType);
+                    let extendIndex = parts.indexOf('extends');
+                    let nameEndIndex = extendIndex != -1 ? extendIndex : parts.length;
+                    let name: string = parts.slice(2, nameEndIndex).join(" ").trim();
+                    name = utils.replaceAll(name, '"', '');
+                    ucType = ucType.replace('extension', 'Extension');
 
-                let newItem = {
-                    "TypeId": this.alTypes.indexOf(ucType) || "",
-                    "Type": ucType || "",
-                    "Id": objId || "",
-                    "Name": name || "",
-                    "TargetObject": targetObj || "",
-                    "Publisher": "Current Project", //TODO: read app.json
-                    "Application": "Current Project" || "", //TODO: read app.json
-                    "Version": "0.0.0.0" || "", //TODO: read app.json
-                    "CanExecute": ["Table", "Page", "PageExtension", "PageCustomization", "TableExtension", "Report"].indexOf(ucType) != -1,
-                    "CanDesign": ["Page", "PageExtension"].indexOf(ucType) != -1,
-                    "CanCreatePage": ['Table', 'TableExtension'].indexOf(ucType) != -1,
-                    "FsPath": file,
-                    "EventName": 'not_an_event',
-                    "SymbolData": null
-                };
+                    let targetObj = extendIndex != -1 ? parts.slice(extendIndex + 1, parts.length).join(" ").trim() : "";
+                    targetObj = utils.replaceAll(targetObj, '"', '');
 
-                objs.push(newItem);
+                    let newItem = {
+                        "TypeId": this.alTypes.indexOf(ucType) || "",
+                        "Type": ucType || "",
+                        "Id": objId || "",
+                        "Name": name || "",
+                        "TargetObject": targetObj || "",
+                        "Publisher": "Current Project", //TODO: read app.json
+                        "Application": "Current Project" || "", //TODO: read app.json
+                        "Version": "0.0.0.0" || "", //TODO: read app.json
+                        "CanExecute": ["Table", "Page", "PageExtension", "PageCustomization", "TableExtension", "Report"].indexOf(ucType) != -1,
+                        "CanDesign": ["Page", "PageExtension"].indexOf(ucType) != -1,
+                        "CanCreatePage": ['Table', 'TableExtension'].indexOf(ucType) != -1,
+                        "FsPath": file,
+                        "EventName": 'not_an_event',
+                        "SymbolData": null
+                    };
+
+                    objs.push(newItem);
+                }
             }
         }
 

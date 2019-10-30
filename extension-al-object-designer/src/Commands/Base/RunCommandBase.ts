@@ -3,12 +3,16 @@ import * as path from 'path';
 import * as utils from '../../utils';
 import { ALPanel } from "../../ALPanel";
 import { ALCommandBase } from "./ALCommandBase";
+import { ALSettings } from '../../ALSettings';
 
 export class RunCommandBase extends ALCommandBase {
+
+    private _vsSettings: any;
 
     public constructor(lObjectDesigner: ALPanel, lExtensionPath: string) {
         super(lObjectDesigner, lExtensionPath);
         this.showInfo = true;
+        this._vsSettings = utils.getVsConfig();
     }
 
     async execute(message: any) {
@@ -23,6 +27,7 @@ export class RunCommandBase extends ALCommandBase {
         let createFile: boolean = message.FsPath == "" || message.Command == 'Run';
         let fname = "";
 
+        let vsUri;
         if (createFile) {
             fname = (vscode.workspace as any).workspaceFolders[0].uri.fsPath + path.sep + `.vscode` + path.sep + `Opening_${Date.now()}.al`;
             let snippet =
@@ -37,10 +42,21 @@ export class RunCommandBase extends ALCommandBase {
 
             let pos = new vscode.Position(2, 18 + objType.length);
             editor.selection = new vscode.Selection(pos, pos);
+            vsUri = newDoc.uri;
         }
 
         if (message.Command == 'Run') {
-            let res: any = await vscode.commands.executeCommand('crs.RunCurrentObjectWeb');
+            if (this._vsSettings.useCRS === false) {
+                let settings = new ALSettings(vsUri);
+                let server = settings.get('server'),
+                    instance = settings.get('serverInstance');
+
+                server = server[server.length - 1] != '/' ? server + '/' : server;
+                let launchUrl = `${server}${instance}/?${message.Type.toLowerCase()}=${message.Id}`;
+                await vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(launchUrl));
+            } else {
+                await vscode.commands.executeCommand('crs.RunCurrentObjectWeb');
+            }
             await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
         } else {
             if (message.FsPath != "") {
