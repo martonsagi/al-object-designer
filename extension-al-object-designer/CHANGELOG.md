@@ -1,7 +1,10 @@
 # Change Log
 All notable changes to the "al-object-designer" extension.
 
-## 0.0.5-update-1 - 2019-10-21
+## 0.0.7 - 2019-10-30
+- Enhancement?: support for listing multiple objects per file.
+
+## 0.0.6 - 2019-10-21
 - Bugfix: objects without ID were not shown on Object Designer list, e.g. Profiles
 
 ## 0.0.5 - 2019-01-03
