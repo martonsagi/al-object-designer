@@ -39,7 +39,7 @@ export class CopyEventCommand extends ALCommandBase {
         }
 
         let eventSnippet = `
-    [EventSubscriber(ObjectType::${objEvent.Type}, ${objEvent.Type == 'Table' ? 'Database' : objEvent.Type}::"${objEvent.Name}", '${objEvent.EventName}', '', true, true)]
+    [EventSubscriber(ObjectType::${objEvent.Type}, ${objEvent.Type == 'Table' ? 'Database' : objEvent.Type}::"${objEvent.Name}", '${objEvent.EventName}', '${objEvent.FieldName || ''}', true, true)]
     local procedure "${objEvent.Name}_${objEvent.EventName}"`;
 
         if (eventParams.length > 1) {

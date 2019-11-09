@@ -3,10 +3,12 @@ import * as path from 'path';
 import * as utils from './utils';
 import { ALSymbolPackage, ALObjectDesigner } from './ALModules';
 import { ALObjectCollectorCache } from './ALObjectCollectorCache';
+import { ALEventGenerator } from './ALEventGenerator';
+import { ALProjectCollector } from './ALProjectCollector';
 const firstBy = require('thenby');
 
 export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
-
+    private _vsSettings: any;
     public events: Array<any> = [];
     private collectorCache: ALObjectCollectorCache;
 
@@ -44,6 +46,7 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
 
     public constructor() {
         this.collectorCache = new ALObjectCollectorCache();
+        this._vsSettings = utils.getVsConfig();
     }
 
     public async discover() {
@@ -73,18 +76,25 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
             }
         }
 
-        for (let i = 0; i < dalFiles.length; i++) {
-            const element = dalFiles[i];
+        let tmpDalFiles = dalFiles.map(m => {
+            let name = path.basename(m);
 
-            let regex = /([aA-zZ\s]+)([0-9\.]+)(\.app)/g;
-            let matches = utils.getAllMatches(regex, element);
-            let matchInfo = matches[0];
+            return {
+                name: name,
+                fsPath: m
+            };
+        });
 
-            let check: any = dalFiles.filter(d => d.indexOf(matchInfo[1]) != -1);
-            if (check.length > 1) {
-                dalFiles.splice(i, 1);
-            }
-        }
+        dalFiles = tmpDalFiles
+            .filter((val, i, arr) => {
+                let result = arr.filter((f, j) => f.name == val.name);
+                if (result.length > 0) {
+                    return arr.indexOf(result[0]) === i;
+                }
+
+                return false;
+            })
+            .map(m => m.fsPath);
 
         let tasks: Array<Promise<any>> = [];
         for (let dal of dalFiles) {
@@ -126,6 +136,9 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
     }
 
     private async _CheckObjectInProject(objs: Array<any>) {
+        let projectCollector = new ALProjectCollector();
+        await projectCollector.init();
+
         let result = await workspace.findFiles('**/*.al');
 
         if (result.length == 0) {
@@ -159,21 +172,24 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
                     let targetObj = extendIndex != -1 ? parts.slice(extendIndex + 1, parts.length).join(" ").trim() : "";
                     targetObj = utils.replaceAll(targetObj, '"', '');
 
+                    let projectInfo = projectCollector.getProjectFromObjectPath(file);
+
                     let newItem = {
                         "TypeId": this.alTypes.indexOf(ucType) || "",
                         "Type": ucType || "",
                         "Id": objId || "",
                         "Name": name || "",
                         "TargetObject": targetObj || "",
-                        "Publisher": "Current Project", //TODO: read app.json
-                        "Application": "Current Project" || "", //TODO: read app.json
-                        "Version": "0.0.0.0" || "", //TODO: read app.json
+                        "Publisher":projectInfo.publisher,
+                        "Application": projectInfo.name || "",
+                        "Version": projectInfo.version || "",
                         "CanExecute": ["Table", "Page", "PageExtension", "PageCustomization", "TableExtension", "Report"].indexOf(ucType) != -1,
                         "CanDesign": ["Page", "PageExtension"].indexOf(ucType) != -1,
                         "CanCreatePage": ['Table', 'TableExtension'].indexOf(ucType) != -1,
                         "FsPath": file,
                         "EventName": 'not_an_event',
-                        "SymbolData": null
+                    "SymbolData": null,
+                    "Scope": 'Extension'
                     };
 
                     objs.push(newItem);
@@ -218,6 +234,14 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
                     let tempArr = json[elem].map((t: any, index: number) => {
                         levents = levents.concat(this.extractEvents(lType, t, info));
 
+                        let scope = 'Extension';
+                        if (t.Properties) {
+                            let scopeProp = t.Properties.find((f: any) => f.Name === 'Scope');
+                            if (scopeProp) {
+                                scope = scopeProp.Value;
+                            }
+                        }
+
                         return {
                             "TypeId": j || "",
                             "Type": lType || "",
@@ -233,11 +257,13 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
                             "FsPath": "",
                             //"Events": levents,
                             "EventName": 'not_an_event',
+                            "FieldName": "",
                             "SymbolData": {
                                 'Path': filePath,
                                 'Type': elem,
                                 'Index': index
-                            }
+                            },
+                            "Scope": scope
                         };
                     });
 
@@ -269,6 +295,7 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
 
                     if (attr) {
                         levents.push({
+                            'TypeId': this.alTypes.indexOf(type),
                             'Type': type,
                             'Id': item.Id,
                             'Name': item.Name,
@@ -282,10 +309,20 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
                             'EventName': m.Name,
                             'EventType': attr.Name,
                             'EventParameters': m.Parameters,
+                            "FieldName": "",
                             "SymbolData": null
                         });
                     }
                 }
+            }
+        }
+
+        if (this._vsSettings.showStandardEvents === true) {
+            if (type == 'Table') {
+                let generator = new ALEventGenerator();
+                info.TypeId = this.alTypes.indexOf(type);
+                let events = generator.generateTableEvents(item, info, this._vsSettings.showStandardFieldEvents === true);
+                levents = levents.concat(events);
             }
         }
 

@@ -9,8 +9,10 @@ const hash = require('hash.js');
 
 export class ALObjectCollectorCache implements ALObjectDesigner.ObjectCollectorCache {
 
-    constructor() {
+    private _vsSettings: any;
 
+    constructor() {
+        this._vsSettings = utils.getVsConfig();
     }
 
     async isCached(filepath: string, tagName?: string) {
@@ -42,7 +44,7 @@ export class ALObjectCollectorCache implements ALObjectDesigner.ObjectCollectorC
     async getCacheInfo(filepath: string, tagName?: string) {
         let root = (workspace as any).workspaceFolders[0];
         let fPath = path.join(root.uri.fsPath, '.alcache', path.sep);
-        let fileHash = hash.sha256().update(filepath).digest('hex');
+        let fileHash = hash.sha256().update(filepath+(this._vsSettings.showStandardEvents === true ? 1 : 0)).digest('hex');
         let jsonFile = path.join(fPath, `cache_${fileHash}${tagName || ''}.json`);
         let cacheInfo: ObjectCollectorCacheInfo = new ObjectCollectorCacheInfo();
         let isInvalid = false;

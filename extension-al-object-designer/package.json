@@ -2,7 +2,7 @@
     "name": "al-object-designer",
     "displayName": "AL Object Designer",
     "description": "Object Designer optimized for (Dynamics 365 Business Central) AL Language development.",
-    "version": "0.0.7",
+    "version": "0.1.0",
     "publisher": "martonsagi",
     "license": "MIT",
     "author": {
@@ -34,6 +34,7 @@
     "activationEvents": [
         "onCommand:extension.openALWindow",
         "onCommand:extension.openALDesignWindow",
+        "onUri",
         "*"
     ],
     "icon": "images/icon.png",
@@ -46,7 +47,11 @@
             },
             {
                 "command": "extension.openALDesignWindow",
-                "title": "AL Page Designer"
+                "title": "AL Designer"
+            },
+            {
+                "command": "extension.generateALTables",
+                "title": "Generate AL Tables"
             }
         ],
         "menus": {
@@ -68,6 +73,21 @@
                     "type": "boolean",
                     "default": true,
                     "description": "Render PageParts in AL Page Designer."
+                },
+                "alObjectDesigner.showStandardEvents": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Show standard Table events, e.g. OnBeforeInsert or OnAfterDelete."
+                },
+                "alObjectDesigner.showStandardFieldEvents": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Show standard Field events, e.g. OnBeforeValidate or OnAfterValidate for each Table Field. (Poor performance warning)"
+                },
+                "alObjectDesigner.VsCodeBrowserPreview": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "(Experimental) Turn on 'Preview' context menu on Object List. Hopefully it will work someday."
                 },
                 "alObjectDesigner.useCRS": {
                     "type": "boolean",

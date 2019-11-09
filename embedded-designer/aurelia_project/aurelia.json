@@ -42,6 +42,23 @@
                     "**/*.{js,json,css,html}"
                 ],
                 "dependencies": [
+                    "lodash",
+                    {
+                        "name": "thenby",
+                        "path": "../node_modules/thenby",
+                        "main": "thenBy.module"
+                    },
+                    "numeral",
+                    {
+                        "name": "kramed",
+                        "path": "../node_modules/kramed/lib",
+                        "main": "kramed"
+                    },
+                    {
+                        "name": "moment",
+                        "path": "../node_modules/moment",
+                        "main": "moment"
+                    },
                     "aurelia-bootstrapper",
                     "aurelia-loader-default",
                     "aurelia-pal-browser",
@@ -59,6 +76,25 @@
                         "name": "aurelia-sortablejs",
                         "path": "../node_modules/aurelia-sortablejs/dist/amd",
                         "main": "index"
+                    },
+                    {
+                        "name": "aurelia-ui-framework",
+                        "path": "../node_modules/aurelia-ui-framework/dist/amd",
+                        "main": "aurelia-ui-framework"
+                    },
+                    {
+                        "name": "ag-grid-community",
+                        "path": "../node_modules/ag-grid-community",
+                        "main": "main",
+                        "resources": [
+                            "dist/styles/ag-grid.css",
+                            "dist/styles/ag-theme-material.css"
+                        ]
+                    },
+                    {
+                        "name": "ag-grid-aurelia",
+                        "path": "../node_modules/ag-grid-aurelia",
+                        "main": "main"
                     }
                 ]
             }
@@ -96,7 +132,8 @@
         "displayName": "TypeScript",
         "fileExtension": ".ts",
         "dtsSource": [
-            "./custom_typings/**/*.d.ts"
+            "./custom_typings/**/*.d.ts",
+            "./node_modules/aurelia-ui-framework/dist/typings/**/*.d.ts"
         ],
         "source": "src/**/*.ts"
     },

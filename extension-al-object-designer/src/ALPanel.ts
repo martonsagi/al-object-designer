@@ -5,7 +5,8 @@ import { ALCommandHandler } from './ALCommandHandler';
 import { ALObjectCollector } from './ALObjectCollector';
 import { ALTemplateCollector } from './ALTemplateCollector';
 import { ALObjectParser } from './ALObjectParser';
-import { ALObjectDesigner } from './ALModules';
+import { ALObjectDesigner, ALSymbolPackage } from './ALModules';
+const fs = require('fs-extra');
 
 /**
  * Manages AL Object Designer webview panel
@@ -44,6 +45,8 @@ export class ALPanel {
             // Enable javascript in the webview
             enableScripts: true,
 
+            enableFindWidget: true,            
+
             retainContextWhenHidden: true,
 
             // And restric the webview to only loading content from our extension's `media` directory.
@@ -59,28 +62,56 @@ export class ALPanel {
     }
 
     public static async openDesigner(extensionPath: string) {
-        let path = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.document.uri.fsPath : '';
-        if (path == '') {
+        let fpath = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.document.uri.fsPath : '';
+        if (fpath == '') {
             return;
         }
 
         let objectInfo: any = {
-            FsPath: path            
+            FsPath: fpath
         };
 
-        let parser = new ALObjectParser();
-        let symbol =  await parser.parseFileBase(objectInfo.FsPath);
-        objectInfo.Symbol = symbol;
-        objectInfo.Id = symbol.Id;
-        objectInfo.Name = symbol.Name;
-        objectInfo.Type = utils.toUpperCaseFirst(symbol.Type);
+        let isLocalFile = (await fs.pathExists(fpath));
+
+        if (!isLocalFile) {
+            // extract symbol values from "imaginary" path
+            fpath = path.normalize(fpath);
+            let fileinfo = path.parse(fpath),
+                fname = decodeURI(fileinfo.name), 
+                fdir = fileinfo.dir,
+                dirparts = fdir.split(path.sep);
+
+            objectInfo.Id = dirparts[dirparts.length - 1];
+            objectInfo.Type = dirparts[dirparts.length - 2];
+            objectInfo.Name = fname;
+            objectInfo.FsPath = '';
+        }
+
+        let parser = new ALObjectParser(),
+            symbol: any = null;
+        if (isLocalFile) {
+            symbol = await parser.parseFileBase(objectInfo.FsPath);
+            objectInfo.Symbol = symbol;
+            objectInfo.Id = symbol.Id;
+            objectInfo.Name = symbol.Name;
+            objectInfo.Type = utils.toUpperCaseFirst(symbol.Type);
+        } else {
+            symbol = await parser.parseSymbol(objectInfo);
+        }
 
         // TODO: to be extended later
         if (["page"].indexOf(symbol.Type.toLowerCase()) == -1) {
             await vscode.window.showErrorMessage(`${objectInfo.Type} ${objectInfo.Id} ${objectInfo.Name} cannot be opened in Page Designer. :(`);
+            return;
         }
 
         await ALPanel.open(extensionPath, ALObjectDesigner.PanelMode.Design, objectInfo);
+    }  
+
+    public static async command(extensionPath: string, objectInfo: any) {
+        await ALPanel.open(extensionPath, ALObjectDesigner.PanelMode.List, objectInfo);
+        let handler: ALCommandHandler = new ALCommandHandler((ALPanel.currentPanel as ALPanel), extensionPath);
+        await handler.dispatch(objectInfo);
     }
 
     private constructor(

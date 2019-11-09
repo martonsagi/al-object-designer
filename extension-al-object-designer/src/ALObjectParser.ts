@@ -125,7 +125,7 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
         if (match) {
             let result: ObjectRegion = new ObjectRegion();
 
-            let lines: Array<string> = match.pre.trim().split('\r\n'),
+            let lines: Array<string> = match.pre.trim().split(/\r?\n/),
                 lastLine = lines.pop();
 
             let regionInfo: any = this.processRegion(lastLine as string);
@@ -139,7 +139,7 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
             let match2 = balanced('{', '}', match.body);
             let isField = result.Region.indexOf('field') != -1;
             if (match2 || isField) {
-                let lines2: Array<string> = (isField ? match.body : match2.pre).trim().split('\r\n');
+                let lines2: Array<string> = (isField ? match.body : match2.pre).trim().split(/\r?\n/);
                 result.Properties = lines2
                     .map((l): ObjectProperty | null => {
                         let prop = l.split('=');
