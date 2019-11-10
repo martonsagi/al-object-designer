@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { ALPanel } from "../ALPanel";
 import { ALCommandBase } from "./Base/ALCommandBase";
-import { ALObjectDesigner } from '../ALModules';
+import { ALSettings } from '../ALSettings';
 
 export class BrowserPreviewCommand extends ALCommandBase {
 
@@ -10,7 +10,7 @@ export class BrowserPreviewCommand extends ALCommandBase {
     }
 
     async execute(message: any) {
-        if (['Table','Page','PageExtension','TableExtension','Report'].indexOf(message.Type) == -1) {
+        if (['Table','Page','PageExtension','TableExtension','Report', 'XmlPort', 'Query'].indexOf(message.Type) == -1) {
             await vscode.window.showErrorMessage(`${message.Type} objects cannot be run in Modern Client.`)
             return;
         }
@@ -27,7 +27,9 @@ export class BrowserPreviewCommand extends ALCommandBase {
                 break;
         }
 
-        // TODO
-        vscode.commands.executeCommand('browser-preview.openPreview', `http://bc-test/NAV/?${type.toLocaleLowerCase()}=${objectId}`);
+        let mainUri = (vscode.workspace as any).workspaceFolders[0].uri;
+        let settings = new ALSettings(mainUri);
+        let launchUrl = settings.getUrl(type, objectId);
+        vscode.commands.executeCommand('browser-preview.openPreview', launchUrl);
     }
 }

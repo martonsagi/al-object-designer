@@ -99,7 +99,7 @@
                             </ag-cell-template>
                         </ag-grid-column>
                         <ag-grid-column header-name="Type" field="Type" editable.bind="false" width.bind="100"></ag-grid-column>
-                        <ag-grid-column header-name="ID" field="Id" width.bind="120" header-class.bind="'td-number'" cell-class.bind="'td-number'"></ag-grid-column>
+                        <ag-grid-column header-name="ID" field="Id" width.bind="120" header-class.bind="'td-number'" cell-class.bind="'td-number'" filter="agNumberColumnFilter"></ag-grid-column>
                         <ag-grid-column cell-class="context-menu-td" editable.bind="false" width.bind="50" 
                             col-id.bind="selectedObject == element || hoverObject == element ? 'context-selected' : ''">
                             <ag-cell-template>
@@ -115,7 +115,7 @@
                                     || ''}</a>
                             </ag-cell-template>
                         </ag-grid-column>
-                        <ag-grid-column header-name="Extends" field="TargetObject" editable.bind="false" width.bind="150">
+                        <ag-grid-column header-name="Extends" field="TargetObject" editable.bind="false" width.bind="150" filter="agTextColumnFilter">
                             <ag-cell-template>
                                 <a href="#click"
                                     click.delegate="params.context.sendCommand(params.data, 'DefinitionExt')">${params.data.TargetObject

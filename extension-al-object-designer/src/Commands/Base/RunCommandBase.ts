@@ -4,6 +4,7 @@ import * as utils from '../../utils';
 import { ALPanel } from "../../ALPanel";
 import { ALCommandBase } from "./ALCommandBase";
 import { ALSettings } from '../../ALSettings';
+import { settings } from 'cluster';
 
 export class RunCommandBase extends ALCommandBase {
 
@@ -46,15 +47,19 @@ export class RunCommandBase extends ALCommandBase {
         }
 
         if (message.Command == 'Run') {
-            if (this._vsSettings.useCRS === false) {
+            let useCrs = this._vsSettings.useCRS === true && vscode.extensions.getExtension('crs.RunCurrentObjectWeb');
+            if (useCrs === false) {
                 let settings = new ALSettings(vsUri);
-                let server = settings.get('server'),
+                /*let server = settings.get('server'),
                     instance = settings.get('serverInstance');
 
                 server = server[server.length - 1] != '/' ? server + '/' : server;
-                let launchUrl = `${server}${instance}/?${message.Type.toLowerCase()}=${message.Id}`;
+                let launchUrl = `${server}${instance}/?${message.Type.toLowerCase()}=${message.Id}`;*/
+
+                let launchUrl = settings.getUrl(message.Type, message.Id);
+
                 await vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(launchUrl));
-            } else {
+            } else {                
                 await vscode.commands.executeCommand('crs.RunCurrentObjectWeb');
             }
             await vscode.commands.executeCommand('workbench.action.closeActiveEditor');

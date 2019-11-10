@@ -74,9 +74,9 @@ export class App {
 
       this.columnApi.setColumnVisible("EventType" as any, this.showEvents === true);
       this.columnApi.setColumnVisible("EventName" as any, this.showEvents === true);
-      this.columnApi.setColumnVisible("Publisher" as any, !this.showEvents);
-      this.columnApi.setColumnVisible("Version" as any, !this.showEvents);
-      this.columnApi.setColumnVisible("Application" as any, !this.showEvents);
+      this.columnApi.setColumnVisible("TargetObject" as any, !this.showEvents);
+      //this.columnApi.setColumnVisible("Version" as any, !this.showEvents);
+      //this.columnApi.setColumnVisible("Application" as any, !this.showEvents);
       this.columnApi.setColumnVisible("Scope" as any, !this.showEvents);
     }
 
@@ -141,11 +141,11 @@ export class App {
       );
 
     this.results.sort(
-        firstBy(function (v1, v2) { return v1.TypeId - v2.TypeId; })
-            .thenBy("Id")
+      firstBy(function (v1, v2) { return v1.TypeId - v2.TypeId; })
+        .thenBy("Id")
     );
 
-    this.count = this.results.length;    
+    this.count = this.results.length;
   }
 
   filterType(type, reset?) {
@@ -276,9 +276,9 @@ export class App {
 
     this.columnApi.setColumnVisible("EventType" as any, this.showEvents);
     this.columnApi.setColumnVisible("EventName" as any, this.showEvents);
-    this.columnApi.setColumnVisible("Publisher" as any, !this.showEvents);
-    this.columnApi.setColumnVisible("Version" as any, !this.showEvents);
-    this.columnApi.setColumnVisible("Application" as any, !this.showEvents);
+    this.columnApi.setColumnVisible("TargetObject" as any, !this.showEvents);
+    //this.columnApi.setColumnVisible("Version" as any, !this.showEvents);
+    //this.columnApi.setColumnVisible("Application" as any, !this.showEvents);
 
     this.search();
   }
@@ -311,7 +311,7 @@ export class App {
   }
 
   compilerCommand(type) {
-    this.sendCommand({Type: type}, 'Compiler');
+    this.sendCommand({ Type: type }, 'Compiler');
   }
 
   showEventParams(element) {
@@ -339,8 +339,9 @@ export class App {
     this.search();
   }
 
-  tableDesignerFieldChanged(row, event) {
-    let message = { 'Change': row, 'Symbol': this.objectInfo.Symbol };
-    this.sendCommand(message, 'TableDesignerField');
+  exportObjectList() {
+    let data = this.api.getDataAsCsv({ columnSeparator: ';', suppressQuotes: true });
+    let message = { 'Data': data };
+    this.sendCommand(message, 'ExportCsv');
   }
 }
