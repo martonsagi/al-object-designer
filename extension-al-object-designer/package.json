@@ -2,7 +2,7 @@
     "name": "al-object-designer",
     "displayName": "AL Object Designer",
     "description": "Object Designer optimized for (Dynamics 365 Business Central) AL Language development.",
-    "version": "0.1.0",
+    "version": "0.1.0-alpha.1",
     "publisher": "martonsagi",
     "license": "MIT",
     "author": {
@@ -104,9 +104,6 @@
         "postinstall": "node ./node_modules/vscode/bin/install",
         "test": "npm run compile && node ./node_modules/vscode/bin/test"
     },
-    "extensionDependencies": [
-        "waldo.crs-al-language-extension"
-    ],
     "devDependencies": {
         "typescript": "^3.1.4",
         "vscode": "^1.1.25",
