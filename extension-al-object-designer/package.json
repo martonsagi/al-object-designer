@@ -2,7 +2,7 @@
     "name": "al-object-designer",
     "displayName": "AL Object Designer",
     "description": "Object Designer optimized for (Dynamics 365 Business Central) AL Language development.",
-    "version": "0.1.0-alpha.1",
+    "version": "0.1.0-alpha.2",
     "publisher": "martonsagi",
     "license": "MIT",
     "author": {
@@ -93,6 +93,16 @@
                     "type": "boolean",
                     "default": true,
                     "description": "Run objects using CRS AL Extension (default)."
+                },
+                "alObjectDesigner.logging": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Diagnostic logging to Developer Tools console."
+                },
+                "alObjectDesigner.singleObjectPerFile": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Detection rule: one object per files."
                 }
             }
         }

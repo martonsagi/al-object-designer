@@ -96,6 +96,8 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
             })
             .map(m => m.fsPath);
 
+        this.log('Symbol packages found.', dalFiles);
+
         let tasks: Array<Promise<any>> = [];
         for (let dal of dalFiles) {
             tasks.push(this._getWorkspaceData(dal));
@@ -141,14 +143,26 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
 
         let result = await workspace.findFiles('**/*.al');
 
+        this.log('No local files detected.');
+
         if (result.length == 0) {
             return objs;
         }
 
+        this.log('Local files found: ' + result.length);
+
         for (let item of result) {
             let file = item.fsPath;
-            //let line: string = await utils.getFirstCodeLine(file);
-            let lines = await utils.getObjectHeaders(file);
+
+            this.log('Current file: ' + file);
+
+            let lines: Array<string> = [];
+            if (this._vsSettings.singleObjectPerFile === true) {
+                let line: string = await utils.getFirstCodeLine(file);
+                lines.push(line);
+            } else {
+                lines = await utils.getObjectHeaders(file);
+            }
 
             for (let line of lines) {
                 let parts = line.split(" ");
@@ -180,7 +194,7 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
                         "Id": objId || "",
                         "Name": name || "",
                         "TargetObject": targetObj || "",
-                        "Publisher":projectInfo.publisher,
+                        "Publisher": projectInfo.publisher,
                         "Application": projectInfo.name || "",
                         "Version": projectInfo.version || "",
                         "CanExecute": ["Table", "Page", "PageExtension", "PageCustomization", "TableExtension", "Report", "XmlPort", "Query"].indexOf(ucType) != -1,
@@ -188,8 +202,8 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
                         "CanCreatePage": ['Table', 'TableExtension'].indexOf(ucType) != -1,
                         "FsPath": file,
                         "EventName": 'not_an_event',
-                    "SymbolData": null,
-                    "Scope": 'Extension'
+                        "SymbolData": null,
+                        "Scope": 'Extension'
                     };
 
                     objs.push(newItem);
@@ -340,6 +354,16 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
         }
 
         return null;
+    }
+
+    public log(message: string, vars?: any) {
+        if (this._vsSettings.logging === true) {
+            let msg = `al-object-designer INFO: ${message}`
+            if (vars)
+                console.log(msg, vars);
+            else
+                console.log(msg);
+        }
     }
 
     //#endregion
