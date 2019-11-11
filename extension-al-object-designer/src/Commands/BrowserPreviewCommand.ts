@@ -10,6 +10,11 @@ export class BrowserPreviewCommand extends ALCommandBase {
     }
 
     async execute(message: any) {
+        let checkExt = vscode.extensions.getExtension('browser-preview');
+        if (!checkExt) {
+            await vscode.window.showErrorMessage(`Browser Preview extension is not installed or disabled.`);
+        }
+
         if (['Table','Page','PageExtension','TableExtension','Report', 'XmlPort', 'Query'].indexOf(message.Type) == -1) {
             await vscode.window.showErrorMessage(`${message.Type} objects cannot be run in Modern Client.`)
             return;
