@@ -2,7 +2,7 @@
     "name": "al-object-designer",
     "displayName": "AL Object Designer",
     "description": "Object Designer optimized for (Dynamics 365 Business Central) AL Language development.",
-    "version": "0.1.0-alpha.2",
+    "version": "0.1.0-alpha.3",
     "publisher": "martonsagi",
     "license": "MIT",
     "author": {
@@ -69,6 +69,11 @@
             "type": "object",
             "title": "AL Object Designer configuration",
             "properties": {
+                "alObjectDesigner.logging": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Diagnostic logging to Developer Tools console."
+                },
                 "alObjectDesigner.renderPageParts": {
                     "type": "boolean",
                     "default": true,
@@ -79,30 +84,25 @@
                     "default": false,
                     "description": "Show standard Table events, e.g. OnBeforeInsert or OnAfterDelete."
                 },
-                "alObjectDesigner.showStandardFieldEvents": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Show standard Field events, e.g. OnBeforeValidate or OnAfterValidate for each Table Field. (Poor performance warning)"
-                },
                 "alObjectDesigner.VsCodeBrowserPreview": {
                     "type": "boolean",
+                    "default": true,
+                    "description": "Turn on 'Preview' context menu on Object List. Works with UserPassword authentication."
+                },
+                "alObjectDesigner.singleObjectPerFile": {
+                    "type": "boolean",
                     "default": false,
-                    "description": "(Experimental) Turn on 'Preview' context menu on Object List. Hopefully it will work someday."
+                    "description": "Detection rule: one object per files."
                 },
                 "alObjectDesigner.useCRS": {
                     "type": "boolean",
                     "default": true,
                     "description": "Run objects using CRS AL Extension (default)."
                 },
-                "alObjectDesigner.logging": {
+                "alObjectDesigner.useAZALDevTools": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Diagnostic logging to Developer Tools console."
-                },
-                "alObjectDesigner.singleObjectPerFile": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Detection rule: one object per files."
+                    "description": "Enable integration with AZ AL Dev Tools extension (default)."
                 }
             }
         }
