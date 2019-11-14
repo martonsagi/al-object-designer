@@ -14,6 +14,7 @@ export class ALEventGenerator {
             "FsPath": "",
             'EventName': 'OnInsert',
             'EventType': 'Trigger',
+            'EventPublisher': true,
             'EventParameters': [],
             'FieldName': '',
             "SymbolData": null

@@ -15,7 +15,7 @@ All notable changes to the "al-object-designer" extension.
   - `Preview`: Browser Preview integration
   - `+ Table Ext.`: create Table extension for selected Table
   - `+ Page Ext.`: create Page extension for selected Page
-  - Run Query and XmlPort objects as well
+  - Run Query objects
 - Commands:
   - New command: `Generate AL Tables` - create table objects using imported custom CSV format. TODO: docs
 

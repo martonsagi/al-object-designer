@@ -5,6 +5,7 @@ import { ALSymbolPackage, ALObjectDesigner } from './ALModules';
 import { ALObjectCollectorCache } from './ALObjectCollectorCache';
 import { ALEventGenerator } from './ALEventGenerator';
 import { ALProjectCollector } from './ALProjectCollector';
+import { ALObjectParser } from './ALObjectParser';
 const firstBy = require('thenby');
 
 export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
@@ -106,6 +107,7 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
         tasks.push(this._CheckObjectInProject(objs));
 
         let res = await Promise.all(tasks);
+
         let projectFiles = [];
         if (dalFiles.length > 0) {
             projectFiles = res.pop();
@@ -126,6 +128,18 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
 
             objs.push(pFile);
         }
+
+        // update event targets
+        this.events = this.events.map(e => {
+            if (e.EventType == "EventSubscriber") {
+                let objData = objs.find(f => f.Type == e.TargetObjectType && f.Id == e.TargetObject);
+                if (objData) {
+                    e.TargetObject = objData.Name;
+                }
+            }
+
+            return e;
+        });
 
         objs = utils.uniqBy(objs, JSON.stringify);
 
@@ -197,7 +211,7 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
                         "Publisher": projectInfo.publisher,
                         "Application": projectInfo.name || "",
                         "Version": projectInfo.version || "",
-                        "CanExecute": ["Table", "Page", "PageExtension", "PageCustomization", "TableExtension", "Report", "XmlPort", "Query"].indexOf(ucType) != -1,
+                        "CanExecute": ["Table", "Page", "PageExtension", "PageCustomization", "TableExtension", "Report", "Query"].indexOf(ucType) != -1,
                         "CanDesign": ["Page", "PageExtension"].indexOf(ucType) != -1,
                         "CanCreatePage": ['Table', 'TableExtension'].indexOf(ucType) != -1,
                         "FsPath": file,
@@ -207,6 +221,39 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
                     };
 
                     objs.push(newItem);
+
+
+                    // Process local eventpublishers
+                    if (objType.toLowerCase() == 'codeunit') {
+                        let parser = new ALObjectParser();
+                        let parsedEvents = await parser.ExtractEventPubSub(file);
+                        if (parsedEvents.Subscribers.length > 0) {
+                            let levents = parsedEvents.Subscribers.map((m: any) => {
+                                return {
+                                    "TypeId": this.alTypes.indexOf(ucType) || "",
+                                    "Type": ucType || "",
+                                    "Id": objId || "",
+                                    "Name": name || "",
+                                    'TargetObjectType': m.TargetObjectType,
+                                    "TargetObject": m.TargetObject || "",
+                                    "Publisher": projectInfo.publisher,
+                                    "Application": projectInfo.name || "",
+                                    "Version": projectInfo.version || "",
+                                    "CanExecute": false,
+                                    "CanDesign": false,
+                                    "FsPath": file,
+                                    'EventName': m.Name,
+                                    'EventType': m.EventType,
+                                    'EventPublisher': false,
+                                    'EventParameters': m.Parameters,
+                                    "FieldName": "",
+                                    "SymbolData": null,
+                                    "Scope": 'Extension'
+                                }
+                            });
+                            this.events = this.events.concat(levents);
+                        }
+                    }
                 }
             }
         }
@@ -265,7 +312,7 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
                             "Publisher": json.Publisher || "Platform",
                             "Application": json.Name || "",
                             "Version": json.Version || "",
-                            "CanExecute": ["Table", "Page", "PageExtension", "TableExtension", "PageCustomization", "Report", "XmlPort", "Query"].indexOf(lType) != -1,
+                            "CanExecute": ["Table", "Page", "PageExtension", "TableExtension", "PageCustomization", "Report", "Query"].indexOf(lType) != -1,
                             "CanDesign": ["Page"].indexOf(lType) != -1,
                             "CanCreatePage": ['Table', 'TableExtension'].indexOf(lType) != -1,
                             "FsPath": "",
@@ -308,12 +355,20 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
                     });
 
                     if (attr) {
+                        let targetObj = '';
+                        let targetObjType = '';
+                        if (attr.Arguments.length > 2) {
+                            targetObj = attr.Arguments[1].Value;
+                            targetObjType = attr.Arguments[0].Value;
+                        }
+
                         levents.push({
                             'TypeId': this.alTypes.indexOf(type),
                             'Type': type,
                             'Id': item.Id,
                             'Name': item.Name,
-                            "TargetObject": item.TargetObject || "",
+                            'TargetObjectType': targetObjType,
+                            "TargetObject": targetObj || "",
                             "Publisher": info.Publisher || "Platform",
                             "Application": info.Name || "",
                             "Version": info.Version || "",
@@ -322,7 +377,9 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
                             "FsPath": "",
                             'EventName': m.Name,
                             'EventType': attr.Name,
+                            'EventPublisher': attr.Name.toLowerCase() != 'eventsubscriber',
                             'EventParameters': m.Parameters,
+                            'TargetEventName': attr.Arguments[2],
                             "FieldName": "",
                             "SymbolData": null
                         });

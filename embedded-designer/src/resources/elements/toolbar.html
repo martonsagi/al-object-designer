@@ -5,6 +5,9 @@
             <ui-switch secondary value.bind="showEvents" click.trigger="setEventsView()" on-label="Events"
                 off-label="Events" size="5em"></ui-switch>
 
+            <ui-switch secondary value.bind="showEventSubs" show.bind="showEvents" click.trigger="setEventSubscriberView()" on-label="Subscriptions"
+                off-label="Subscriptions" size="7em"></ui-switch>
+
             <ui-switch secondary value.bind="showMarkedOnly" click.trigger="setShowMarkedOnly()" on-label="Marked only"
                 off-label="Marked Only" size="7em"></ui-switch>
 

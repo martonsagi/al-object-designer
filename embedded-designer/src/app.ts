@@ -25,7 +25,11 @@ export class App {
   customLinks: Array<any> = [];
   events: Array<any> = [];
   showEvents: boolean = false;
+  showEventSubs: boolean = false;
   headerType: string = 'object';
+
+  @observable
+  TargetObjectHeader: string = 'Extends';
 
   vsSettings: any;
 
@@ -75,6 +79,7 @@ export class App {
       this.columnApi.setColumnVisible("EventType" as any, this.showEvents === true);
       this.columnApi.setColumnVisible("EventName" as any, this.showEvents === true);
       this.columnApi.setColumnVisible("TargetObject" as any, !this.showEvents);
+      this.columnApi.setColumnVisible("EventPublisher" as any, this.showEventSubs);
       //this.columnApi.setColumnVisible("Version" as any, !this.showEvents);
       //this.columnApi.setColumnVisible("Application" as any, !this.showEvents);
       this.columnApi.setColumnVisible("Scope" as any, !this.showEvents);
@@ -133,6 +138,8 @@ export class App {
         &&
         (this.showMarkedOnly === true ? f.Marked == true : true)
         &&
+        (this.showEvents ? f.EventPublisher == !this.showEventSubs : true)
+        &&
         (f.Id.toString().indexOf(this.query.toLowerCase()) != -1
           || f.Publisher.toLowerCase().indexOf(this.query.toLowerCase()) != -1
           || f.Version.toLowerCase().indexOf(this.query.toLowerCase()) != -1
@@ -185,7 +192,16 @@ export class App {
     if (command == 'DefinitionExt' && element.TargetObject) {
       command = 'Definition';
       element.Name = element.TargetObject;
+      name = element.Name;            
+    }
+
+    if (command == 'DefinitionEventPub' && element.TargetObject) {
+      command = 'Definition';
+      element.Name = element.TargetObject;
+      element.Type = element.TargetObjectType;
       name = element.Name;
+      type = element.Type;
+      element.FsPath = "";
     }
 
     this.showMenu = false;
@@ -270,16 +286,27 @@ export class App {
     this.contextMenu.style.top = rect.top + 'px';
   }
 
-  setEventsView() {
+  setEventsView(skipSearch?: boolean) {
     this.showEvents = !this.showEvents;
     this.headerType = this.showEvents ? 'event' : 'object';
 
     this.columnApi.setColumnVisible("EventType" as any, this.showEvents);
     this.columnApi.setColumnVisible("EventName" as any, this.showEvents);
     this.columnApi.setColumnVisible("TargetObject" as any, !this.showEvents);
+    this.columnApi.setColumnVisible("EventPublisher" as any, false);
     //this.columnApi.setColumnVisible("Version" as any, !this.showEvents);
     //this.columnApi.setColumnVisible("Application" as any, !this.showEvents);
 
+    if (skipSearch !== true)
+      this.search();
+  }
+
+  setEventSubscriberView() {
+    this.showEventSubs = !this.showEventSubs;
+    this.headerType = this.showEventSubs ? 'subscription' : this.showEvents ? 'event' : 'object';
+    this.columnApi.setColumnVisible("TargetObject" as any, !this.showEventSubs && !this.showEvents);
+    this.columnApi.setColumnVisible("EventPublisher" as any, this.showEventSubs);
+    this.TargetObjectHeader = this.showEventSubs ? 'Publisher' : 'Extends';
     this.search();
   }
 

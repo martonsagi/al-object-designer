@@ -115,7 +115,7 @@
                                     || ''}</a>
                             </ag-cell-template>
                         </ag-grid-column>
-                        <ag-grid-column header-name="Extends" field="TargetObject" editable.bind="false" width.bind="150" filter="agTextColumnFilter">
+                        <ag-grid-column header-name="Extends" field="TargetObject" editable.bind="true" width.bind="150" filter="agTextColumnFilter">
                             <ag-cell-template>
                                 <a href="#click"
                                     click.delegate="params.context.sendCommand(params.data, 'DefinitionExt')">${params.data.TargetObject
@@ -130,7 +130,13 @@
                                 </a>
                             </ag-cell-template>
                         </ag-grid-column>
-                        <ag-grid-column header-name="Event Type" width.bind="100" field="EventType" editable.bind="false"></ag-grid-column>
+                        <ag-grid-column header-name="Event Publisher" col-id="EventPublisher" field="TargetObject" editable.bind="true" width.bind="150" filter="agTextColumnFilter">
+                            <ag-cell-template>
+                                <a href="#click"
+                                    click.delegate="params.context.sendCommand(params.data, 'DefinitionEventPub')">${params.data.TargetObjectType} ${params.data.TargetObject}</a>
+                            </ag-cell-template>
+                        </ag-grid-column>
+                        <ag-grid-column header-name="Event Type" width.bind="100" field="EventType" editable.bind="false" filter="agTextColumnFilter"></ag-grid-column>
                         <ag-grid-column header-name="Application" width.bind="150" field="Application" editable.bind="false"></ag-grid-column>
                         <ag-grid-column header-name="Version" width.bind="150" field="Version" editable.bind="false"></ag-grid-column>
                         <ag-grid-column header-name="Publisher" width.bind="150" field="Publisher" editable.bind="false"></ag-grid-column>

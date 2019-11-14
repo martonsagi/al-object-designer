@@ -5,6 +5,7 @@ import ObjectRegion = ALObjectDesigner.ParsedObjectRegion;
 import ObjectProperty = ALSymbolPackage.Property;
 import ParseMode = ALObjectDesigner.ParseMode;
 import { ALObjectCollector } from './ALObjectCollector';
+import { type } from 'os';
 const balanced = require('balanced-match');
 
 export class ALObjectParser implements ALObjectDesigner.ObjectParser {
@@ -354,6 +355,88 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
             }
             control[container] = await this.processSymbol(alObject, container, child, control);
             result.push(control);
+        }
+
+        return result;
+    }
+
+    public async ExtractEventPubSub(filePath: string): Promise<any> {
+        let contents: string = await utils.read(filePath) as string;
+        let result: any = {};
+
+        let eventPubPattern = /\s+(.*ness|.*tion).vent.*\s+(.*procedure)\s+(.*?)\((.*?)\)\:?(.*)/gm;
+        let eventSubPattern = /\s+(.*vent.*ber.*)\s+(.*procedure)\s+(.*?)\((.*?)\)\:?(.*)/gm;
+
+        // parse Event Publishers
+        result.Publishers = this.ParseEventMethodHeader(eventPubPattern, contents);
+
+        // parse Event Subscribers
+        result.Subscribers = this.ParseEventMethodHeader(eventSubPattern, contents);
+
+        return result;
+    }
+
+    public ParseEventMethodHeader(eventPattern: RegExp, contents: string): Array<any> {
+        let matches = utils.getAllMatches(eventPattern, contents);
+        let result: Array<any> = [];
+        for (let m of matches) {
+            let event = this.ParseMethodHeader(m);
+            result.push(event);
+        }
+
+        return result;
+    }
+
+    public ParseMethodHeader(parts: Array<string>): any {
+        let result: any = {};
+
+        result.Name = parts[3].replace(/procedure|\"/gm, '').trim();
+        result.Parameters = [];
+        switch (parts[1].replace(/\[/gm, '').trim().toLowerCase()) {
+            case 'business':
+                result.EventType = 'BusinessEvent';
+                break;
+            case 'integration':
+                result.EventType = 'IntegrationEvent';
+                break;
+            default:
+                result.EventType = 'EventSubscriber';
+                break;
+        }
+
+        if (result.EventType == 'EventSubscriber') {
+            let subsParts = parts[1].split(',');
+            let TargetType = subsParts[0].split('::')[1];
+            let TargetObj = subsParts[1].split('::')[1].replace(/\"/, '').trim();
+            result.TargetObjectType = TargetType;
+            result.TargetObject = TargetObj;
+        }
+
+        if (parts[3].trim() != '') {
+            let params = parts[3].split(';');
+            for (let p of params) {
+                let varParts = p.split(':');
+                let paramDef: any = {};
+                paramDef.Name = varParts[0].replace(/var|\"/gm, '').trim();
+                paramDef.IsVar = varParts[0].indexOf('var ') !== -1;
+
+                if (varParts.length > 1) {
+                    let TypeDef: any = {};
+                    let typeParts = varParts[1].split(' ');
+                    TypeDef.Name = typeParts[0];
+
+                    if (typeParts.length > 1) {
+                        let subType: any = {};
+                        subType.Name = varParts[1].replace(typeParts[0], '').trim();
+                        TypeDef.Subtype = subType;
+                    }
+
+                    paramDef.TypeDefinition = TypeDef;
+                }
+
+                result.Parameters.push(paramDef);
+            }
+
         }
 
         return result;
