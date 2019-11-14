@@ -14,6 +14,8 @@ export class AZWizardCommand extends ALCommandBase {
             await vscode.window.showErrorMessage(`AZ AL Dev Tools extension is not installed or disabled.`);
         }
 
+        (checkExt as any).activate();
+
         vscode.commands.executeCommand('azALDevTools.newALFile');
 
         return;

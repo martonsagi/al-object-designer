@@ -145,7 +145,7 @@ export async function getFirstCodeLine(file: string) {
 
 export async function getObjectHeaders(filePath: string) {
     let fileContent: string = await read(filePath) as string;
-    let pattern = /^([a-z]+)\s([0-9]+|.*?)\s?(.*)/gm;
+    let pattern = /([a-z]+)\s([0-9]+|.*?)\s?(.*)/gm;
     let matches = getAllMatches(pattern, fileContent);
 
     let result = matches.map(m => m[0]);
