@@ -270,6 +270,7 @@ export module ALObjectDesigner {
         SymbolData?: SymbolData;
         Symbol: any;
         SubType: string;
+        Scope?: string;
     }
 
     export interface TemplateItem {

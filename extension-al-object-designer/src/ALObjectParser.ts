@@ -5,6 +5,7 @@ import ObjectRegion = ALObjectDesigner.ParsedObjectRegion;
 import ObjectProperty = ALSymbolPackage.Property;
 import ParseMode = ALObjectDesigner.ParseMode;
 import { ALObjectCollector } from './ALObjectCollector';
+import { type } from 'os';
 const balanced = require('balanced-match');
 
 export class ALObjectParser implements ALObjectDesigner.ObjectParser {
@@ -125,7 +126,7 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
         if (match) {
             let result: ObjectRegion = new ObjectRegion();
 
-            let lines: Array<string> = match.pre.trim().split('\r\n'),
+            let lines: Array<string> = match.pre.trim().split(/\r?\n/),
                 lastLine = lines.pop();
 
             let regionInfo: any = this.processRegion(lastLine as string);
@@ -139,7 +140,7 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
             let match2 = balanced('{', '}', match.body);
             let isField = result.Region.indexOf('field') != -1;
             if (match2 || isField) {
-                let lines2: Array<string> = (isField ? match.body : match2.pre).trim().split('\r\n');
+                let lines2: Array<string> = (isField ? match.body : match2.pre).trim().split(/\r?\n/);
                 result.Properties = lines2
                     .map((l): ObjectProperty | null => {
                         let prop = l.split('=');
@@ -354,6 +355,91 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
             }
             control[container] = await this.processSymbol(alObject, container, child, control);
             result.push(control);
+        }
+
+        return result;
+    }
+
+    public async ExtractEventPubSub(filePath: string): Promise<any> {
+        let contents: string = await utils.read(filePath) as string;
+        let result: any = {};
+
+        let eventPubPattern = /(\[(.*Event)\(.*\])(\s\S*?)+(.*procedure)\s+(.*?)\((.*?)\)\:?(.*)/gmi;
+        let eventSubPattern = /(\[(EventSubscriber)\(.*\])(\s\S*?)+(.*procedure)\s+(.*?)\((.*?)\)\:?(.*)/gmi
+
+        // parse Event Publishers
+        result.Publishers = this.ParseEventMethodHeader(eventPubPattern, contents);
+
+        // parse Event Subscribers
+        result.Subscribers = this.ParseEventMethodHeader(eventSubPattern, contents);
+
+        return result;
+    }
+
+    public ParseEventMethodHeader(eventPattern: RegExp, contents: string): Array<any> {
+        let matches = utils.getAllMatches(eventPattern, contents);
+        let result: Array<any> = [];
+
+        if (matches) {
+            for (let m of matches) {
+                let event = this.ParseMethodHeader(m);
+                result.push(event);
+            }
+        }
+
+        return result;
+    }
+
+    public ParseMethodHeader(parts: Array<string>): any {
+        let result: any = {};
+
+        result.Name = parts[5].replace(/\"/gmi, '').trim();
+        result.Parameters = [];
+        switch (parts[2].trim().toLowerCase()) {
+            case 'businessevent':
+                result.EventType = 'BusinessEvent';
+                break;
+            case 'integrationevent':
+                result.EventType = 'IntegrationEvent';
+                break;
+            default:
+                result.EventType = 'EventSubscriber';
+                break;
+        }
+
+        if (result.EventType == 'EventSubscriber') {
+            let subsParts = parts[1].split(',');
+            let TargetType = subsParts[0].split('::')[1];
+            let TargetObj = subsParts[1].split('::')[1].replace(/\"/, '').trim();
+            result.TargetObjectType = TargetType;
+            result.TargetObject = TargetObj;
+        }
+
+        if (parts[6].trim() != '') {
+            let params = parts[6].split(';');
+            for (let p of params) {
+                let varParts = p.split(':');
+                let paramDef: any = {};
+                paramDef.Name = varParts[0].replace(/var|\"/gmi, '').trim();
+                paramDef.IsVar = varParts[0].indexOf('var ') !== -1;
+
+                if (varParts.length > 1) {
+                    let TypeDef: any = {};
+                    let typeParts = varParts[1].split(' ');
+                    TypeDef.Name = typeParts[0];
+
+                    if (typeParts.length > 1) {
+                        let subType: any = {};
+                        subType.Name = varParts[1].replace(typeParts[0], '').trim();
+                        TypeDef.Subtype = subType;
+                    }
+
+                    paramDef.TypeDefinition = TypeDef;
+                }
+
+                result.Parameters.push(paramDef);
+            }
+
         }
 
         return result;

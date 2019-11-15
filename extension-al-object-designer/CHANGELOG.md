@@ -1,6 +1,30 @@
 # Change Log
 All notable changes to the "al-object-designer" extension.
 
+## 0.1.0 - 2019-11-??
+**Enhancements:**
+- Object List:
+    - New design and button layout
+    - New data-grid component: ag-grid
+    - AZ AL Dev Tools wizard integration: `AZ AL Wizard` button
+    - CSV export of list contents
+    - Optional: Show standard Table events, e.g. OnBeforeInsert or OnAfterDelete
+    - Copy Object/Event name by double clicking on cell
+    - Marked only switch: show marked objects only (similar to C/Side)
+    - List Event Publishers in local files
+    - List Event Subscribers in Symbol/local files
+- Context menu:
+  - `Preview`: Browser Preview integration
+  - `+ Table Ext.`: create Table extension for selected Table
+  - `+ Page Ext.`: create Page extension for selected Page
+  - Run Query objects
+- Commands:
+  - New command: `Generate AL Tables` - create table objects using imported custom CSV format. TODO: docs
+
+**Bugfixes:**
+- Fixed sorting by Object Type and ID after search
+- Object recognition: case-insensitive parsing
+
 ## 0.0.7 - 2019-10-30
 - Enhancement?: support for listing multiple objects per file.
 

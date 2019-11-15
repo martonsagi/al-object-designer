@@ -2,6 +2,7 @@ html,
 body {
     margin: 0;
     padding: 0;
+    font-size: 14px;
 }
 
 body {
@@ -34,10 +35,11 @@ div.header {
 
 div.buttons {
     position: fixed;
-    padding: 70px 40px 10px;
+    padding: 70px 0px 10px;
     text-align: left;
     width: 100%;
     background-color: rgb(246, 247, 248) !important;
+    z-index: 1;
 }
 
 h1 {
@@ -62,7 +64,7 @@ input#searchInput {
 }
 
 div.content {
-    padding: 200px 40px 20px;
+    padding: 115px 0px 0px;
 }
 
 div.designer-content {
@@ -153,7 +155,7 @@ tr.selected .td-name a:focus {
 }
 
 .virtual-repeater-wrapper {
-    height: 70vh;
+    height: 80vh;
     vertical-align: top;
     overflow: scroll;
     overflow-x: hidden;
@@ -176,12 +178,12 @@ tr.selected:hover {
     background: rgb(178, 233, 237) !important;
 }
 
-td.context-menu-td {
+.context-menu-td {
     padding: 0px;
 }
 
 a.context-menu-btn {
-    padding: 5px;
+    padding: 0 20px;
     display: block;
     font-weight: bold;
     background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAA+UlEQVQ4ja3Uv0pDMRgF8F9KKReRUkQEHayzi47ikzj7CL6C+ESCb6Cj4NRNURzEQeqglnppHHLBCjeBWzwZ8gUO359zkoQoakMQKuyhwgLPUXxrJUPMLBziEREfOEM/x+9lKzDCbhOvYYx+jlxK1AnZCnjFDXYwwx3mOXLIiQ1BWJfGqjGN4qJzR0HYxAm28YUr3GarFlw7wrvk2jfOMVjFtQrDpc6HCuaUEtWSyKQLOWv2VpRcu8eFpNEcl1Fc2bURNppuXkqulcTexzUeMMEpejl+abQtHC+dDzDwq9sf/NsTKSWa4qmJP6WfoM6Rs2J3/Y+KrnXBD1GoiT9F9m3JAAAAAElFTkSuQmCC);
@@ -212,7 +214,8 @@ tr.selected:hover td#context-selected {
     background: #fff;
     box-shadow: rgba(0, 0, 0, 0.47) 0px 0px 7px 0px;
     z-index: 1001;
-    margin-left: -90px;
+    margin-left: -120px;
+    margin-top: -75px;
 }
 
 .context-menu-ul li {
@@ -230,7 +233,7 @@ tr.selected:hover td#context-selected {
 
 .new-object-link {
     display: inline-block;
-    min-width: 100px;
+    min-width: 50px;
     font-size: 16px;
     cursor: pointer;
     color: rgb(0, 126, 135);
@@ -313,6 +316,70 @@ tr.selected:hover td#context-selected {
     background: rgb(178, 233, 237) !important;
 }
 
+.ag-theme-material,
+.ui-sidebar {
+    background-color: transparent;
+}
+
+.ag-theme-material .ag-header {
+    background: none;
+    text-transform: uppercase;
+    font-size: 14px;
+    font-weight: 400;
+    color: #222;
+}
+
+.ui-sidebar .ui-sidebar-head {
+    background-color: transparent;
+    border-bottom-color: lightgray;
+    padding: 10px 5px 5px;
+    text-transform: uppercase;
+    font-size: 14px;
+    font-weight: 400;
+    color: #222;
+}
+
+.ui-sidebar.object-types {
+    max-width: 10em !important;
+}
+
+
+.ui-sidebar.object-types.ui-collapse.ui-mini-display {
+    max-width: 6em !important;
+}
+
+.td-number {
+    text-align: right !important;
+}
+
+.ui-dropdown {
+    padding: 0.1em 0.5em;
+    border: 1px solid #ddd;
+}
+
+.ui-sidebar.object-properties {
+    height: 100%;
+    width: 500px !important;
+    max-width: inherit;
+}
+
+.ag-theme-material .ag-cell-inline-editing {
+    height: inherit;
+}
+
+.ag-cell.ag-cell-with-height.ag-cell-value.ag-cell-focus.ag-cell-inline-editing,
+.ag-has-focus .ag-cell-focus,
+.ag-theme-material .ag-cell-inline-editing input[type="text"]:focus, .ag-theme-material .ag-cell-inline-editing input[type="tel"]:focus, .ag-theme-material .ag-cell-inline-editing input[type="date"]:focus, .ag-theme-material .ag-cell-inline-editing input[type="datetime-local"]:focus, .ag-theme-material .ag-popup-editor input[type="text"]:focus, .ag-theme-material .ag-popup-editor input[type="tel"]:focus, .ag-theme-material .ag-popup-editor input[type="date"]:focus, .ag-theme-material .ag-popup-editor input[type="datetime-local"]:focus {
+    border-color: #008089 !important;
+}
+
+
+.ag-theme-material .ag-cell {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+
 /*
  * http://fatopng.com/fontawesome-to-base64 :D
  */
@@ -367,7 +434,7 @@ tr.selected:hover td#context-selected {
     }
 
     div.content {
-        padding-top: 280px;
+        padding-top: 160px;
     }
 
     div.designer-content {

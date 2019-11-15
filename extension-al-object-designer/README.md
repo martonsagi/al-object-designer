@@ -20,11 +20,20 @@ C/Side Object Designer was something that the new AL development environment lac
 * **Custom snippets**: use your own snippets placed in `<project root>/.altemplates` folder
 * **Design view** for Pages (alpha): card/list layout is rendered for local pages. Card/Document Symbols are also supported.
 
+### Optional integration with [AZ AL Dev Tools](https://marketplace.visualstudio.com/items?itemName=andrzejzwierzchowski.al-code-outline)
+* **AZ AL Wizard** button: launch AL objects wizards
+
 ![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/media/preview1.PNG)
 
 ## Requirements
 
-'Run Object' function is based on commands from [CRS AL Language Extension](https://marketplace.visualstudio.com/items?itemName=waldo.crs-al-language-extension). It's made by Waldo so you should install it anyway. ;)
+There are no hard dependencies as of v0.1.0.
+
+Optional dependencies:
+* [CRS AL Language Extension](https://marketplace.visualstudio.com/items?itemName=waldo.crs-al-language-extension)
+  * If installed, `Run Object` function uses commands from this extension
+* [AZ AL Dev Tools](https://marketplace.visualstudio.com/items?itemName=andrzejzwierzchowski.al-code-outline)
+  * If installed, `AZ AL Wizard` button appears at the top left corner.
 
 ## VS Commands
 * **AL Object Designer**: opens Object Overview
@@ -42,7 +51,15 @@ Rendered layout is very similar to Business Central pages, although not an exact
 
 ## Extension Settings
 
-TODO: this is something I want for future releases. Many options are now hardcoded but should be customizable for the best experience.
+|Option   |Description   |
+|---|---|
+|renderPageParts   |Render PageParts in AL Page Designer   |
+|showStandardEvents   |Show standard Table events, e.g. OnBeforeInsert or OnAfterDelete   |
+|VsCodeBrowserPreview   |Turn on 'Preview' context menu on Object List. Works with UserPassword authentication.   |
+|useCRS   |Run objects using CRS AL Extension (default)   |
+|logging   |Diagnostic logging to Developer Tools console   |
+|singleObjectPerFile   |Detection rule: one object per files   |
+|useAZALDevTools   |Enable integration with AZ AL Dev Tools extension.   |
 
 ## Known Issues
 

@@ -1,37 +1,42 @@
 <template>
     <div class="object-bar buttons">
-        <div class="object-bar-line">
-            <button class.bind="activeType == '' && !currentProject ? 'selected' : ''" click.delegate="showAll()">All</button>
-            <button class.bind="activeType == 'Table' ? 'selected' : ''" click.delegate="filterType('Table')" id="filter-Table">Tables</button>
-            <button class.bind="activeType == 'Page' ? 'selected' : ''" click.delegate="filterType('Page')" id="filter-Page">Pages</button>
-            <button class.bind="activeType == 'Report' ? 'selected' : ''" click.delegate="filterType('Report')" id="filter-Report">Reports</button>
-            <span class="linebreaker"></span>
-            <button class.bind="activeType == 'Codeunit' ? 'selected' : ''" click.delegate="filterType('Codeunit')" id="filter-Codeunit">Codeunits</button>
-            <button class.bind="activeType == 'Query' ? 'selected' : ''" click.delegate="filterType('Query')" id="filter-Query">Queries</button>
-            <button class.bind="activeType == 'XmlPort' ? 'selected' : ''" click.delegate="filterType('XmlPort')" id="filter-XmlPort">XmlPorts</button>
-        </div>
-        <div class="object-bar-line">
-            <button class.bind="currentProject ? 'selected' : ''" click.delegate="setCurrentProjectFilter()">Workspace</button>
-            <button class.bind="activeType == 'TableExtension' ? 'selected' : ''" click.delegate="filterType('TableExtension')"
-                id="filter-TableExtension">Table Ext.</button>
-            <button class.bind="activeType == 'PageExtension' ? 'selected' : ''" click.delegate="filterType('PageExtension')"
-                id="filter-PageExtension">Page Ext.</button>
-            <button class.bind="activeType == 'PageCustomization' ? 'selected' : ''" click.delegate="filterType('PageCustomization')"
-                id="filter-PageCustomization">Page Cust.</button>
-            <span class="linebreaker"></span>
-            <button class.bind="activeType == 'ControlAddIn' ? 'selected' : ''" click.delegate="filterType('ControlAddIn')"
-                id="filter-ControlAddIn">Control Add.</button>
-            <button class.bind="activeType == 'Enum' ? 'selected' : ''" click.delegate="filterType('Enum')" id="filter-Enum">Enums</button>
-            <button class.bind="activeType == 'Profile' ? 'selected' : ''" click.delegate="filterType('Profile')" id="filter-Profile">Profiles</button>
-        </div>
-        <div class="object-bar-line">
-            <button class.bind="showEvents ? 'selected' : ''" click.delegate="setEventsView()" title="Show Events"
-                style="cursor: pointer">Events</button>
-            <span class="new-object-link" click.delegate="refreshDesigner()" title="Create a new Object" style="cursor: pointer">Refresh</span>
-            <span class="new-object-link" click.delegate="addNewObject('empty')" title="Create a new Object" style="cursor: pointer">+
-                New Object</span>
-            <span repeat.for="link of customLinks" class="new-object-link" click.delegate="addNewCustomObject(link)"
-                title="link.description" style="cursor: pointer">${link.title}</span>
-        </div>
+        <ui-toolbar style="background: none;">
+            <ui-button style="margin-right: 5px;" show.bind="vsSettings.useAZALDevTools" secondary click.trigger="sendCommand('', 'AZWizard')" title="AZ AL Dev Tools - New Object Wizard">AZ AL Wizard</ui-button>
+            <ui-switch secondary value.bind="showEvents" click.trigger="setEventsView()" on-label="Events"
+                off-label="Events" size="5em"></ui-switch>
+
+            <ui-switch secondary value.bind="showEventSubs" show.bind="showEvents" click.trigger="setEventSubscriberView()" on-label="Subscriptions"
+                off-label="Subscriptions" size="7em"></ui-switch>
+
+            <ui-switch secondary value.bind="showMarkedOnly" click.trigger="setShowMarkedOnly()" on-label="Marked only"
+                off-label="Marked Only" size="7em"></ui-switch>
+
+            <!-- span>Launch:&nbsp;</span>
+            <ui-dropdown width="10em">
+                <ui-list-item value="1">Local</ui-list-item>
+                <ui-list-item value="2">Cloud</ui-list-item>
+            </ui-dropdown>
+            <ui-button primary click.trigger="compilerCommand('build')">Build</ui-button>
+            <ui-button success click.trigger="compilerCommand('run')">Publish</ui-button>
+            <ui-button secondary click.trigger="compilerCommand('debug')">Debug</ui-button -->
+            <span>&nbsp;Snippets:&nbsp;</span>
+            <ui-dropdown width="10em">
+                <ui-list-group label="Built-in">
+                    <ui-list-item value="1" click.delegate="addNewObject('empty')">
+                        New Object
+                    </ui-list-item>
+                </ui-list-group>
+                <ui-list-group label="Custom">
+                    <ui-list-item repeat.for="link of customLinks" click.delegate="addNewCustomObject(link)"
+                        title="link.description">
+                        ${link.title}
+                    </ui-list-item>
+                </ui-list-group>
+            </ui-dropdown>
+            <ui-filler></ui-filler>
+            <ui-button primary click.delegate="exportObjectList()" title="Export Object List to CSV">Export</ui-button>
+            <ui-button click.delegate="refreshDesigner()" title="Reload object list">Refresh</ui-button>
+
+        </ui-toolbar>
     </div>
 </template>

@@ -3,6 +3,8 @@
 import * as vscode from 'vscode';
 import { ALPanel } from './ALPanel';
 import { ALObjectDesigner } from './ALModules';
+import querystring = require('querystring');
+import { ALTableGenerator } from './ALTableGenerator';
 
 // this method is called when your extension is activated
 export function activate(context: vscode.ExtensionContext) {
@@ -23,6 +25,26 @@ export function activate(context: vscode.ExtensionContext) {
             vscode.window.showErrorMessage(`AL Page Designer could not be opened. Error: '${e.message}'`);
         }
     }));
+
+    context.subscriptions.push(vscode.window.registerUriHandler(<vscode.UriHandler>{
+        async handleUri(uri: vscode.Uri) {
+            let q = querystring.parse(uri.query);
+            q.FsPath = "";
+            await ALPanel.command(context.extensionPath, q);
+            vscode.window.showInformationMessage(JSON.stringify(q));
+        }
+    }));
+
+    context.subscriptions.push(vscode.commands.registerCommand('extension.generateALTables', async () => {
+        try {
+            let generator = new ALTableGenerator();
+            await generator.generate();
+        } catch (e) {
+            console.error(e);
+            vscode.window.showErrorMessage(`AL Table Generator could not be opened. Error: '${e.message}'`);
+        }
+    }));
+
 }
 
 // this method is called when your extension is deactivated

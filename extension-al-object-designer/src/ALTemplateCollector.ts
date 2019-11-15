@@ -28,6 +28,8 @@ export class ALTemplateCollector implements ALObjectDesigner.TemplateCollector {
         for (let i = 0; i < fpaths.length; i++) {
             const wkspace = fpaths[i];
             let fpath: any = path.join(wkspace.uri.fsPath, '.altemplates', path.sep);
+            let exists = await utils.folderExists(fpath);
+            if (exists === true) {
             let items: any = await utils.readDir(fpath);
             items = items.filter((f: string) => f.endsWith('.json'));
 
@@ -41,6 +43,7 @@ export class ALTemplateCollector implements ALObjectDesigner.TemplateCollector {
             });
 
             templates = templates.concat(await Promise.all(files));
+            }
         }
 
         templates.sort(firstBy('position'));

@@ -67,9 +67,9 @@ export function toUpperCaseFirst(str: string) {
 }
 
 export function uniqBy(a: any, key: any) {
-    var index: any = [];
+    let index: any = [];
     return a.filter(function (item: any) {
-        var k = key(item);
+        let k = key(item);
         return index.indexOf(k) >= 0 ? false : index.push(k);
     });
 }
@@ -79,13 +79,17 @@ export function getAllMatches(regex: RegExp, text: string) {
         throw new Error('not RegExp');
     }
 
-    var res = [];
-    var match = null;
+    let res = [];
+    let match = null;
 
     if (regex.global) {
-        while (match = regex.exec(text)) {
+        while ((match = regex.exec(text)) !== null) {
+            if (match.index === regex.lastIndex) {
+                regex.lastIndex++;
+            }
+
             res.push(match);
-        }
+        }        
     }
     else {
         if (match = regex.exec(text)) {
@@ -145,7 +149,8 @@ export async function getFirstCodeLine(file: string) {
 
 export async function getObjectHeaders(filePath: string) {
     let fileContent: string = await read(filePath) as string;
-    let pattern = /^([a-z]+)\s([0-9]+|.*?)\s?(.*)/gm;
+    //let pattern = /([a-z]+)\s([0-9]+|.*?)\s?(.*)/gm;
+    let pattern = /\b^(codeunit|page|pageextension|pagecustomization|dotnet|enum|enumextension|query|report|table|tableextension|xmlport|profile|controladdin)\s([0-9]+|.*?)\s?(.*)/gmi;
     let matches = getAllMatches(pattern, fileContent);
 
     let result = matches.map(m => m[0]);

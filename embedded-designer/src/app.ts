@@ -2,9 +2,16 @@ const vscode = (window as any).vscode;
 const panelMode = (window as any).panelMode;
 const objectInfo = (window as any).objectInfo;
 const vsSettings = (window as any).vsSettings;
+
 import { observable } from 'aurelia-framework';
+import { ColumnApi, GridApi, GridOptions } from 'ag-grid-community';
+import { firstBy } from 'thenby';
 
 export class App {
+
+  private gridOptions: GridOptions;
+  private api: GridApi;
+  private columnApi: ColumnApi;
 
   data: Array<any> = [];
   results: Array<any> = [];
@@ -12,12 +19,17 @@ export class App {
   activeType: string = "";
   count: number = 0;
   loaded: boolean = false;
+  contextMenu: HTMLElement;
 
   mode: string;
   customLinks: Array<any> = [];
   events: Array<any> = [];
   showEvents: boolean = false;
+  showEventSubs: boolean = false;
   headerType: string = 'object';
+
+  @observable
+  TargetObjectHeader: string = 'Extends';
 
   vsSettings: any;
 
@@ -38,8 +50,19 @@ export class App {
 
   dragOptions: any;
 
+  @observable
+  allRowsSelected: boolean = false;
+
+  showMarkedOnly: boolean = false;
+
   constructor() {
-    
+    this.gridOptions = <GridOptions>{
+      defaultColDef: {
+        resizable: true,
+        sortable: true,
+        editable: false
+      }
+    };
   }
 
   attached() {
@@ -48,7 +71,20 @@ export class App {
     this.activeType = "";
     this.currentProject = false;
     this.vsSettings = vsSettings;
-    
+
+    this.gridOptions.onGridReady = () => {
+      this.api = this.gridOptions.api;
+      this.columnApi = this.gridOptions.columnApi;
+
+      this.columnApi.setColumnVisible("EventType" as any, this.showEvents === true);
+      this.columnApi.setColumnVisible("EventName" as any, this.showEvents === true);
+      this.columnApi.setColumnVisible("TargetObject" as any, !this.showEvents);
+      this.columnApi.setColumnVisible("EventPublisher" as any, this.showEventSubs);
+      //this.columnApi.setColumnVisible("Version" as any, !this.showEvents);
+      //this.columnApi.setColumnVisible("Application" as any, !this.showEvents);
+      this.columnApi.setColumnVisible("Scope" as any, !this.showEvents);
+    }
+
     window.addEventListener('message', event => {
       this.loaded = false;
       const message = event.data; // The JSON data our extension sent
@@ -100,12 +136,21 @@ export class App {
         &&
         (this.currentProject == true ? f.FsPath != "" : true)
         &&
+        (this.showMarkedOnly === true ? f.Marked == true : true)
+        &&
+        (this.showEvents ? f.EventPublisher == !this.showEventSubs : true)
+        &&
         (f.Id.toString().indexOf(this.query.toLowerCase()) != -1
           || f.Publisher.toLowerCase().indexOf(this.query.toLowerCase()) != -1
           || f.Version.toLowerCase().indexOf(this.query.toLowerCase()) != -1
           || this.searchParts(this.query, `${f.Type}${f.Id}`) == true
-          || this.searchParts(this.query, this.showEvents ? `${f.Name} ${f.EventName}` : f.Name) == true)
+          || this.searchParts(this.query, this.showEvents ? `${f.Name} ${f.FieldName != '' ? f.FieldName + ' ' : ''}${f.EventName}` : f.Name) == true)
       );
+
+    this.results.sort(
+      firstBy(function (v1, v2) { return v1.TypeId - v2.TypeId; })
+        .thenBy("Id")
+    );
 
     this.count = this.results.length;
   }
@@ -126,9 +171,11 @@ export class App {
     }
 
     this.count = this.results.length;
+    this.selectedObject = null;
   }
 
   sendCommand(element, command, additionalCommands?: any) {
+    element = Object.assign({}, element);
     let name = element.Name;
     let type = element.Type;
     let id = element.Id;
@@ -142,6 +189,21 @@ export class App {
       }
     }
 
+    if (command == 'DefinitionExt' && element.TargetObject) {
+      command = 'Definition';
+      element.Name = element.TargetObject;
+      name = element.Name;            
+    }
+
+    if (command == 'DefinitionEventPub' && element.TargetObject) {
+      command = 'Definition';
+      element.Name = element.TargetObject;
+      element.Type = element.TargetObjectType;
+      name = element.Name;
+      type = element.Type;
+      element.FsPath = "";
+    }
+
     this.showMenu = false;
 
     let message = {
@@ -150,8 +212,14 @@ export class App {
       Name: name,
       FsPath: element.FsPath,
       Command: command,
-      EventData: element
+      EventData: element,
+      Objects: [],
+      TargetObject: element.TargetObject
     };
+
+    if (command == 'BrowserPreview') {
+      message.Objects = this.data;
+    }
 
     let messages = [message];
 
@@ -181,14 +249,23 @@ export class App {
     return search.test(what) == true;
   }
 
-  selectRow(elem, target) {
+  selectionChanged(elem, event) {
+    let target = event.target;
+    if (target)
+      this.showMenu = target.tagName.toLowerCase() == "a" && target.className.indexOf("context-menu-btn") != -1;
+    else
+      this.showMenu = false;
+  }
+
+  selectRow(elem, event) {
+    if (!event.node || event.node.selected !== true) {
+      return;
+    }
+
     if (this.selectedObject == elem) {
       return;
     }
 
-    console.log(target.tagName);
-
-    this.showMenu = target.tagName.toLowerCase() == "a" && target.className.indexOf("context-menu-btn") != -1;
     this.selectedObject = elem;
   }
 
@@ -201,13 +278,35 @@ export class App {
     this.hoverObject = elem;
   }
 
-  setContextMenuVisible() {
+  setContextMenuVisible(event, currRec) {
+    this.selectRow(currRec, event);
     this.showMenu = !this.showMenu;
+    let rect = (event.target as HTMLElement).getBoundingClientRect();
+    this.contextMenu.style.left = rect.left + 'px';
+    this.contextMenu.style.top = rect.top + 'px';
   }
 
-  setEventsView() {
+  setEventsView(skipSearch?: boolean) {
     this.showEvents = !this.showEvents;
     this.headerType = this.showEvents ? 'event' : 'object';
+
+    this.columnApi.setColumnVisible("EventType" as any, this.showEvents);
+    this.columnApi.setColumnVisible("EventName" as any, this.showEvents);
+    this.columnApi.setColumnVisible("TargetObject" as any, !this.showEvents);
+    this.columnApi.setColumnVisible("EventPublisher" as any, false);
+    //this.columnApi.setColumnVisible("Version" as any, !this.showEvents);
+    //this.columnApi.setColumnVisible("Application" as any, !this.showEvents);
+
+    if (skipSearch !== true)
+      this.search();
+  }
+
+  setEventSubscriberView() {
+    this.showEventSubs = !this.showEventSubs;
+    this.headerType = this.showEventSubs ? 'subscription' : this.showEvents ? 'event' : 'object';
+    this.columnApi.setColumnVisible("TargetObject" as any, !this.showEventSubs && !this.showEvents);
+    this.columnApi.setColumnVisible("EventPublisher" as any, this.showEventSubs);
+    this.TargetObjectHeader = this.showEventSubs ? 'Publisher' : 'Extends';
     this.search();
   }
 
@@ -238,11 +337,38 @@ export class App {
     this.sendCommand(element, 'Design');
   }
 
+  compilerCommand(type) {
+    this.sendCommand({ Type: type }, 'Compiler');
+  }
+
   showEventParams(element) {
     this.sendCommand(element, 'CopyEvent');
   }
 
   designerFieldOnClick(event) {
     console.log(event);
+  }
+
+  markAllObjects(event, record) {
+    this.allRowsSelected = !this.allRowsSelected;
+    for (let row of this.results) {
+      row.Marked = this.allRowsSelected;
+    }
+  }
+
+  markSelectedObject(event, record) {
+
+  }
+
+  setShowMarkedOnly() {
+    this.showMarkedOnly = !this.showMarkedOnly;
+
+    this.search();
+  }
+
+  exportObjectList() {
+    let data = this.api.getDataAsCsv({ columnSeparator: ';', suppressQuotes: true });
+    let message = { 'Data': data };
+    this.sendCommand(message, 'ExportCsv');
   }
 }

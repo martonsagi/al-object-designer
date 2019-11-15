@@ -8,6 +8,6 @@ export function configure(config: FrameworkConfiguration) {
     './elements/designer.html',
     './elements/design-element',
     './elements/action-element',
-    './elements/objects.html'
+    './elements/properties-window.html'
   ]);
 }

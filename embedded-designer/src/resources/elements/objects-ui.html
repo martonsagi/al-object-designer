@@ -1,0 +1,148 @@
+<template>
+    <div class="content">
+        <ui-section row-layout>
+            <ui-sidebar class="object-types" label="Objects" scroll>
+                <ui-menu>
+                    <ui-menu-item active.bind="activeType == '' && !currentProject" click.trigger="showAll()">All</ui-menu-item>
+                    <ui-menu-item active.bind="currentProject" click.trigger="setCurrentProjectFilter()">Workspace</ui-menu-item>
+                    <ui-menu-item active.bind="activeType == 'Table'" click.trigger="filterType('Table')" id="filter-Table">Tables</ui-menu-item>
+                    <ui-menu-item active.bind="activeType == 'TableExtension'" click.trigger="filterType('TableExtension')" id="filter-TableExtension">Table Ext.</ui-menu-item>
+                    <ui-menu-item active.bind="activeType == 'Page'" click.trigger="filterType('Page')" id="filter-Page">Pages</ui-menu-item>
+                    <ui-menu-item active.bind="activeType == 'PageExtension'" click.trigger="filterType('PageExtension')"
+                        id="filter-PageExtension">Page Ext.</ui-menu-item>
+                    <ui-menu-item active.bind="activeType == 'PageCustomization'" click.trigger="filterType('PageCustomization')"
+                        id="filter-PageCustomization">Page Cust.</ui-menu-item>
+                    <ui-menu-item active.bind="activeType == 'Report'" click.trigger="filterType('Report')" id="filter-Report">Reports</ui-menu-item>
+                    <ui-menu-item active.bind="activeType == 'Codeunit'" click.trigger="filterType('Codeunit')" id="filter-Codeunit">Codeunits</ui-menu-item>
+                    <ui-menu-item active.bind="activeType == 'Query'" click.trigger="filterType('Query')" id="filter-Query">Queries</ui-menu-item>
+                    <ui-menu-item active.bind="activeType == 'XmlPort'" click.trigger="filterType('XmlPort')" id="filter-XmlPort">XmlPorts</ui-menu-item>
+                    <ui-menu-item active.bind="activeType == 'ControlAddIn'" click.trigger="filterType('ControlAddIn')"
+                        id="filter-ControlAddIn">Control Add.</ui-menu-item>
+                    <ui-menu-item active.bind="activeType == 'Enum'" click.trigger="filterType('Enum')" id="filter-Enum">Enums</ui-menu-item>
+                    <ui-menu-item active.bind="activeType == 'Profile'" click.trigger="filterType('Profile')" id="filter-Profile">Profiles</ui-menu-item>
+        
+                </ui-menu>
+            </ui-sidebar>
+            <ui-content scroll>
+                <div hidden.bind="loaded">
+                    <div style="font-size: 1.2em;" class="ui-bg-primary ui-pad-all ui-text-white">Discovering objects...</div>
+                </div>
+
+                <ul ref="contextMenu" show.bind="showMenu == true" class="context-menu-ul">
+                        <li click.trigger="sendCommand(selectedObject, 'Definition')"><i
+                                class="fa fa-view"></i> View</li>
+                        <li show.bind="showEvents"
+                            click.trigger="showEventParams(selectedObject)"><i
+                                class="fa fa-run"></i>
+                            Copy Event</li>
+                        <li show.bind="selectedObject.CanExecute"
+                            click.trigger="sendCommand(selectedObject, 'BrowserPreview')"><i
+                                class="fa fa-run"></i>
+                            Preview</li>
+                        <li show.bind="selectedObject.CanExecute"
+                            click.trigger="sendCommand(selectedObject, 'Run')"><i
+                                class="fa fa-run"></i>
+                            Run</li>
+                        <li show.bind="selectedObject.CanDesign"
+                            click.trigger="openPageDesigner(selectedObject)"><i
+                                class="fa fa-design"></i>
+                            Design</li>
+                        <li show.bind="selectedObject.Type == 'Table'"
+                            click.trigger="sendCommand(selectedObject, 'NewTableExt')"><i
+                                class="fa fa-plus"></i>
+                            New Table Ext.</li>
+                        <li show.bind="selectedObject.Type == 'Page'"
+                            click.trigger="sendCommand(selectedObject, 'NewPageExt')"><i
+                                class="fa fa-plus"></i>
+                            New
+                            Page Ext.</li>
+                        <li show.bind="selectedObject.CanCreatePage"
+                            click.trigger="sendCommand(selectedObject, 'NewCard')"><i
+                                class="fa fa-list"></i>
+                            New
+                            Card</li>
+                        <li show.bind="selectedObject.CanCreatePage"
+                            click.trigger="sendCommand(selectedObject, 'NewList')"><i
+                                class="fa fa-list"></i>
+                            New
+                            List</li>
+                        <li show.bind="selectedObject.CanCreatePage"
+                            click.trigger="sendCommand(selectedObject, 'NewReport')"><i
+                                class="fa fa-report"></i>
+                            New Report</li>
+                        <li show.bind="selectedObject.CanCreatePage"
+                            click.trigger="sendCommand(selectedObject, 'NewQuery')"><i
+                                class="fa fa-plus"></i>
+                            New Query</li>
+                    </ul>
+
+                <div class="virtual-repeater-wrapper">
+                    <ag-grid-aurelia show.bind="loaded" #agGrid style="width: 100%; height: 100%;"
+                        class="ag-theme-material" 
+                        context.bind="$this" 
+                        row-data.bind="results"
+                        row-selection.bind="'single'"
+                        row-selected.call="selectRow($event.node.data, $event)"
+                        cell-focused.call="selectionChanged($event.node.data, $event)"
+                        cell-mouse-over.call="setContextBtnVisible($event.node.data)" 
+                        cell-mouse-out.call="setContextBtnVisible(null)"
+                        grid-options.bind="gridOptions">
+                        <ag-grid-column header-name="Select" pinned.bind="'left'" width.bind="70" editable.bind="false">
+                            <ag-header-template>
+                                <label style="margin-left: -15px;">
+                                    <ui-switch secondary value.bind="params.context.allRowsSelected" click.trigger="params.context.markAllObjects($event, params.data)" on-label="All"
+                                    off-label="All" size="2em"></ui-switch>
+                                </label>
+                            </ag-header-template>
+                            <ag-cell-template>
+                                <label style="padding: 15px; margin-left: -15px;"><input type="checkbox" checked.bind="params.data.Marked"></label>
+                            </ag-cell-template>
+                        </ag-grid-column>
+                        <ag-grid-column header-name="Type" field="Type" editable.bind="false" width.bind="100"></ag-grid-column>
+                        <ag-grid-column header-name="ID" field="Id" width.bind="120" header-class.bind="'td-number'" cell-class.bind="'td-number'" filter="agNumberColumnFilter"></ag-grid-column>
+                        <ag-grid-column cell-class="context-menu-td" editable.bind="false" width.bind="50" 
+                            col-id.bind="selectedObject == element || hoverObject == element ? 'context-selected' : ''">
+                            <ag-cell-template>
+                                <a class="context-menu-btn" class="context-menu"
+                                    click.trigger="params.context.setContextMenuVisible($event, params.data)">&nbsp;
+                                </a>
+                            </ag-cell-template>
+                        </ag-grid-column>
+                        <ag-grid-column header-name="Name" field="Name" width.bind="250" editable.bind="true">
+                            <ag-cell-template>
+                                <a href="#click"
+                                    click.delegate="params.context.sendCommand(params.data, 'Definition')">${params.data.Name
+                                    || ''}</a>
+                            </ag-cell-template>
+                        </ag-grid-column>
+                        <ag-grid-column header-name="Extends" field="TargetObject" editable.bind="true" width.bind="150" filter="agTextColumnFilter">
+                            <ag-cell-template>
+                                <a href="#click"
+                                    click.delegate="params.context.sendCommand(params.data, 'DefinitionExt')">${params.data.TargetObject
+                                    || ''}</a>
+                            </ag-cell-template>
+                        </ag-grid-column>
+                        <ag-grid-column header-name="Event Name" width.bind="250" field="EventName" width.bind="300"  editable.bind="true">
+                            <ag-cell-template>
+                                <a href="#click" click.delegate="params.context.showEventParams(params.data)">
+                                    <span if.bind="params.data.FieldName != ''">${params.data.FieldName} -
+                                    </span>${params.data.EventName || ''}
+                                </a>
+                            </ag-cell-template>
+                        </ag-grid-column>
+                        <ag-grid-column header-name="Event Publisher" col-id="EventPublisher" field="TargetObject" editable.bind="true" width.bind="150" filter="agTextColumnFilter">
+                            <ag-cell-template>
+                                <a href="#click"
+                                    click.delegate="params.context.sendCommand(params.data, 'DefinitionEventPub')">${params.data.TargetObjectType} ${params.data.TargetObject}</a>
+                            </ag-cell-template>
+                        </ag-grid-column>
+                        <ag-grid-column header-name="Event Type" width.bind="100" field="EventType" editable.bind="false" filter="agTextColumnFilter"></ag-grid-column>
+                        <ag-grid-column header-name="Application" width.bind="150" field="Application" editable.bind="false"></ag-grid-column>
+                        <ag-grid-column header-name="Version" width.bind="150" field="Version" editable.bind="false"></ag-grid-column>
+                        <ag-grid-column header-name="Publisher" width.bind="150" field="Publisher" editable.bind="false"></ag-grid-column>
+                    </ag-grid-aurelia>                    
+                </div>
+            </ui-content>
+        </ui-section>
+    </div>
+</template>
