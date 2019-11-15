@@ -61,6 +61,8 @@ Rendered layout is very similar to Business Central pages, although not an exact
 |singleObjectPerFile   |Detection rule: one object per files   |
 |useAZALDevTools   |Enable integration with AZ AL Dev Tools extension.   |
 
+![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/media/preview8_settings.PNG)
+
 ## Known Issues
 
 * Design feature works only with pages, the window is empty when selecting page extensions.
@@ -79,8 +81,22 @@ Rendered layout is very similar to Business Central pages, although not an exact
 ### Filter to workspace and check the context menu for more options
 ![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/media/preview4.PNG)
 
-### Browse events
+### Browse event publishers
 ![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/media/preview5.PNG)
+
+### Browse event subscriptions
+![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/media/preview6.PNG)
+
+![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/media/preview10_EventPubSub.gif)
+
+### AZ AL Dev Tools Wizard button
+![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/media/preview7_AZIntegration.png)
+
+### Browser Preview extension integration
+![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/media/preview9_alobj_browser.jpg)
+
+### C/Side-like markedonly feature to cherry-pick objects
+![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/media/preview9_markedonly.png)
 
 ### Copy/Paste Events
 ![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/media/ALObjectDesigner_ObjectEventCopyPaste.gif)
