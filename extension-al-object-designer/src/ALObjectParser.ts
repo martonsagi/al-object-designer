@@ -364,8 +364,8 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
         let contents: string = await utils.read(filePath) as string;
         let result: any = {};
 
-        let eventPubPattern = /\s+(.*ness|.*tion).vent.*\s+(.*procedure)\s+(.*?)\((.*?)\)\:?(.*)/gm;
-        let eventSubPattern = /\s+(.*vent.*ber.*)\s+(.*procedure)\s+(.*?)\((.*?)\)\:?(.*)/gm;
+        let eventPubPattern = /(\[(.*Event)\(.*\])(\s\S*?)+(.*procedure)\s+(.*?)\((.*?)\)\:?(.*)/gmi;
+        let eventSubPattern = /(\[(EventSubscriber)\(.*\])(\s\S*?)+(.*procedure)\s+(.*?)\((.*?)\)\:?(.*)/gmi
 
         // parse Event Publishers
         result.Publishers = this.ParseEventMethodHeader(eventPubPattern, contents);
@@ -379,9 +379,12 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
     public ParseEventMethodHeader(eventPattern: RegExp, contents: string): Array<any> {
         let matches = utils.getAllMatches(eventPattern, contents);
         let result: Array<any> = [];
-        for (let m of matches) {
-            let event = this.ParseMethodHeader(m);
-            result.push(event);
+
+        if (matches) {
+            for (let m of matches) {
+                let event = this.ParseMethodHeader(m);
+                result.push(event);
+            }
         }
 
         return result;
@@ -390,13 +393,13 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
     public ParseMethodHeader(parts: Array<string>): any {
         let result: any = {};
 
-        result.Name = parts[3].replace(/procedure|\"/gm, '').trim();
+        result.Name = parts[5].replace(/\"/gmi, '').trim();
         result.Parameters = [];
-        switch (parts[1].replace(/\[/gm, '').trim().toLowerCase()) {
-            case 'business':
+        switch (parts[2].trim().toLowerCase()) {
+            case 'businessevent':
                 result.EventType = 'BusinessEvent';
                 break;
-            case 'integration':
+            case 'integrationevent':
                 result.EventType = 'IntegrationEvent';
                 break;
             default:
@@ -412,12 +415,12 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
             result.TargetObject = TargetObj;
         }
 
-        if (parts[3].trim() != '') {
-            let params = parts[3].split(';');
+        if (parts[6].trim() != '') {
+            let params = parts[6].split(';');
             for (let p of params) {
                 let varParts = p.split(':');
                 let paramDef: any = {};
-                paramDef.Name = varParts[0].replace(/var|\"/gm, '').trim();
+                paramDef.Name = varParts[0].replace(/var|\"/gmi, '').trim();
                 paramDef.IsVar = varParts[0].indexOf('var ') !== -1;
 
                 if (varParts.length > 1) {

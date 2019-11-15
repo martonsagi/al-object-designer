@@ -11,6 +11,8 @@ All notable changes to the "al-object-designer" extension.
     - Optional: Show standard Table events, e.g. OnBeforeInsert or OnAfterDelete
     - Copy Object/Event name by double clicking on cell
     - Marked only switch: show marked objects only (similar to C/Side)
+    - List Event Publishers in local files
+    - List Event Subscribers in Symbol/local files
 - Context menu:
   - `Preview`: Browser Preview integration
   - `+ Table Ext.`: create Table extension for selected Table

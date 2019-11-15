@@ -222,36 +222,37 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
 
                     objs.push(newItem);
 
-
                     // Process local eventpublishers
                     if (objType.toLowerCase() == 'codeunit') {
                         let parser = new ALObjectParser();
                         let parsedEvents = await parser.ExtractEventPubSub(file);
-                        if (parsedEvents.Subscribers.length > 0) {
-                            let levents = parsedEvents.Subscribers.map((m: any) => {
-                                return {
-                                    "TypeId": this.alTypes.indexOf(ucType) || "",
-                                    "Type": ucType || "",
-                                    "Id": objId || "",
-                                    "Name": name || "",
-                                    'TargetObjectType': m.TargetObjectType,
-                                    "TargetObject": m.TargetObject || "",
-                                    "Publisher": projectInfo.publisher,
-                                    "Application": projectInfo.name || "",
-                                    "Version": projectInfo.version || "",
-                                    "CanExecute": false,
-                                    "CanDesign": false,
-                                    "FsPath": file,
-                                    'EventName': m.Name,
-                                    'EventType': m.EventType,
-                                    'EventPublisher': false,
-                                    'EventParameters': m.Parameters,
-                                    "FieldName": "",
-                                    "SymbolData": null,
-                                    "Scope": 'Extension'
-                                }
-                            });
-                            this.events = this.events.concat(levents);
+                        for (let pKey in parsedEvents) {
+                            if (parsedEvents[pKey].length > 0) {
+                                let levents = parsedEvents[pKey].map((m: any) => {
+                                    return {
+                                        "TypeId": this.alTypes.indexOf(ucType) || "",
+                                        "Type": ucType || "",
+                                        "Id": objId || "",
+                                        "Name": name || "",
+                                        'TargetObjectType': m.TargetObjectType,
+                                        "TargetObject": m.TargetObject || "",
+                                        "Publisher": projectInfo.publisher,
+                                        "Application": projectInfo.name || "",
+                                        "Version": projectInfo.version || "",
+                                        "CanExecute": false,
+                                        "CanDesign": false,
+                                        "FsPath": file,
+                                        'EventName': m.Name,
+                                        'EventType': m.EventType,
+                                        'EventPublisher': m.EventType != 'EventSubscriber',
+                                        'EventParameters': m.Parameters,
+                                        "FieldName": "",
+                                        "SymbolData": null,
+                                        "Scope": 'Extension'
+                                    }
+                                });
+                                this.events = this.events.concat(levents);
+                            }
                         }
                     }
                 }
@@ -260,6 +261,7 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
 
         return objs;
     }
+
 
     private async _getWorkspaceData(filePath: string) {
         let objs: Array<any> = new Array(),

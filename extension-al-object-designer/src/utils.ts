@@ -67,9 +67,9 @@ export function toUpperCaseFirst(str: string) {
 }
 
 export function uniqBy(a: any, key: any) {
-    var index: any = [];
+    let index: any = [];
     return a.filter(function (item: any) {
-        var k = key(item);
+        let k = key(item);
         return index.indexOf(k) >= 0 ? false : index.push(k);
     });
 }
@@ -79,13 +79,17 @@ export function getAllMatches(regex: RegExp, text: string) {
         throw new Error('not RegExp');
     }
 
-    var res = [];
-    var match = null;
+    let res = [];
+    let match = null;
 
     if (regex.global) {
-        while (match = regex.exec(text)) {
+        while ((match = regex.exec(text)) !== null) {
+            if (match.index === regex.lastIndex) {
+                regex.lastIndex++;
+            }
+
             res.push(match);
-        }
+        }        
     }
     else {
         if (match = regex.exec(text)) {
