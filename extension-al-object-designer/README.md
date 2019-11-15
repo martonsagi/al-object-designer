@@ -65,7 +65,7 @@ Rendered layout is very similar to Business Central pages, although not an exact
 
 * Design feature works only with pages, the window is empty when selecting page extensions.
 * View (Go to definition) is active for all object types, however, it will not work with Control Add-ins for example. 
-* Event listing does not include events defined in local objects.
+* Event listing may include commented out event publishers/subscriptions.
 * It might be too bright for dark themes. 
 
 ## Preview
