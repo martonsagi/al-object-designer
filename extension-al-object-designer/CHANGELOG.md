@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to the "al-object-designer" extension.
 
-## 0.1.0 - 2019-11-??
+## 0.1.0 - 2019-11-17
 **Enhancements:**
 - Object List:
     - New design and button layout
