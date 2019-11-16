@@ -19,11 +19,11 @@ All notable changes to the "al-object-designer" extension.
   - `+ Page Ext.`: create Page extension for selected Page
   - Run Query objects
 - Commands:
-  - New command: `Generate AL Tables` - create table objects using imported custom CSV format. TODO: docs
+  - New command: `Generate AL Tables` - create table objects using imported custom CSV format.
 
 **Bugfixes:**
 - Fixed sorting by Object Type and ID after search
-- Object recognition: case-insensitive parsing
+- Multi-object/file parsing: case-insensitive parsing
 
 ## 0.0.7 - 2019-10-30
 - Enhancement?: support for listing multiple objects per file.

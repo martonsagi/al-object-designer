@@ -5,7 +5,9 @@ C/Side Object Designer was something that the new AL development environment lac
 ## Main Features
 
 * **List Overview** of all AL objects in your project: based on symbols (*.app) and your local .al files.
-* **List Events** from symbol objects, browse them in the same way as objects.
+* **List Event Publishers** from symbol objects and local files, browse them in the same way as objects.
+* **List Event Subscribers** from symbol objects and local files, browse them in the same way as objects.
+* **Export list to CSV:** current view (objects/events/subscriptions) including all records and visible columns - respecting filters - is exported.
 * **Live Update:** object list is automatically maintained as you create/change/delete objects or download symbols.
 * **Multi-Folder workspaces** are supported: e.g. a workspace with MainApp/TestApp folders.
 * **Object Search**: filter by Object Type, Name or ID.
@@ -38,8 +40,27 @@ Optional dependencies:
 ## VS Commands
 * **AL Object Designer**: opens Object Overview
 * **AL Page Designer**: opens up Page Designer for currently edited AL Object (Page)
+* **Generate AL Tables**: create table objects by importing custom CSV format
 
 ![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/media/commands.png)
+
+## VSCode Hyperlink support
+
+Open objects using VSCode hyperlinks. This is useful for integration scenarios with external applications.
+
+*Format:*
+
+> vscode://martonsagi.al-object-designer/?Command=**[Custom command name]**&Type=**[Object Type]**&Id=**[Object ID]**&Name=**[Object Name]**
+
+*Example:*
+
+```
+vscode://martonsagi.al-object-designer/?Command=Definition&Type=table&Name=Currency
+```
+
+*Available commands (case-sensitive!):*
+* Definition - open AL definition or local file
+* Design - open Page designer
 
 ## Page Designer
 This extension has a limited ability to view a rendered page layout without deployment, or move existing fields/actions on screen using drag&drop.
@@ -48,6 +69,41 @@ Supported page types:
 * List types: types other than Card/Document are regarded as List
 
 Rendered layout is very similar to Business Central pages, although not an exact copy as I'm not using Office Fabric UI.
+
+## Generate AL Tables using custom CSV format
+
+Well, this command has been laying in an internal alpha version for months, it's time to publish it! :)
+Functional requirement documents often contain table definitions that developers have to re-type into AL files once more. This simple CSV format helps speeding up the typing.
+One CSV file can contain more table definitions separated by empty lines.
+
+**Why CSV?**
+Functional documents usually have AL Table defintion in Word tables that are easy to copy to Excel and transfrom that to this custom format.
+
+*Template format:*
+
+* Field Start/End delimiter: `None`
+* Field separator: `semi-colon` `;`
+* Line separator: `carriage return`
+* Object separator: `empty line`
+
+> |[Object Type]  |[Object Id]   |[Object Name]:[Object Caption] |  |
+> |---|---|---|---|
+> |[Fieldname]:[Caption]|[Field Type]|[Length or Option Members]|[Description] |
+
+*Example:*
+```
+Table;79001;Customer Header Table
+No.;Code;20;Test Field Desc
+Description;Text;50
+Selection;Option; ,First,Second
+
+Table;79002;Custom Line Table
+Document No.;Code;20;Test Field Desc
+Line No.;Integer
+Description;Text;50
+Amount;Decimal
+Selection;Option; ,First,Second
+```
 
 ## Extension Settings
 

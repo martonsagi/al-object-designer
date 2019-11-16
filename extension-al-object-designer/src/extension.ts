@@ -31,7 +31,6 @@ export function activate(context: vscode.ExtensionContext) {
             let q = querystring.parse(uri.query);
             q.FsPath = "";
             await ALPanel.command(context.extensionPath, q);
-            vscode.window.showInformationMessage(JSON.stringify(q));
         }
     }));
 

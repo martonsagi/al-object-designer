@@ -17,10 +17,10 @@ export class RunCommandBase extends ALCommandBase {
     }
 
     async execute(message: any) {
-        let objType = message.Type,
+        let objType: string = message.Type,
             notDefinition = message.Command != 'Definition';
-        switch (objType) {
-            case 'Table':
+        switch (objType.toLowerCase()) {
+            case 'table':
                 objType = 'Record';
                 break;
         }
