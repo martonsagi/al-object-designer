@@ -56,7 +56,7 @@ export class ContextMenuCommandBase extends ALCommandBase {
 
                 //${newOptions.Field}("${newOptions.Type == "page" ? field.Name : field.Name.replace(/\s|\./g, '_')}"; "${field.Name}") 
                 content += `
-                ${newOptions.Field}("${newOptions.Type == "page" ? field.Name : field.Name.replace(/\s|[.-()%#/+&?;*!]/g, '_')}"; "${field.Name}") 
+                ${newOptions.Field}("${newOptions.Type == "page" ? field.Name : field.Name.replace(/\s|[-.()%#/+&?;*!]/g, '_')}"; "${field.Name}") 
                 {
                     ${newOptions.Type == "page" ? 'ApplicationArea = All;' : ''}
                     ${newOptions.Type == "page" ? `//Caption = '${(field as any).Caption}';` : ''}
