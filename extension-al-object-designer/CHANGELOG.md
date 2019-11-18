@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to the "al-object-designer" extension.
 
+## 0.1.1 - 2019-11-18
+- Bugfix: #45 Discovering stops at Event Subscriptions when Object ID is specified instead of [Type::Name] format.
+
 ## 0.1.0 - 2019-11-17
 **Enhancements:**
 - Object List:
