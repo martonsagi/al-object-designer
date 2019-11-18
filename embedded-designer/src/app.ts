@@ -20,6 +20,7 @@ export class App {
   count: number = 0;
   loaded: boolean = false;
   contextMenu: HTMLElement;
+  currentRowHeight: number;
 
   mode: string;
   customLinks: Array<any> = [];
@@ -56,7 +57,7 @@ export class App {
   showMarkedOnly: boolean = false;
 
   constructor() {
-    this.gridOptions = <GridOptions>{
+    this.gridOptions = <GridOptions>{      
       defaultColDef: {
         resizable: true,
         sortable: true,
@@ -72,6 +73,7 @@ export class App {
     this.currentProject = false;
     this.vsSettings = vsSettings;
 
+    this.gridOptions.rowHeight = this.getRowHeight();
     this.gridOptions.onGridReady = () => {
       this.api = this.gridOptions.api;
       this.columnApi = this.gridOptions.columnApi;
@@ -192,7 +194,7 @@ export class App {
     if (command == 'DefinitionExt' && element.TargetObject) {
       command = 'Definition';
       element.Name = element.TargetObject;
-      name = element.Name;            
+      name = element.Name;
     }
 
     if (command == 'DefinitionEventPub' && element.TargetObject) {
@@ -370,5 +372,29 @@ export class App {
     let data = this.api.getDataAsCsv({ columnSeparator: ';', suppressQuotes: true });
     let message = { 'Data': data };
     this.sendCommand(message, 'ExportCsv');
+  }
+
+  getRowHeight() {
+    let height = 40;
+    switch (this.vsSettings.gridRowHeightOption) {
+      case "large":
+        height = 40;
+        break;
+      case "medium":
+        height = 30;
+        break;
+      case "small":
+        height = 20;
+        break;
+      case "custom":
+        let check = parseInt(this.vsSettings.gridRowHeightPixels);
+        height = check === NaN ? height : check;
+        break;
+      default:
+        break;
+    }
+
+    this.currentRowHeight = height;
+    return height;
   }
 }

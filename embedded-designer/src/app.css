@@ -214,7 +214,7 @@ tr.selected:hover td#context-selected {
     background: #fff;
     box-shadow: rgba(0, 0, 0, 0.47) 0px 0px 7px 0px;
     z-index: 1001;
-    margin-left: -120px;
+    margin-left: -237px;
     margin-top: -75px;
 }
 
@@ -431,10 +431,6 @@ tr.selected:hover td#context-selected {
 
     .object-bar-line button:nth-of-type(5) {
         margin-left: 124px !important;
-    }
-
-    div.content {
-        padding-top: 160px;
     }
 
     div.designer-content {

@@ -1,5 +1,11 @@
 <template>
     <div class="content">
+        <style type="text/css">
+            .ag-theme-material .ag-cell {
+                line-height: ${currentRowHeight}px;
+            }
+        </style>
+
         <ui-section row-layout>
             <ui-sidebar class="object-types" label="Objects" scroll>
                 <ui-menu>

@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to the "al-object-designer" extension.
 
+## 0.1.2 - 2019-11-19
+**Enhancement:**
+- Object List: 
+    - adjustable row height through settings
+    - context menu adjusted to left so Object names remain visible
+
 ## 0.1.1 - 2019-11-18
 - Bugfix: #45 Discovering stops at Event Subscriptions when Object ID is specified instead of [Type::Name] format.
 

@@ -116,6 +116,8 @@ Selection;Option; ,First,Second
 |logging   |Diagnostic logging to Developer Tools console   |
 |singleObjectPerFile   |Detection rule: one object per files   |
 |useAZALDevTools   |Enable integration with AZ AL Dev Tools extension.   |
+|gridRowHeightOption   |Row-height setting for Object list. Values: large (default), medium, small, custom.   |
+|gridRowHeightPixels   |Custom row height in pixels. gridRowHeightOption must be set to custom.   |
 
 ![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/media/preview8_settings.PNG)
 
@@ -153,6 +155,9 @@ Selection;Option; ,First,Second
 
 ### C/Side-like markedonly feature to cherry-pick objects
 ![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/media/preview9_markedonly.png)
+
+### Custom Row Height (small)
+![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/media/preview10_rowheight.png)
 
 ### Copy/Paste Events
 ![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/media/ALObjectDesigner_ObjectEventCopyPaste.gif)

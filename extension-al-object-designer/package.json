@@ -2,7 +2,7 @@
     "name": "al-object-designer",
     "displayName": "AL Object Designer",
     "description": "Object Designer optimized for (Dynamics 365 Business Central) AL Language development.",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "publisher": "martonsagi",
     "license": "MIT",
     "author": {
@@ -75,7 +75,7 @@
             "properties": {
                 "alObjectDesigner.logging": {
                     "type": "boolean",
-                    "default": true,
+                    "default": false,
                     "description": "Diagnostic logging to Developer Tools console."
                 },
                 "alObjectDesigner.renderPageParts": {
@@ -107,6 +107,22 @@
                     "type": "boolean",
                     "default": true,
                     "description": "Enable integration with AZ AL Dev Tools extension (default)."
+                },
+                "alObjectDesigner.gridRowHeightOption": {
+                    "type": "string",
+                    "default": "large",
+                    "enum": [
+                        "large",
+                        "medium",
+                        "small",
+                        "custom"
+                    ],
+                    "description": "Change row-height setting for Object list."
+                },
+                "alObjectDesigner.gridRowHeightPixels": {
+                    "type": "number",                    
+                    "default": 0,                    
+                    "description": "Define custom row-heigh in pixels. "
                 }
             }
         }
