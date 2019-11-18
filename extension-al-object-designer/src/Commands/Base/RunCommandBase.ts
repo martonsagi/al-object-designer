@@ -30,7 +30,7 @@ export class RunCommandBase extends ALCommandBase {
 
         let vsUri;
         if (createFile) {
-            fname = (vscode.workspace as any).workspaceFolders[0].uri.fsPath + path.sep + `.vscode` + path.sep + `Opening_${Date.now()}.al`;
+            fname = (vscode.workspace as any).workspaceFolders[0].uri.fsPath + path.sep + `.alcache` + path.sep + `Opening_${Date.now()}.al`;
             let snippet =
                 `${notDefinition ? message.Type.toLowerCase() : "codeunit"} ${notDefinition ? message.Id : "99999999"} ${notDefinition ? '"' + message.Name + '"' : "Temp"} {
     var

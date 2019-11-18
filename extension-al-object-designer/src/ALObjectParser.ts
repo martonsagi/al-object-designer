@@ -410,7 +410,12 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
         if (result.EventType == 'EventSubscriber') {
             let subsParts = parts[1].split(',');
             let TargetType = subsParts[0].split('::')[1];
-            let TargetObj = subsParts[1].split('::')[1].replace(/\"/, '').trim();
+            let TargetObj = '';
+            if (subsParts[1].indexOf('::') != -1) {
+                TargetObj = subsParts[1].split('::')[1].replace(/\"/, '').trim();
+            } else {
+                TargetObj = subsParts[1];
+            }
             result.TargetObjectType = TargetType;
             result.TargetObject = TargetObj;
         }
