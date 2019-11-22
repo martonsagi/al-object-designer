@@ -26,7 +26,8 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
         "TableExtensions",
         "ControlAddIns",
         "EnumTypes",
-        "DotNetPackages"
+        "DotNetPackages",
+        "Interfaces"
     ];
 
     private alTypes = [
@@ -42,7 +43,8 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
         "TableExtension",
         "ControlAddIn",
         "Enum",
-        "DotNetPackage"
+        "DotNetPackage",
+        "Interface"
     ];
 
     public constructor() {
