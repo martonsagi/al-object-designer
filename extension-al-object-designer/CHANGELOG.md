@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to the "al-object-designer" extension.
 
+## 0.1.3 - 2019-11-19
+**Enhancement:**
+- Object List: 
+    - New object type: Interface
+
 ## 0.1.2 - 2019-11-19
 **Enhancement:**
 - Object List: 
