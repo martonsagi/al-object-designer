@@ -364,8 +364,8 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
         let contents: string = await utils.read(filePath) as string;
         let result: any = {};
 
-        let eventPubPattern = /(\[(.*Event)\(.*\])(\s\S*?)+(.*procedure)\s+(.*?)\((.*?)\)\:?(.*)/gmi;
-        let eventSubPattern = /(\[(EventSubscriber)\(.*\])(\s\S*?)+(.*procedure)\s+(.*?)\((.*?)\)\:?(.*)/gmi
+        let eventPubPattern = /(?<!\/\*\s*?)(\[(.*Event)\(.*\])(\s\S*?)+(.*procedure)\s+(.*?)\((.*?)\)\:?(.*)/gmi;
+        let eventSubPattern = /(?<!\/\*\s*?)(\[(EventSubscriber)\(.*\])(\s\S*?)+(.*procedure)\s+(.*?)\((.*?)\)\:?(.*)/gmi;
 
         // parse Event Publishers
         result.Publishers = this.ParseEventMethodHeader(eventPubPattern, contents);
