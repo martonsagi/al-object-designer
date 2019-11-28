@@ -60,6 +60,7 @@ export class ContextMenuCommandBase extends ALCommandBase {
                 {
                     ${newOptions.Type == "page" ? 'ApplicationArea = All;' : ''}
                     ${newOptions.Type == "page" ? `//Caption = '${(field as any).Caption}';` : ''}
+                    ${newOptions.Type == "page" ? `Tooltip = 'Specifies ${(field as any).Caption}.';` : ''}
                 }
                 `;
             }
