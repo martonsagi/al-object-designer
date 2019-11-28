@@ -360,18 +360,22 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
         return result;
     }
 
-    public async ExtractEventPubSub(filePath: string): Promise<any> {
+    public async ExtractMethodsWithAttrs(filePath: string): Promise<any> {
         let contents: string = await utils.read(filePath) as string;
         let result: any = {};
 
         let eventPubPattern = /(?<!\/\*\s*?)(\[(.*Event)\(.*\])(\s\S*?)+(.*procedure)\s+(.*?)\((.*?)\)\:?(.*)/gmi;
         let eventSubPattern = /(?<!\/\*\s*?)(\[(EventSubscriber)\(.*\])(\s\S*?)+(.*procedure)\s+(.*?)\((.*?)\)\:?(.*)/gmi;
+        let testMethodPattern = /(?<!\/\*\s*?)(\[(Test).*\])(\s\S*?)+(.*procedure)\s+(.*?)\((.*?)\)\:?(.*)/gmi;
 
         // parse Event Publishers
         result.Publishers = this.ParseEventMethodHeader(eventPubPattern, contents);
 
         // parse Event Subscribers
         result.Subscribers = this.ParseEventMethodHeader(eventSubPattern, contents);
+
+        // parse Test Methods
+        result.Tests = this.ParseEventMethodHeader(testMethodPattern, contents);
 
         return result;
     }
@@ -401,6 +405,9 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
                 break;
             case 'integrationevent':
                 result.EventType = 'IntegrationEvent';
+                break;
+            case 'test':
+                result.EventType = 'Test';
                 break;
             default:
                 result.EventType = 'EventSubscriber';

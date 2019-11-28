@@ -27,7 +27,6 @@
                     <ui-menu-item active.bind="activeType == 'Enum'" click.trigger="filterType('Enum')" id="filter-Enum">Enums</ui-menu-item>
                     <ui-menu-item active.bind="activeType == 'Interface'" click.trigger="filterType('Interface')" id="filter-Interface">Interfaces</ui-menu-item>
                     <ui-menu-item active.bind="activeType == 'Profile'" click.trigger="filterType('Profile')" id="filter-Profile">Profiles</ui-menu-item>
-        
                 </ui-menu>
             </ui-sidebar>
             <ui-content scroll>
@@ -46,6 +45,10 @@
                             click.trigger="sendCommand(selectedObject, 'BrowserPreview')"><i
                                 class="fa fa-run"></i>
                             Preview</li>
+                        <li show.bind="selectedObject.TestMethod"
+                            click.trigger="runTest(selectedObject)"><i
+                                class="fa fa-run"></i>
+                            Run Test</li>
                         <li show.bind="selectedObject.CanExecute"
                             click.trigger="sendCommand(selectedObject, 'Run')"><i
                                 class="fa fa-run"></i>
@@ -137,10 +140,18 @@
                                 </a>
                             </ag-cell-template>
                         </ag-grid-column>
+                        <ag-grid-column header-name="Unit Test" col-id="UnitTest" field="EventName" editable.bind="true" width.bind="150" filter="agTextColumnFilter">
+                            <ag-cell-template>
+                                <a href="#click"
+                                    click.delegate="params.context.sendCommand(params.data, 'Definition')">${params.data.EventName
+                                    || ''}</a>
+                            </ag-cell-template>
+                        </ag-grid-column>
                         <ag-grid-column header-name="Event Publisher" col-id="EventPublisher" field="TargetObject" editable.bind="true" width.bind="150" filter="agTextColumnFilter">
                             <ag-cell-template>
                                 <a href="#click"
-                                    click.delegate="params.context.sendCommand(params.data, 'DefinitionEventPub')">${params.data.TargetObjectType} ${params.data.TargetObject}</a>
+                                    click.delegate="params.context.sendCommand(params.data, 'DefinitionEventPub')">${params.data.TargetObjectType} ${params.data.TargetObject
+                                    || ''}</a>
                             </ag-cell-template>
                         </ag-grid-column>
                         <ag-grid-column header-name="Event Type" width.bind="100" field="EventType" editable.bind="false" filter="agTextColumnFilter"></ag-grid-column>

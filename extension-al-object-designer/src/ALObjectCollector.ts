@@ -227,7 +227,7 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
                     // Process local eventpublishers
                     if (objType.toLowerCase() == 'codeunit') {
                         let parser = new ALObjectParser();
-                        let parsedEvents = await parser.ExtractEventPubSub(file);
+                        let parsedEvents = await parser.ExtractMethodsWithAttrs(file);
                         for (let pKey in parsedEvents) {
                             if (parsedEvents[pKey].length > 0) {
                                 let levents = parsedEvents[pKey].map((m: any) => {
@@ -246,7 +246,8 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
                                         "FsPath": file,
                                         'EventName': m.Name,
                                         'EventType': m.EventType,
-                                        'EventPublisher': m.EventType != 'EventSubscriber',
+                                        'EventPublisher': (m.EventType as string).endsWith('Event'),
+                                        'TestMethod': m.EventType === 'Test',
                                         'EventParameters': m.Parameters,
                                         "FieldName": "",
                                         "SymbolData": null,

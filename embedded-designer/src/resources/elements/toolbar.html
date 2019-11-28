@@ -2,6 +2,9 @@
     <div class="object-bar buttons">
         <ui-toolbar style="background: none;">
             <ui-button style="margin-right: 5px;" show.bind="vsSettings.useAZALDevTools" secondary click.trigger="sendCommand('', 'AZWizard')" title="AZ AL Dev Tools - New Object Wizard">AZ AL Wizard</ui-button>
+            <ui-button style="margin-right: 5px;" primary click.trigger="sendCommand('', 'ALTestRunner')" title="AL Test Runner - Local unit testing">AL Test Runner</ui-button>
+            <ui-switch secondary value.bind="showTests" click.trigger="setTestMethodView()" on-label="Tests"
+                off-label="Tests" size="5em"></ui-switch>
             <ui-switch secondary value.bind="showEvents" click.trigger="setEventsView()" on-label="Events"
                 off-label="Events" size="5em"></ui-switch>
 

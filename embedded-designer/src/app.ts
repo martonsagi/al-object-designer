@@ -27,6 +27,7 @@ export class App {
   events: Array<any> = [];
   showEvents: boolean = false;
   showEventSubs: boolean = false;
+  showTests: boolean = false;
   headerType: string = 'object';
 
   @observable
@@ -85,6 +86,7 @@ export class App {
       //this.columnApi.setColumnVisible("Version" as any, !this.showEvents);
       //this.columnApi.setColumnVisible("Application" as any, !this.showEvents);
       this.columnApi.setColumnVisible("Scope" as any, !this.showEvents);
+      this.columnApi.setColumnVisible("UnitTest" as any, this.showTests);
     }
 
     window.addEventListener('message', event => {
@@ -130,7 +132,7 @@ export class App {
       this.query = newQuery;
     }
 
-    let source = this.showEvents === true ? this.events : this.data;
+    let source = this.showEvents === true || this.showTests === true ? this.events : this.data;
 
     this.results = source
       .filter(f =>
@@ -142,6 +144,8 @@ export class App {
         &&
         (this.showEvents ? f.EventPublisher == !this.showEventSubs : true)
         &&
+        (this.showTests === true ? f.EventType == 'Test' : true)
+        &&
         (f.Id.toString().indexOf(this.query.toLowerCase()) != -1
           || f.Publisher.toLowerCase().indexOf(this.query.toLowerCase()) != -1
           || f.Version.toLowerCase().indexOf(this.query.toLowerCase()) != -1
@@ -152,7 +156,9 @@ export class App {
     this.results.sort(
       firstBy(function (v1, v2) { return v1.TypeId - v2.TypeId; })
         .thenBy("Id")
-    );
+    );    
+
+    console.log(this.results);
 
     this.count = this.results.length;
   }
@@ -289,6 +295,7 @@ export class App {
   }
 
   setEventsView(skipSearch?: boolean) {
+    this.showTests = false;
     this.showEvents = !this.showEvents;
     this.headerType = this.showEvents ? 'event' : 'object';
 
@@ -296,6 +303,7 @@ export class App {
     this.columnApi.setColumnVisible("EventName" as any, this.showEvents);
     this.columnApi.setColumnVisible("TargetObject" as any, !this.showEvents);
     this.columnApi.setColumnVisible("EventPublisher" as any, false);
+    this.columnApi.setColumnVisible("UnitTest" as any, this.showTests);
     //this.columnApi.setColumnVisible("Version" as any, !this.showEvents);
     //this.columnApi.setColumnVisible("Application" as any, !this.showEvents);
 
@@ -309,6 +317,19 @@ export class App {
     this.columnApi.setColumnVisible("TargetObject" as any, !this.showEventSubs && !this.showEvents);
     this.columnApi.setColumnVisible("EventPublisher" as any, this.showEventSubs);
     this.TargetObjectHeader = this.showEventSubs ? 'Publisher' : 'Extends';
+    this.search();
+  }
+
+  setTestMethodView() {
+    this.showEvents = false;
+    this.showEventSubs = false;
+    this.showTests = !this.showTests;
+    this.headerType = this.showTests ? 'test' : this.showEventSubs ? 'subscription' : this.showEvents ? 'event' : 'object';
+    this.columnApi.setColumnVisible("EventType" as any, !this.showTests && this.showEvents);
+    this.columnApi.setColumnVisible("EventName" as any, !this.showTests && this.showEvents);
+    this.columnApi.setColumnVisible("EventPublisher" as any, false);
+    this.columnApi.setColumnVisible("UnitTest" as any, this.showTests);
+    this.columnApi.setColumnVisible("TargetObject" as any, !this.showTests);    
     this.search();
   }
 
@@ -349,6 +370,10 @@ export class App {
 
   designerFieldOnClick(event) {
     console.log(event);
+  }
+
+  runTest(element) {
+    this.sendCommand(element, 'ALTestRunner');
   }
 
   markAllObjects(event, record) {
