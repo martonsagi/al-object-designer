@@ -281,70 +281,75 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
             return cacheInfo.Items;
         }
 
-        let zip: any = await utils.readZip(filePath);
-        let files = Object.keys(zip.files).filter(i => i.indexOf('.json') != -1);
-        if (files.length > 0) {
-            let contents: string = await zip.file(files[0]).async('string');
-            let json: ALSymbolPackage.SymbolReference = JSON.parse(contents.trim());
-            let info = {
-                Publisher: json.Publisher,
-                Name: json.Name,
-                Version: json.Version
-            };
+        try {
+            let zip: any = await utils.readZip(filePath);
+            let files = Object.keys(zip.files).filter(i => i.indexOf('.json') != -1);
+            if (files.length > 0) {
+                let contents: string = await zip.file(files[0]).async('string');
+                let json: ALSymbolPackage.SymbolReference = JSON.parse(contents.trim());
+                let info = {
+                    Publisher: json.Publisher,
+                    Name: json.Name,
+                    Version: json.Version
+                };
 
-            for (let j = 0; j < this.types.length; j++) {
-                let elem: string = this.types[j];
-                let lType: string = this.alTypes[j];
+                for (let j = 0; j < this.types.length; j++) {
+                    let elem: string = this.types[j];
+                    let lType: string = this.alTypes[j];
 
-                if (json[elem]) {
-                    let tempArr = json[elem].map((t: any, index: number) => {
-                        levents = levents.concat(this.extractEvents(lType, t, info));
+                    if (json[elem]) {
+                        let tempArr = json[elem].map((t: any, index: number) => {
+                            levents = levents.concat(this.extractEvents(lType, t, info));
 
-                        let scope = 'Extension';
-                        if (t.Properties) {
-                            let scopeProp = t.Properties.find((f: any) => f.Name === 'Scope');
-                            if (scopeProp) {
-                                scope = scopeProp.Value;
+                            let scope = 'Extension';
+                            if (t.Properties) {
+                                let scopeProp = t.Properties.find((f: any) => f.Name === 'Scope');
+                                if (scopeProp) {
+                                    scope = scopeProp.Value;
+                                }
                             }
-                        }
 
-                        return {
-                            "TypeId": j || "",
-                            "Type": lType || "",
-                            "Id": t.Id || "",
-                            "Name": t.Name || "",
-                            "TargetObject": t.TargetObject || "",
-                            "Publisher": json.Publisher || "Platform",
-                            "Application": json.Name || "",
-                            "Version": json.Version || "",
-                            "CanExecute": ["Table", "Page", "PageExtension", "TableExtension", "PageCustomization", "Report", "Query"].indexOf(lType) != -1,
-                            "CanDesign": ["Page"].indexOf(lType) != -1,
-                            "CanCreatePage": ['Table', 'TableExtension'].indexOf(lType) != -1,
-                            "FsPath": "",
-                            //"Events": levents,
-                            "EventName": 'not_an_event',
-                            "FieldName": "",
-                            "SymbolData": {
-                                'Path': filePath,
-                                'Type': elem,
-                                'Index': index
-                            },
-                            "Scope": scope
-                        };
-                    });
+                            return {
+                                "TypeId": j || "",
+                                "Type": lType || "",
+                                "Id": t.Id || "",
+                                "Name": t.Name || "",
+                                "TargetObject": t.TargetObject || "",
+                                "Publisher": json.Publisher || "Platform",
+                                "Application": json.Name || "",
+                                "Version": json.Version || "",
+                                "CanExecute": ["Table", "Page", "PageExtension", "TableExtension", "PageCustomization", "Report", "Query"].indexOf(lType) != -1,
+                                "CanDesign": ["Page"].indexOf(lType) != -1,
+                                "CanCreatePage": ['Table', 'TableExtension'].indexOf(lType) != -1,
+                                "FsPath": "",
+                                //"Events": levents,
+                                "EventName": 'not_an_event',
+                                "FieldName": "",
+                                "SymbolData": {
+                                    'Path': filePath,
+                                    'Type': elem,
+                                    'Index': index
+                                },
+                                "Scope": scope
+                            };
+                        });
 
 
-                    objs = objs.concat(tempArr);
+                        objs = objs.concat(tempArr);
+                    }
                 }
             }
-        }
 
-        if (levents.length > 0) {
-            this.events = this.events.concat(levents);
-        }
+            if (levents.length > 0) {
+                this.events = this.events.concat(levents);
+            }
 
-        this.collectorCache.setCache(filePath, objs);
-        this.collectorCache.setCache(filePath, levents, 'events');
+            this.collectorCache.setCache(filePath, objs);
+            this.collectorCache.setCache(filePath, levents, 'events');
+
+        } catch (e) {
+            this.log(`Runtime package found, skipped: ${filePath}`);
+        }
 
         return objs;
     }
