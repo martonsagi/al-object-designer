@@ -16,6 +16,8 @@ export class ALTestRunnerCommand extends ALCommandBase {
         }
 
         // TODO:
-        vscode.commands.executeCommand('altestrunner.runTest');
+        let fileName = message.FsPath;
+        let functionName = message.EventData.EventName;
+        vscode.commands.executeCommand('altestrunner.runTest', fileName, functionName);
     }
 }
