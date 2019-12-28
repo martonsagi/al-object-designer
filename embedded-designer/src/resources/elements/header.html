@@ -15,10 +15,27 @@
         <div style="clear: both;"></div>
     </div>
 
-    <div class="header" show.bind="mode == 'Design' || mode == 'Table'">
+    <div class="header" show.bind="mode == 'Design'">
         <h1>AL</h1>
         <h1>${mode == 'Design' ? 'Page' : 'Table'}  Designer</h1>
         <h1>${objectInfo.Type} ${objectInfo.Id} ${objectInfo.Name}</h1>
         <div style="clear: both;"></div>
     </div>
+
+    <div class="header" show.bind="mode == 'EventList'">
+        <h1>AL</h1>
+        <h1>Events - ${objectInfo.Type} ${objectInfo.Id} ${objectInfo.Name}</h1>
+        <h1 show.bind="loaded">
+            <span textcontent.bind="count || 0"></span> ${activeType} ${headerType}${count > 1 ? 's' : ''}
+        </h1>
+        <h1 style="float: right; padding: 6px 15px 5px 15px;">
+            <input id="searchInput" type="text" id="searchVal" placeholder="Search for ${headerType}s" value.bind="query"
+                keyup.delegate="search() & throttle:350" />
+        </h1>
+        <h1 id="searchHeader" style="float: right; padding-right: 15px; border-left: none; cursor: pointer" click.delegate="filterType('', true)">
+            ${query == '' ? 'Search' : 'Show All (X)'}
+        </h1>
+        <div style="clear: both;"></div>
+    </div>
+
 </template>

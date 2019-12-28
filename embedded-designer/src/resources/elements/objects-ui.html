@@ -7,7 +7,7 @@
         </style>
 
         <ui-section row-layout>
-            <ui-sidebar class="object-types" label="Objects" scroll>
+            <ui-sidebar class="object-types" label="Objects" scroll show.bind="mode == 'List'">
                 <ui-menu>
                     <ui-menu-item active.bind="activeType == '' && !currentProject" click.trigger="showAll()">All</ui-menu-item>
                     <ui-menu-item active.bind="currentProject" click.trigger="setCurrentProjectFilter()">Workspace</ui-menu-item>
@@ -37,6 +37,14 @@
                 <ul ref="contextMenu" show.bind="showMenu == true" class="context-menu-ul">
                         <li click.trigger="sendCommand(selectedObject, 'Definition')"><i
                                 class="fa fa-view"></i> View</li>
+                        <li
+                            click.trigger="openEventList(selectedObject)"><i
+                            class="fa fa-view"></i>
+                            Show Events</li>
+                        <li show.bind="selectedObject.Type == 'Table'"
+                            click.trigger="sendCommand(selectedObject, 'NewTableExt')"><i
+                                class="fa fa-plus"></i>
+                            New Table Ext.</li>
                         <li show.bind="showEvents"
                             click.trigger="showEventParams(selectedObject)"><i
                                 class="fa fa-run"></i>
@@ -48,7 +56,7 @@
                         <li show.bind="selectedObject.TestMethod"
                             click.trigger="runTest(selectedObject)"><i
                                 class="fa fa-run"></i>
-                            Run Test</li>
+                            Run Tests</li>
                         <li show.bind="selectedObject.CanExecute"
                             click.trigger="sendCommand(selectedObject, 'Run')"><i
                                 class="fa fa-run"></i>
@@ -57,11 +65,11 @@
                             click.trigger="openPageDesigner(selectedObject)"><i
                                 class="fa fa-design"></i>
                             Design</li>
-                        <li show.bind="selectedObject.Type == 'Table'"
+                        <li show.bind="selectedObject.Type == 'Table' && !showEvents"
                             click.trigger="sendCommand(selectedObject, 'NewTableExt')"><i
                                 class="fa fa-plus"></i>
                             New Table Ext.</li>
-                        <li show.bind="selectedObject.Type == 'Page'"
+                        <li show.bind="selectedObject.Type == 'Page' && !showEvents"
                             click.trigger="sendCommand(selectedObject, 'NewPageExt')"><i
                                 class="fa fa-plus"></i>
                             New

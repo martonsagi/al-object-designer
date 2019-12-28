@@ -242,7 +242,8 @@ export module ALObjectDesigner {
 
     export enum PanelMode {
         List = "List",
-        Design = "Design"
+        Design = "Design",
+        EventList = "EventList"
     }
 
     export enum ParseMode {

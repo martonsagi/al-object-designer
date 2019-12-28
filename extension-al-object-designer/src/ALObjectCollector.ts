@@ -299,7 +299,7 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
 
                     if (json[elem]) {
                         let tempArr = json[elem].map((t: any, index: number) => {
-                            levents = levents.concat(this.extractEvents(lType, t, info));
+                            levents = levents.concat(this.extractEvents(lType, t, info, this._vsSettings.showStandardEvents, this._vsSettings.showStandardFieldEvents));
 
                             let scope = 'Extension';
                             if (t.Properties) {
@@ -354,7 +354,7 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
         return objs;
     }
 
-    protected extractEvents(type: string, item: any, info: any) {
+    public extractEvents(type: string, item: any, info: any, showStandardEvents?: boolean, showFieldEvents?: boolean) {
         let levents = [];
 
         if (item.Methods) {
@@ -398,17 +398,16 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
             }
         }
 
-        if (this._vsSettings.showStandardEvents === true) {
+        if (showStandardEvents === true) {
             if (type == 'Table') {
                 let generator = new ALEventGenerator();
                 info.TypeId = this.alTypes.indexOf(type);
-                let events = generator.generateTableEvents(item, info, this._vsSettings.showStandardFieldEvents === true);
+                let events = generator.generateTableEvents(item, info, showFieldEvents === true);
                 levents = levents.concat(events);
             }
         }
 
         return levents;
-
     }
 
     public async getSymbolReference(data: ALObjectDesigner.SymbolData) {

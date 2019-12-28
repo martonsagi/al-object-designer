@@ -58,7 +58,7 @@ export class App {
   showMarkedOnly: boolean = false;
 
   constructor() {
-    this.gridOptions = <GridOptions>{      
+    this.gridOptions = <GridOptions>{
       defaultColDef: {
         resizable: true,
         sortable: true,
@@ -69,6 +69,7 @@ export class App {
 
   attached() {
     this.mode = panelMode;
+    console.log('Panelmode:', this.mode);
     this.objectInfo = objectInfo;
     this.activeType = "";
     this.currentProject = false;
@@ -103,6 +104,18 @@ export class App {
           break;
         case 'designer':
           this.objectInfo = message.objectInfo;
+          break;
+        case 'eventlist':
+          this.events = message.events;          
+          this.setEventsView();    
+          this.filterType("");    
+          this.loaded = true;  
+          this.columnApi.setColumnVisible("Type" as any, false);
+          this.columnApi.setColumnVisible("Id" as any, false);
+          this.columnApi.setColumnVisible("Name" as any, false);
+          this.columnApi.setColumnVisible("Version" as any, false);
+          this.columnApi.setColumnVisible("Publisher" as any, false);
+          this.columnApi.setColumnVisible("Application" as any, false);
           break;
       }
 
@@ -156,7 +169,7 @@ export class App {
     this.results.sort(
       firstBy(function (v1, v2) { return v1.TypeId - v2.TypeId; })
         .thenBy("Id")
-    );    
+    );
 
     console.log(this.results);
 
@@ -329,7 +342,7 @@ export class App {
     this.columnApi.setColumnVisible("EventName" as any, !this.showTests && this.showEvents);
     this.columnApi.setColumnVisible("EventPublisher" as any, false);
     this.columnApi.setColumnVisible("UnitTest" as any, this.showTests);
-    this.columnApi.setColumnVisible("TargetObject" as any, !this.showTests);    
+    this.columnApi.setColumnVisible("TargetObject" as any, !this.showTests);
     this.search();
   }
 
@@ -370,10 +383,6 @@ export class App {
 
   designerFieldOnClick(event) {
     console.log(event);
-  }
-
-  runTest(element) {
-    this.sendCommand(element, 'ALTestRunner');
   }
 
   markAllObjects(event, record) {
@@ -421,5 +430,29 @@ export class App {
 
     this.currentRowHeight = height;
     return height;
+  }
+
+  runTest(element) {
+    this.sendCommand(element, 'ALTestRunner');
+  }
+
+  runTests() {
+    let selectedRows = this.events.filter(f => f.EventType == 'Test');
+  }
+
+  copySelectedEvents() {
+    let selectedRows = this.results.filter(f => f.Marked === true);
+
+    let message = {
+      Command: 'CopyEvents',
+      EventData: selectedRows
+    };
+
+    let messages = [message];
+    vscode.postMessage(messages);
+  }
+
+  openEventList(selectedObject) {
+    this.sendCommand(selectedObject, 'OpenEventList');
   }
 }

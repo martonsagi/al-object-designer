@@ -6,6 +6,7 @@ import { ALObjectCollector } from './ALObjectCollector';
 import { ALTemplateCollector } from './ALTemplateCollector';
 import { ALObjectParser } from './ALObjectParser';
 import { ALObjectDesigner, ALSymbolPackage } from './ALModules';
+import { ALEventGenerator } from './ALEventGenerator';
 const fs = require('fs-extra');
 
 /**
@@ -32,20 +33,34 @@ export class ALPanel {
         const column = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
 
         // If we already have a panel, show it.
-        if (ALPanel.currentPanel 
-            && ALPanel.currentPanel.panelMode == ALObjectDesigner.PanelMode.List 
+        if (ALPanel.currentPanel
+            && ALPanel.currentPanel.panelMode == ALObjectDesigner.PanelMode.List
             && mode == ALObjectDesigner.PanelMode.List) {
             ALPanel.currentPanel._panel.reveal(vscode.ViewColumn.One);
             return;
         }
 
         // Otherwise, create a new panel.
-        let title = mode == "List" ? "AL Object Designer" : `AL Designer: ${objectInfo.Type} ${objectInfo.Id} ${objectInfo.Name}`;
-        const panel = vscode.window.createWebviewPanel(ALPanel.viewType, title, mode == "List" ? vscode.ViewColumn.One : vscode.ViewColumn.Two, {
+        //let title = mode == "List" ? "AL Object Designer" : `AL Designer: ${objectInfo.Type} ${objectInfo.Id} ${objectInfo.Name}`;
+
+        let title = '';
+        switch (mode) {
+            case ALObjectDesigner.PanelMode.List:
+                title = 'AL Object Designer';
+                break;
+            case ALObjectDesigner.PanelMode.Design:
+                title = `AL Designer: ${objectInfo.Type} ${objectInfo.Id} ${objectInfo.Name}`;
+                break;
+            case ALObjectDesigner.PanelMode.EventList:
+                title = `AL Event List: ${objectInfo.Type} ${objectInfo.Id} ${objectInfo.Name}`;
+                break;
+        }
+
+        const panel = vscode.window.createWebviewPanel(ALPanel.viewType, title, mode == ALObjectDesigner.PanelMode.List ? vscode.ViewColumn.One : vscode.ViewColumn.Two, {
             // Enable javascript in the webview
             enableScripts: true,
 
-            enableFindWidget: true,            
+            enableFindWidget: true,
 
             retainContextWhenHidden: true,
 
@@ -77,7 +92,7 @@ export class ALPanel {
             // extract symbol values from "imaginary" path
             fpath = path.normalize(fpath);
             let fileinfo = path.parse(fpath),
-                fname = decodeURI(fileinfo.name), 
+                fname = decodeURI(fileinfo.name),
                 fdir = fileinfo.dir,
                 dirparts = fdir.split(path.sep);
 
@@ -106,7 +121,7 @@ export class ALPanel {
         }
 
         await ALPanel.open(extensionPath, ALObjectDesigner.PanelMode.Design, objectInfo);
-    }  
+    }
 
     public static async command(extensionPath: string, objectInfo: any) {
         await ALPanel.open(extensionPath, ALObjectDesigner.PanelMode.List, objectInfo);
@@ -187,25 +202,36 @@ export class ALPanel {
         if (!this._panel.webview.html)
             this._panel.webview.html = await this._getHtmlForWebview();
 
-        if (this.panelMode == ALObjectDesigner.PanelMode.List) {
-            let objectCollector = new ALObjectCollector();
-            this.objectList = await objectCollector.discover();
-            this.eventList = objectCollector.events;
-            let links: Array<ALObjectDesigner.TemplateItem> = [];
-            try {
-                let linkCollector = new ALTemplateCollector(this._extensionPath);
-                await linkCollector.initialize();
-                links = await linkCollector.discover();
-            } catch (e) {
-                console.log(`Cannot load templates: ${e}`);
-            }
+        let parser = new ALObjectParser();
+        let objectCollector = new ALObjectCollector();
+        switch (this.panelMode) {
+            case ALObjectDesigner.PanelMode.List:                
+                this.objectList = await objectCollector.discover();
+                this.eventList = objectCollector.events;
+                let links: Array<ALObjectDesigner.TemplateItem> = [];
+                try {
+                    let linkCollector = new ALTemplateCollector(this._extensionPath);
+                    await linkCollector.initialize();
+                    links = await linkCollector.discover();
+                } catch (e) {
+                    console.log(`Cannot load templates: ${e}`);
+                }
 
-            await this._panel.webview.postMessage({ command: 'data', data: this.objectList, 'customLinks': links, 'events': this.eventList });
-        } else {
-            let parser = new ALObjectParser();
-            this.objectInfo = await parser.updateCollectorItem(this.objectInfo);
+                await this._panel.webview.postMessage({ command: 'data', data: this.objectList, 'customLinks': links, 'events': this.eventList });
+                break;
+            case ALObjectDesigner.PanelMode.Design:
+                this.objectInfo = await parser.updateCollectorItem(this.objectInfo);
 
-            await this._panel.webview.postMessage({ command: 'designer', objectInfo: this.objectInfo });
+                await this._panel.webview.postMessage({ command: 'designer', objectInfo: this.objectInfo });
+                break;
+            case ALObjectDesigner.PanelMode.EventList:
+                this.objectList = await objectCollector.discover();
+                this.objectInfo = await parser.updateCollectorItem(this.objectInfo);
+                let events = objectCollector.extractEvents(this.objectInfo.Type, this.objectInfo.Symbol, this.objectInfo, true, true);
+                //let events = generator.generateTableEvents(this.objectInfo.Symbol, this.objectInfo, true);
+
+                await this._panel.webview.postMessage({ command: 'eventlist', 'data': this.objectInfo, 'events': events });
+                break;
         }
     }
 

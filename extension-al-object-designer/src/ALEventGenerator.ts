@@ -101,7 +101,7 @@ export class ALEventGenerator {
             );
 
             event.FieldName = fieldName;
-            event.EventType = 'Field';
+            event.EventType = 'System';
         }
 
         event.EventParameters = parameters;

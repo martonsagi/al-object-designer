@@ -10,8 +10,8 @@ export class CopyEventCommand extends ALCommandBase {
         super(lObjectDesigner, lExtensionPath);
     }
 
-    async execute(message: any) {
-        let objEvent = message.EventData;
+    getEventSnippet(objEvent: any) {
+        //let objEvent = message.EventData;
         let eventParams = [];
 
         if (objEvent.EventParameters) {
@@ -57,6 +57,13 @@ export class CopyEventCommand extends ALCommandBase {
 
     end;
 `
+        return eventSnippet;
+    }
+
+    async execute(message: any) {
+        let objEvent = message.EventData;
+        let eventSnippet = await this.getEventSnippet(objEvent);
+
         await clipboardy.write(eventSnippet);
 
         await vscode.window.showInformationMessage(`${objEvent.Type} ${objEvent.Id} ${objEvent.Name} - ${objEvent.EventName} copied to clipboard.`);

@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
 import { ALPanel } from "../ALPanel";
 import { ALCommandBase } from "./Base/ALCommandBase";
-import { ALSettings } from '../ALSettings';
 
 export class ALTestRunnerCommand extends ALCommandBase {
 
@@ -16,8 +15,14 @@ export class ALTestRunnerCommand extends ALCommandBase {
         }
 
         // TODO:
+        let allTests = message.AllTests === true;
         let fileName = message.FsPath;
         let functionName = message.EventData.EventName;
-        vscode.commands.executeCommand('altestrunner.runTest', fileName, functionName);
+
+        if (allTests === true) {
+            vscode.commands.executeCommand('altestrunner.runAllTests', '', message.Application);
+        } else {
+            vscode.commands.executeCommand('altestrunner.runTest', fileName, functionName);
+        }
     }
 }
