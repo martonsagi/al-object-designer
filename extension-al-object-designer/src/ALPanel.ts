@@ -162,26 +162,28 @@ export class ALPanel {
             }
         }, null, this._disposables);
 
-        let watcher = vscode.workspace.createFileSystemWatcher('**/*.al');
-        watcher.onDidCreate(async (e: vscode.Uri) => {
-            if (e.fsPath.indexOf('.vscode') == -1) {
-                await this.update();
-            }
-        });
+        if (mode === ALObjectDesigner.PanelMode.List) {
+            let watcher = vscode.workspace.createFileSystemWatcher('**/*.al');
+            watcher.onDidCreate(async (e: vscode.Uri) => {
+                if (e.fsPath.indexOf('.vscode') == -1) {
+                    await this.update();
+                }
+            });
 
-        watcher.onDidChange(async (e: vscode.Uri) => {
-            if (e.fsPath.indexOf('.vscode') == -1) {
-                await this.update();
-            }
-        });
+            watcher.onDidChange(async (e: vscode.Uri) => {
+                if (e.fsPath.indexOf('.vscode') == -1) {
+                    await this.update();
+                }
+            });
 
-        watcher.onDidDelete(async (e: vscode.Uri) => {
-            if (e.fsPath.indexOf('.vscode') == -1) {
-                await this.update();
-            }
-        });
+            watcher.onDidDelete(async (e: vscode.Uri) => {
+                if (e.fsPath.indexOf('.vscode') == -1) {
+                    await this.update();
+                }
+            });
 
-        this._disposables.push(watcher);
+            this._disposables.push(watcher);
+        }
     }
 
     public dispose() {
@@ -205,7 +207,7 @@ export class ALPanel {
         let parser = new ALObjectParser();
         let objectCollector = new ALObjectCollector();
         switch (this.panelMode) {
-            case ALObjectDesigner.PanelMode.List:                
+            case ALObjectDesigner.PanelMode.List:
                 this.objectList = await objectCollector.discover();
                 this.eventList = objectCollector.events;
                 let links: Array<ALObjectDesigner.TemplateItem> = [];
@@ -227,7 +229,12 @@ export class ALPanel {
             case ALObjectDesigner.PanelMode.EventList:
                 this.objectList = await objectCollector.discover();
                 this.objectInfo = await parser.updateCollectorItem(this.objectInfo);
-                let events = objectCollector.extractEvents(this.objectInfo.Type, this.objectInfo.Symbol, this.objectInfo, true, true);
+                let events = objectCollector.extractEvents(this.objectInfo.Type, this.objectInfo.Symbol, this.objectInfo.EventData, true, true);
+                if (this.objectInfo.Symbol.FsPath) {
+                    let levents = await objectCollector.extractLocalEvents(this.objectInfo.Type, this.objectInfo.Symbol, this.objectInfo.EventData);
+                    events = events.concat(levents);
+                }
+                events = objectCollector.updateEventTargets(this.objectList, events);
                 //let events = generator.generateTableEvents(this.objectInfo.Symbol, this.objectInfo, true);
 
                 await this._panel.webview.postMessage({ command: 'eventlist', 'data': this.objectInfo, 'events': events });

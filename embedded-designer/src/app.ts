@@ -93,7 +93,6 @@ export class App {
     window.addEventListener('message', event => {
       this.loaded = false;
       const message = event.data; // The JSON data our extension sent
-
       switch (message.command) {
         case 'data':
           this.data = message.data;
@@ -106,16 +105,16 @@ export class App {
           this.objectInfo = message.objectInfo;
           break;
         case 'eventlist':
-          this.events = message.events;          
-          this.setEventsView();    
-          this.filterType("");    
-          this.loaded = true;  
+          this.events = message.events;
+          this.setEventsView();
+          this.filterType("");
+          this.loaded = true;
           this.columnApi.setColumnVisible("Type" as any, false);
           this.columnApi.setColumnVisible("Id" as any, false);
           this.columnApi.setColumnVisible("Name" as any, false);
           this.columnApi.setColumnVisible("Version" as any, false);
           this.columnApi.setColumnVisible("Publisher" as any, false);
-          this.columnApi.setColumnVisible("Application" as any, false);
+          //this.columnApi.setColumnVisible("Application" as any, false);
           break;
       }
 

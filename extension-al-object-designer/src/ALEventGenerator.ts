@@ -7,13 +7,13 @@ export class ALEventGenerator {
             'Name': symbol.Name,
             "TargetObject": symbol.TargetObject || "",
             "Publisher": info.Publisher || "Platform",
-            "Application": info.Name || "",
+            "Application": info.Application || "",
             "Version": info.Version || "",
             "CanExecute": false,
             "CanDesign": false,
-            "FsPath": "",
+            "FsPath": info.FsPath,
             'EventName': 'OnInsert',
-            'EventType': 'Trigger',
+            'EventType': 'TriggerEvent',
             'EventPublisher': true,
             'EventParameters': [],
             'FieldName': '',
@@ -23,20 +23,20 @@ export class ALEventGenerator {
         let result: Array<any> = [];
 
         // creating global trigger events
-        result.push(this.getTableEvent(eventTemplate, 'OnAfterDeleteEvent', false, true, ''));
-        result.push(this.getTableEvent(eventTemplate, 'OnAfterInsertEvent', false, true, ''));
-        result.push(this.getTableEvent(eventTemplate, 'OnAfterModifyEvent', true, true, ''));
-        result.push(this.getTableEvent(eventTemplate, 'OnAfterRenameEvent', true, true, ''));
-        result.push(this.getTableEvent(eventTemplate, 'OnBeforeDeleteEvent', false, true, ''));
         result.push(this.getTableEvent(eventTemplate, 'OnBeforeInsertEvent', false, true, ''));
+        result.push(this.getTableEvent(eventTemplate, 'OnAfterInsertEvent', false, true, ''));
         result.push(this.getTableEvent(eventTemplate, 'OnBeforeModifyEvent', true, true, ''));
+        result.push(this.getTableEvent(eventTemplate, 'OnAfterModifyEvent', true, true, ''));
+        result.push(this.getTableEvent(eventTemplate, 'OnBeforeDeleteEvent', false, true, ''));
+        result.push(this.getTableEvent(eventTemplate, 'OnAfterDeleteEvent', false, true, ''));
         result.push(this.getTableEvent(eventTemplate, 'OnBeforeRenameEvent', true, true, ''));
+        result.push(this.getTableEvent(eventTemplate, 'OnAfterRenameEvent', true, true, ''));
 
         if (includeFields === true) {
             // field level events
             for (let field of symbol.Fields) {
-                result.push(this.getTableEvent(eventTemplate, 'OnAfterValidateEvent', true, false, field.Name));
                 result.push(this.getTableEvent(eventTemplate, 'OnBeforeValidateEvent', true, false, field.Name));
+                result.push(this.getTableEvent(eventTemplate, 'OnAfterValidateEvent', true, false, field.Name));
             }
         }
         return result;
@@ -45,7 +45,7 @@ export class ALEventGenerator {
     getTableEvent(inEvent: any, eventName: string, xRec: boolean, runTrigger: boolean, fieldName: string) {
         let event = Object.assign({}, inEvent);
         event.EventName = eventName;
-        event.EventType = 'Trigger';
+        event.EventType = 'TriggerEvent';
 
         let parameters: Array<any> = [
             {
@@ -101,7 +101,7 @@ export class ALEventGenerator {
             );
 
             event.FieldName = fieldName;
-            event.EventType = 'System';
+            event.EventType = 'TriggerEvent';
         }
 
         event.EventParameters = parameters;

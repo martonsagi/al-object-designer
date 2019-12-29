@@ -24,7 +24,7 @@
 
     <div class="header" show.bind="mode == 'EventList'">
         <h1>AL</h1>
-        <h1>Events - ${objectInfo.Type} ${objectInfo.Id} ${objectInfo.Name}</h1>
+        <h1>${objectInfo.Type} ${objectInfo.Name}</h1>
         <h1 show.bind="loaded">
             <span textcontent.bind="count || 0"></span> ${activeType} ${headerType}${count > 1 ? 's' : ''}
         </h1>

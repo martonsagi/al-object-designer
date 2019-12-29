@@ -40,7 +40,7 @@
                         <li
                             click.trigger="openEventList(selectedObject)"><i
                             class="fa fa-view"></i>
-                            Show Events</li>
+                            Events</li>
                         <li show.bind="selectedObject.Type == 'Table'"
                             click.trigger="sendCommand(selectedObject, 'NewTableExt')"><i
                                 class="fa fa-plus"></i>
@@ -56,7 +56,7 @@
                         <li show.bind="selectedObject.TestMethod"
                             click.trigger="runTest(selectedObject)"><i
                                 class="fa fa-run"></i>
-                            Run Tests</li>
+                            Run Test</li>
                         <li show.bind="selectedObject.CanExecute"
                             click.trigger="sendCommand(selectedObject, 'Run')"><i
                                 class="fa fa-run"></i>
@@ -107,13 +107,13 @@
                         grid-options.bind="gridOptions">
                         <ag-grid-column header-name="Select" pinned.bind="'left'" width.bind="70" editable.bind="false">
                             <ag-header-template>
-                                <label style="margin-left: -15px;">
+                                <label>
                                     <ui-switch secondary value.bind="params.context.allRowsSelected" click.trigger="params.context.markAllObjects($event, params.data)" on-label="All"
                                     off-label="All" size="2em"></ui-switch>
                                 </label>
                             </ag-header-template>
                             <ag-cell-template>
-                                <label style="padding: 15px; margin-left: -15px;"><input type="checkbox" checked.bind="params.data.Marked"></label>
+                                <label style="padding: 15px;"><input type="checkbox" checked.bind="params.data.Marked"></label>
                             </ag-cell-template>
                         </ag-grid-column>
                         <ag-grid-column header-name="Type" field="Type" editable.bind="false" width.bind="100"></ag-grid-column>
@@ -126,7 +126,7 @@
                                 </a>
                             </ag-cell-template>
                         </ag-grid-column>
-                        <ag-grid-column header-name="Name" field="Name" width.bind="250" editable.bind="true">
+                        <ag-grid-column header-name="Name" field="Name" width.bind="250" editable.bind="true" filter="agTextColumnFilter">
                             <ag-cell-template>
                                 <a href="#click"
                                     click.delegate="params.context.sendCommand(params.data, 'Definition')">${params.data.Name
@@ -140,7 +140,7 @@
                                     || ''}</a>
                             </ag-cell-template>
                         </ag-grid-column>
-                        <ag-grid-column header-name="Event Name" width.bind="250" field="EventName" width.bind="300"  editable.bind="true">
+                        <ag-grid-column header-name="Event Name" width.bind="350" field="EventName" editable.bind="true" filter="agTextColumnFilter">
                             <ag-cell-template>
                                 <a href="#click" click.delegate="params.context.showEventParams(params.data)">
                                     <span if.bind="params.data.FieldName != ''">${params.data.FieldName} -
@@ -148,7 +148,7 @@
                                 </a>
                             </ag-cell-template>
                         </ag-grid-column>
-                        <ag-grid-column header-name="Unit Test" col-id="UnitTest" field="EventName" editable.bind="true" width.bind="150" filter="agTextColumnFilter">
+                        <ag-grid-column header-name="Unit Test" col-id="UnitTest" field="EventName" editable.bind="true" width.bind="250" filter="agTextColumnFilter">
                             <ag-cell-template>
                                 <a href="#click"
                                     click.delegate="params.context.sendCommand(params.data, 'Definition')">${params.data.EventName
@@ -162,10 +162,10 @@
                                     || ''}</a>
                             </ag-cell-template>
                         </ag-grid-column>
-                        <ag-grid-column header-name="Event Type" width.bind="100" field="EventType" editable.bind="false" filter="agTextColumnFilter"></ag-grid-column>
-                        <ag-grid-column header-name="Application" width.bind="150" field="Application" editable.bind="false"></ag-grid-column>
-                        <ag-grid-column header-name="Version" width.bind="150" field="Version" editable.bind="false"></ag-grid-column>
-                        <ag-grid-column header-name="Publisher" width.bind="150" field="Publisher" editable.bind="false"></ag-grid-column>
+                        <ag-grid-column header-name="Event Type" width.bind="200" field="EventType" editable.bind="false" filter="agTextColumnFilter"></ag-grid-column>
+                        <ag-grid-column header-name="Application" width.bind="150" field="Application" editable.bind="false" filter="agTextColumnFilter"></ag-grid-column>
+                        <ag-grid-column header-name="Version" width.bind="150" field="Version" editable.bind="false" filter="agTextColumnFilter"></ag-grid-column>
+                        <ag-grid-column header-name="Publisher" width.bind="150" field="Publisher" editable.bind="false" filter="agTextColumnFilter"></ag-grid-column>
                     </ag-grid-aurelia>                    
                 </div>
             </ui-content>

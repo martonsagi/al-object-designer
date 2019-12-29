@@ -374,11 +374,11 @@ tr.selected:hover td#context-selected {
 }
 
 
-.ag-theme-material .ag-cell {
+.ag-theme-material .ag-cell,
+.ag-theme-material .ag-header-cell {
     padding-left: 5px;
     padding-right: 5px;
 }
-
 
 /*
  * http://fatopng.com/fontawesome-to-base64 :D

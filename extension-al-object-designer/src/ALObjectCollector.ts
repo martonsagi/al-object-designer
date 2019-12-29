@@ -132,7 +132,8 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
         }
 
         // update event targets
-        this.events = this.events.map(e => {
+        this.events = this.updateEventTargets(objs, this.events);
+        /*this.events = this.events.map(e => {
             if (e.EventType == "EventSubscriber") {
                 let objData = objs.find(f => f.Type == e.TargetObjectType && f.Id == e.TargetObject);
                 if (objData) {
@@ -141,7 +142,7 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
             }
 
             return e;
-        });
+        });*/
 
         objs = utils.uniqBy(objs, JSON.stringify);
 
@@ -203,6 +204,11 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
                     targetObj = utils.replaceAll(targetObj, '"', '');
 
                     let projectInfo = projectCollector.getProjectFromObjectPath(file);
+                    let info = {
+                        Publisher: projectInfo.publisher,
+                        Version: projectInfo.version,
+                        Application: projectInfo.name
+                    };
 
                     let newItem = {
                         "TypeId": this.alTypes.indexOf(ucType) || "",
@@ -226,7 +232,9 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
 
                     // Process local eventpublishers
                     if (objType.toLowerCase() == 'codeunit') {
-                        let parser = new ALObjectParser();
+                        let levents = await this.extractLocalEvents(ucType, newItem, info);
+                        this.events = this.events.concat(levents);
+                        /*let parser = new ALObjectParser();
                         let parsedEvents = await parser.ExtractMethodsWithAttrs(file);
                         for (let pKey in parsedEvents) {
                             if (parsedEvents[pKey].length > 0) {
@@ -256,7 +264,7 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
                                 });
                                 this.events = this.events.concat(levents);
                             }
-                        }
+                        }*/
                     }
                 }
             }
@@ -289,7 +297,7 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
                 let json: ALSymbolPackage.SymbolReference = JSON.parse(contents.trim());
                 let info = {
                     Publisher: json.Publisher,
-                    Name: json.Name,
+                    Application: json.Name,
                     Version: json.Version
                 };
 
@@ -354,6 +362,43 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
         return objs;
     }
 
+    public async extractLocalEvents(type: string, item: any, info: any) {
+        let events: Array<any> = [];        
+        let parser = new ALObjectParser();
+        let parsedEvents = await parser.ExtractMethodsWithAttrs(item.FsPath);
+        for (let pKey in parsedEvents) {
+            if (parsedEvents[pKey].length > 0) {
+                let levents = parsedEvents[pKey].map((m: any) => {
+                    return {
+                        "TypeId": this.alTypes.indexOf(type) || "",
+                        "Type": type || "",
+                        "Id": item.Id || "",
+                        "Name": item.Name || "",
+                        'TargetObjectType': m.TargetObjectType,
+                        "TargetObject": m.TargetObject || "",
+                        "Publisher": info.Publisher,
+                        "Application": info.Application || "",
+                        "Version": info.Version || "",
+                        "CanExecute": false,
+                        "CanDesign": false,
+                        "FsPath": item.FsPath,
+                        'EventName': m.Name,
+                        'EventType': m.EventType,
+                        'EventPublisher': (m.EventType as string).endsWith('Event'),
+                        'TestMethod': m.EventType === 'Test',
+                        'EventParameters': m.Parameters,
+                        "FieldName": "",
+                        "SymbolData": null,
+                        "Scope": 'Extension'
+                    }
+                });
+                events = events.concat(levents);
+            }
+        }
+
+        return events;
+    }
+
     public extractEvents(type: string, item: any, info: any, showStandardEvents?: boolean, showFieldEvents?: boolean) {
         let levents = [];
 
@@ -380,7 +425,7 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
                             'TargetObjectType': targetObjType,
                             "TargetObject": targetObj || "",
                             "Publisher": info.Publisher || "Platform",
-                            "Application": info.Name || "",
+                            "Application": info.Application || "",
                             "Version": info.Version || "",
                             "CanExecute": false,
                             "CanDesign": false,
@@ -408,6 +453,21 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
         }
 
         return levents;
+    }
+
+    public updateEventTargets(objs: Array<any>, events: Array<any>) {
+        let result = events.map(e => {
+            if (e.EventType == "EventSubscriber") {
+                let objData = objs.find(f => f.Type == e.TargetObjectType && f.Id == e.TargetObject);
+                if (objData) {
+                    e.TargetObject = objData.Name;
+                }
+            }
+
+            return e;
+        });
+
+        return result;
     }
 
     public async getSymbolReference(data: ALObjectDesigner.SymbolData) {
