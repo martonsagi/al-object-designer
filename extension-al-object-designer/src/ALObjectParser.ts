@@ -1,3 +1,4 @@
+import { ALPanel } from './ALPanel';
 import * as utils from './utils';
 import { ALObjectDesigner, ALSymbolPackage } from './ALModules';
 import ALObject = ALSymbolPackage.ALObject;
@@ -10,7 +11,7 @@ const balanced = require('balanced-match');
 
 export class ALObjectParser implements ALObjectDesigner.ObjectParser {
 
-    private _objectList: Array<ALObjectDesigner.CollectorItem> = [];
+    //private _objectList: Array<ALObjectDesigner.CollectorItem> = [];
     private _filePath: string = '';
     private _vsSettings: any;
 
@@ -99,10 +100,13 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
 
     public async parseSymbol(objectInfo: ALObjectDesigner.CollectorItem) {
         let collector = new ALObjectCollector();
-        this._objectList = await collector.discover();
-        let result = this._objectList.find(f => {
-            return (f.Id == objectInfo.Id && f.Type.toLowerCase() == objectInfo.Type.toLowerCase())
-                || (f.Name == objectInfo.Name && f.Type.toLowerCase() == objectInfo.Type.toLowerCase());
+        if (ALPanel.objectList === undefined) {            
+            ALPanel.objectList = await collector.discover();
+        }
+        
+        let result = ALPanel.objectList.find(f => {
+            return (f.Id && objectInfo.Id && f.Id == objectInfo.Id && f.Type.toLowerCase() == objectInfo.Type.toLowerCase())
+                || (f.Name && objectInfo.Name && f.Name == objectInfo.Name && f.Type.toLowerCase() == objectInfo.Type.toLowerCase());
         });
 
         if (result) {

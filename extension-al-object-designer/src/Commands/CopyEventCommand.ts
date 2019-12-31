@@ -20,7 +20,7 @@ export class CopyEventCommand extends ALCommandBase {
                 let paramTypeStr = `${paramType.Name}`;
                 if (paramType.Subtype) {
                     if (!paramType.IsEmpty) {
-                        let objectList = this.objectDesigner.objectList as Array<ALObjectDesigner.CollectorItem>;
+                        let objectList = ALPanel.objectList as Array<ALObjectDesigner.CollectorItem>;
                         let object = objectList.find(f => {
                             let lType = paramType.Name == 'Record' ? 'Table' : paramType.Name;
                             return f.Type == lType && f.Id == paramType.Subtype.Id;
@@ -38,9 +38,10 @@ export class CopyEventCommand extends ALCommandBase {
             }
         }
 
+        let objEventFieldName = objEvent.FieldOptions ? objEvent.FieldOptions.Name : objEvent.FieldName;
         let eventSnippet = `
-    [EventSubscriber(ObjectType::${objEvent.Type}, ${objEvent.Type == 'Table' ? 'Database' : objEvent.Type}::"${objEvent.Name}", '${objEvent.EventName}', '${objEvent.FieldName || ''}', true, true)]
-    local procedure "${objEvent.Name}_${objEvent.EventName}${objEvent.EventType.toLowerCase() == "triggerevent" ? `_${objEvent.FieldName}` : ''}"`;
+    [EventSubscriber(ObjectType::${objEvent.Type}, ${objEvent.Type == 'Table' ? 'Database' : objEvent.Type}::"${objEvent.Name}", '${objEvent.EventName}', '${objEventFieldName || ''}', true, true)]
+    local procedure "${objEvent.Name}_${objEvent.EventName}${["triggerevent", "pageactionevent", "pagefieldevent"].indexOf(objEvent.EventType.toLowerCase()) != -1 && objEvent.FieldName.length > 0 ? `_${objEvent.FieldName}` : ''}"`;
 
         if (eventParams.length > 1) {
             eventSnippet += `

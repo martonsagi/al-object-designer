@@ -106,19 +106,21 @@ export class App {
           break;
         case 'eventlist':
           this.events = message.events;
-          this.setEventsView();
+          console.log(message);
           this.filterType("");
-          this.loaded = true;
-          this.columnApi.setColumnVisible("Type" as any, false);
-          this.columnApi.setColumnVisible("Id" as any, false);
-          this.columnApi.setColumnVisible("Name" as any, false);
-          this.columnApi.setColumnVisible("Version" as any, false);
-          this.columnApi.setColumnVisible("Publisher" as any, false);
-          //this.columnApi.setColumnVisible("Application" as any, false);
+          setTimeout((() => {
+            this.setEventsView();
+            this.columnApi.setColumnVisible("Type" as any, false);
+            this.columnApi.setColumnVisible("Id" as any, false);
+            this.columnApi.setColumnVisible("Name" as any, false);
+            this.columnApi.setColumnVisible("Version" as any, false);
+            this.columnApi.setColumnVisible("Publisher" as any, false);
+            //this.columnApi.setColumnVisible("Application" as any, false);
+            this.loaded = true;
+          }).bind(this), 250);
+
           break;
       }
-
-      this.loaded = true;
     });
 
     window.addEventListener('field-onmove', (event: any) => {
@@ -148,6 +150,8 @@ export class App {
 
     this.results = source
       .filter(f =>
+        (f.Name)
+        &&
         (this.activeType != "" ? f.Type == this.activeType : true)
         &&
         (this.currentProject == true ? f.FsPath != "" : true)
@@ -158,7 +162,7 @@ export class App {
         &&
         (this.showTests === true ? f.EventType == 'Test' : true)
         &&
-        (f.Id.toString().indexOf(this.query.toLowerCase()) != -1
+        ((f.Id.toString().indexOf(this.query.toLowerCase()) != -1)
           || f.Publisher.toLowerCase().indexOf(this.query.toLowerCase()) != -1
           || f.Version.toLowerCase().indexOf(this.query.toLowerCase()) != -1
           || this.searchParts(this.query, `${f.Type}${f.Id}`) == true
@@ -169,8 +173,6 @@ export class App {
       firstBy(function (v1, v2) { return v1.TypeId - v2.TypeId; })
         .thenBy("Id")
     );
-
-    console.log(this.results);
 
     this.count = this.results.length;
   }

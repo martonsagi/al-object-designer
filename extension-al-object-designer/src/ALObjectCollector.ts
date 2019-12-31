@@ -306,8 +306,9 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
                     let lType: string = this.alTypes[j];
 
                     if (json[elem]) {
-                        let tempArr = json[elem].map((t: any, index: number) => {
-                            levents = levents.concat(this.extractEvents(lType, t, info, this._vsSettings.showStandardEvents, this._vsSettings.showStandardFieldEvents));
+                        let tempArr = json[elem].map(async (t: any, index: number) => {
+                            let evts = await this.extractEvents(lType, t, info, this._vsSettings.showStandardEvents, this._vsSettings.showStandardFieldEvents);
+                            levents = levents.concat(evts);
 
                             let scope = 'Extension';
                             if (t.Properties) {
@@ -341,9 +342,9 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
                                 "Scope": scope
                             };
                         });
-
-
-                        objs = objs.concat(tempArr);
+                        
+                        let tempArr2 = await Promise.all(tempArr);
+                        objs = objs.concat(tempArr2);
                     }
                 }
             }
@@ -363,7 +364,7 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
     }
 
     public async extractLocalEvents(type: string, item: any, info: any) {
-        let events: Array<any> = [];        
+        let events: Array<any> = [];
         let parser = new ALObjectParser();
         let parsedEvents = await parser.ExtractMethodsWithAttrs(item.FsPath);
         for (let pKey in parsedEvents) {
@@ -399,7 +400,7 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
         return events;
     }
 
-    public extractEvents(type: string, item: any, info: any, showStandardEvents?: boolean, showFieldEvents?: boolean) {
+    public async extractEvents(type: string, item: any, info: any, showStandardEvents?: boolean, showFieldEvents?: boolean): Promise<any[]> {
         let levents = [];
 
         if (item.Methods) {
@@ -444,11 +445,18 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
         }
 
         if (showStandardEvents === true) {
-            if (type == 'Table') {
-                let generator = new ALEventGenerator();
-                info.TypeId = this.alTypes.indexOf(type);
-                let events = generator.generateTableEvents(item, info, showFieldEvents === true);
-                levents = levents.concat(events);
+            let generator = new ALEventGenerator();
+            let events: Array<any> = [];
+            info.TypeId = this.alTypes.indexOf(type);
+            switch (type.toLowerCase()) {
+                case 'table':
+                    events = generator.generateTableEvents(item, info, showFieldEvents === true);
+                    levents = levents.concat(events);
+                    break;
+                case 'page':
+                    events = await generator.generatePageEvents(item, info, showFieldEvents === true);
+                    levents = levents.concat(events);
+                    break;
             }
         }
 

@@ -6,7 +6,6 @@ import { ALObjectCollector } from './ALObjectCollector';
 import { ALTemplateCollector } from './ALTemplateCollector';
 import { ALObjectParser } from './ALObjectParser';
 import { ALObjectDesigner, ALSymbolPackage } from './ALModules';
-import { ALEventGenerator } from './ALEventGenerator';
 const fs = require('fs-extra');
 
 /**
@@ -19,8 +18,8 @@ export class ALPanel {
     public static currentPanel: ALPanel | undefined;
     public panelMode: ALObjectDesigner.PanelMode = ALObjectDesigner.PanelMode.List; // List, Designer
     public objectInfo: any;
-    public objectList?: Array<ALObjectDesigner.CollectorItem>;
-    public eventList?: Array<ALObjectDesigner.CollectorItem>;
+    public static objectList?: Array<ALObjectDesigner.CollectorItem>;
+    public static eventList?: Array<ALObjectDesigner.CollectorItem>;
 
     public static readonly viewType = 'alObjectDesigner';
 
@@ -187,8 +186,6 @@ export class ALPanel {
     }
 
     public dispose() {
-        ALPanel.currentPanel = undefined;
-
         // Clean up our resources
         this._panel.dispose();
 
@@ -198,6 +195,10 @@ export class ALPanel {
                 x.dispose();
             }
         }
+
+        ALPanel.currentPanel = undefined;
+        ALPanel.objectList = undefined;
+        ALPanel.eventList = undefined;
     }
 
     public async update() {
@@ -208,8 +209,8 @@ export class ALPanel {
         let objectCollector = new ALObjectCollector();
         switch (this.panelMode) {
             case ALObjectDesigner.PanelMode.List:
-                this.objectList = await objectCollector.discover();
-                this.eventList = objectCollector.events;
+                ALPanel.objectList = await objectCollector.discover();
+                ALPanel.eventList = objectCollector.events;
                 let links: Array<ALObjectDesigner.TemplateItem> = [];
                 try {
                     let linkCollector = new ALTemplateCollector(this._extensionPath);
@@ -219,7 +220,7 @@ export class ALPanel {
                     console.log(`Cannot load templates: ${e}`);
                 }
 
-                await this._panel.webview.postMessage({ command: 'data', data: this.objectList, 'customLinks': links, 'events': this.eventList });
+                await this._panel.webview.postMessage({ command: 'data', data: ALPanel.objectList, 'customLinks': links, 'events': ALPanel.eventList });
                 break;
             case ALObjectDesigner.PanelMode.Design:
                 this.objectInfo = await parser.updateCollectorItem(this.objectInfo);
@@ -227,14 +228,31 @@ export class ALPanel {
                 await this._panel.webview.postMessage({ command: 'designer', objectInfo: this.objectInfo });
                 break;
             case ALObjectDesigner.PanelMode.EventList:
-                this.objectList = await objectCollector.discover();
+                if (ALPanel.objectList === undefined)
+                    ALPanel.objectList = await objectCollector.discover();
+
                 this.objectInfo = await parser.updateCollectorItem(this.objectInfo);
-                let events = objectCollector.extractEvents(this.objectInfo.Type, this.objectInfo.Symbol, this.objectInfo.EventData, true, true);
+
+                let sourceTable = ALObjectParser.getSymbolProperty(this.objectInfo.Symbol, 'SourceTable');
+                if (sourceTable !== null) {
+                    if (!isNaN(parseInt(sourceTable))) {
+                        let table = ALPanel.objectList.find(f => f.Type && f.Type.toLowerCase() == 'table' && f.Id == (parseInt(sourceTable as string)));
+                        if (table) {
+                            for (let prop of this.objectInfo.Symbol.Properties) {
+                                if (prop.Name == 'SourceTable') {
+                                    prop.Value = table.Name;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                let events = await objectCollector.extractEvents(this.objectInfo.Type, this.objectInfo.Symbol, this.objectInfo.EventData, true, true);
                 if (this.objectInfo.Symbol.FsPath) {
                     let levents = await objectCollector.extractLocalEvents(this.objectInfo.Type, this.objectInfo.Symbol, this.objectInfo.EventData);
                     events = events.concat(levents);
                 }
-                events = objectCollector.updateEventTargets(this.objectList, events);
+                events = objectCollector.updateEventTargets(ALPanel.objectList, events);
                 //let events = generator.generateTableEvents(this.objectInfo.Symbol, this.objectInfo, true);
 
                 await this._panel.webview.postMessage({ command: 'eventlist', 'data': this.objectInfo, 'events': events });
