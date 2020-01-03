@@ -9,6 +9,11 @@ export class ALTestRunnerCommand extends ALCommandBase {
     }
 
     async execute(message: any) {
+        //TODO:
+        await vscode.window.showInformationMessage(`Integration with AL Test Runner extension is under development. Try again in the next release! :)`);
+        return;
+
+        /*
         let checkExt = vscode.extensions.getExtension('jamespearson.al-test-runner');
         if (!checkExt) {
             await vscode.window.showErrorMessage(`AL Test Runner extension is not installed or disabled.`);
@@ -24,5 +29,6 @@ export class ALTestRunnerCommand extends ALCommandBase {
         } else {
             vscode.commands.executeCommand('altestrunner.runTest', fileName, functionName);
         }
+        */
     }
 }

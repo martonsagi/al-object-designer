@@ -1,6 +1,29 @@
 # Change Log
 All notable changes to the "al-object-designer" extension.
 
+## 0.1.4 - 2020-01-03
+**Enhancement:**
+- New view type: Event List
+    - Available from context menu: "Events" link
+    - Shows events for a single object
+    - "Standard" object/field/action events are listed for tables and pages
+    - Copy multiple events
+- Object List:
+    - "Tests" switch: list unit tests within the workspace
+    - Performance updates: number of full-reads have been reduced
+    - Copy multiple events in Event mode
+- Context menu:
+    - Events: show events of a specific object
+- **Upcoming in v0.1.5**:
+    - AL Test Runner integration: `AL Test Runner` button
+        - Run selected unit tests from Object Designer
+        - Run all tests
+
+**Bugfixes:**
+- #46, #47: runtime symbols cannot be processed, skipping these files.
+- #39: commented out EventSubscribers are parsed in some cases, partially fixed.
+
+
 ## 0.1.3 - 2019-11-22
 **Enhancement:**
 - Object List: 

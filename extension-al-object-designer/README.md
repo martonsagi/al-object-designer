@@ -7,6 +7,8 @@ C/Side Object Designer was something that the new AL development environment lac
 * **List Overview** of all AL objects in your project: based on symbols (*.app) and your local .al files.
 * **List Event Publishers** from symbol objects and local files, browse them in the same way as objects.
 * **List Event Subscribers** from symbol objects and local files, browse them in the same way as objects.
+* **Event List view**: browse Event publishers of a specific object. Standard events are shown for tables and pages.
+* **List Unit Tests** available in your own workspace files.
 * **Export list to CSV:** current view (objects/events/subscriptions) including all records and visible columns - respecting filters - is exported.
 * **Live Update:** object list is automatically maintained as you create/change/delete objects or download symbols.
 * **Multi-Folder workspaces** are supported: e.g. a workspace with MainApp/TestApp folders.
@@ -161,6 +163,14 @@ Selection;Option; ,First,Second
 
 ### Copy/Paste Events
 ![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/media/ALObjectDesigner_ObjectEventCopyPaste.gif)
+
+### Copy/Paste Multiple Events
+
+![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/media/preview11_masscopy.gif)
+
+### Event List for Tables/Pages
+
+![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/media/preview12_page_events.png)
 
 ### Real-time Page Designer (alpha)
 ![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/media/ALObjectDesigner_PageDesign.gif)
