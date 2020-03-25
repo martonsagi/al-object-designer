@@ -100,10 +100,10 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
 
     public async parseSymbol(objectInfo: ALObjectDesigner.CollectorItem) {
         let collector = new ALObjectCollector();
-        if (ALPanel.objectList === undefined) {            
+        if (ALPanel.objectList === undefined) {
             ALPanel.objectList = await collector.discover();
         }
-        
+
         let result = ALPanel.objectList.find(f => {
             return (f.Id && objectInfo.Id && f.Id == objectInfo.Id && f.Type.toLowerCase() == objectInfo.Type.toLowerCase())
                 || (f.Name && objectInfo.Name && f.Name == objectInfo.Name && f.Type.toLowerCase() == objectInfo.Type.toLowerCase());
@@ -409,6 +409,9 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
                 break;
             case 'integrationevent':
                 result.EventType = 'IntegrationEvent';
+                break;
+            case 'internalevent':
+                result.EventType = 'InternalEvent';
                 break;
             case 'test':
                 result.EventType = 'Test';
