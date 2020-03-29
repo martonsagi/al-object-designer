@@ -30,7 +30,7 @@ export class RunCommandBase extends ALCommandBase {
 
         let vsUri;
         if (createFile) {
-            fname = (vscode.workspace as any).workspaceFolders[0].uri.fsPath + path.sep + `.alcache` + path.sep + `Opening_${Date.now()}.al`;
+            fname =  path.join((vscode.workspace as any).workspaceFolders[0].uri.fsPath, '.vscode', `.alcache`, `Opening_${Date.now()}.al`);
             let snippet =
                 `${notDefinition ? message.Type.toLowerCase() : "codeunit"} ${notDefinition ? message.Id : "99999999"} ${notDefinition ? '"' + message.Name + '"' : "Temp"} {
     var
@@ -63,23 +63,28 @@ export class RunCommandBase extends ALCommandBase {
                 await vscode.commands.executeCommand('crs.RunCurrentObjectWeb');
             }
             await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+            if (createFile) {
+                this.deleteFile(fname);
+            }
         } else {
             if (message.FsPath != "") {
                 let newDoc = await vscode.workspace.openTextDocument(message.FsPath);
                 await vscode.window.showTextDocument(newDoc, vscode.ViewColumn.One);
             } else {
-                let res: any = await vscode.commands.executeCommand('editor.action.goToDeclaration');
+                vscode.commands.executeCommand('editor.action.goToDeclaration').then(() => {
+                    if (createFile) {
+                        this.deleteFile(fname);
+                    }
+                })
             }
         }
+    }
 
-        if (createFile) {
-            setTimeout(() => {
-                try {
-                    utils.unlink(fname);
-                } catch (e) {
-                    console.log(e);
-                }
-            }, 1000);
+    private deleteFile(name: string) {
+        try {
+            utils.unlink(name);
+        } catch (e) {
+            console.log(e);
         }
     }
 }

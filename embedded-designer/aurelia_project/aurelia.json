@@ -4,6 +4,54 @@
     "bundler": {
         "id": "cli",
         "displayName": "Aurelia-CLI"
+    },	 
+    "paths": {
+        "root": "src",
+        "resources": "resources",
+        "elements": "resources/elements",
+        "attributes": "resources/attributes",
+        "valueConverters": "resources/value-converters",
+        "bindingBehaviors": "resources/binding-behaviors"
+    },    
+    "transpiler": {
+        "id": "typescript",
+        "displayName": "TypeScript",
+        "fileExtension": ".ts",
+        "dtsSource": [
+            "./custom_typings/**/*.d.ts",
+            "./node_modules/aurelia-ui-framework/dist/typings/**/*.d.ts"
+        ],
+        "source": "src/**/*.ts"
+    },
+    "markupProcessor": {
+        "id": "none",
+        "displayName": "None",
+        "fileExtension": ".html",
+        "source": "src/**/*.html"
+    },
+    "cssProcessor": {
+        "source": [
+            "src/**/*.less"
+        ]
+    },
+    "bundleCss": {
+        "source": [
+            "src/**/*.css"
+        ]
+    },
+    "jsonProcessor": {
+        "id": "none",
+        "displayName": "None",
+        "fileExtension": ".json",
+        "source": "src/**/*.json"
+    },
+    "platform": {
+        "id": "web",
+        "displayName": "Web",
+        "port": 9000,
+        "index": "index.html",
+        "baseDir": ".",
+        "output": "scripts"
     },
     "build": {
         "targets": [
@@ -118,43 +166,7 @@
                 }
             ]
         }
-    },
-    "platform": {
-        "id": "web",
-        "displayName": "Web",
-        "port": 9000,
-        "index": "index.html",
-        "baseDir": ".",
-        "output": "scripts"
-    },
-    "transpiler": {
-        "id": "typescript",
-        "displayName": "TypeScript",
-        "fileExtension": ".ts",
-        "dtsSource": [
-            "./custom_typings/**/*.d.ts",
-            "./node_modules/aurelia-ui-framework/dist/typings/**/*.d.ts"
-        ],
-        "source": "src/**/*.ts"
-    },
-    "markupProcessor": {
-        "id": "none",
-        "displayName": "None",
-        "fileExtension": ".html",
-        "source": "src/**/*.html"
-    },
-    "cssProcessor": {
-        "id": "none",
-        "displayName": "None",
-        "fileExtension": ".css",
-        "source": "src/**/*.css"
-    },
-    "jsonProcessor": {
-        "id": "none",
-        "displayName": "None",
-        "fileExtension": ".json",
-        "source": "src/**/*.json"
-    },
+    },    
     "editor": {
         "id": "vscode",
         "displayName": "Visual Studio Code"
@@ -168,14 +180,6 @@
     "integrationTestRunner": {
         "id": "none",
         "displayName": "None"
-    },
-    "paths": {
-        "root": "src",
-        "resources": "resources",
-        "elements": "resources/elements",
-        "attributes": "resources/attributes",
-        "valueConverters": "resources/value-converters",
-        "bindingBehaviors": "resources/binding-behaviors"
-    },
+    },    
     "packageManager": "npm"
 }

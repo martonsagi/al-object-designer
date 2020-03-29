@@ -21,7 +21,7 @@ C/Side Object Designer was something that the new AL development environment lac
 * **View definition of Symbols**: original file is opened for local files.
 * **Generate new objects** from tables: card/list pages, report, query.
 * **Built-in snippets**: generate new dictionary or entry tables using a single click.
-* **Custom snippets**: use your own snippets placed in `<project root>/.altemplates` folder
+* **Custom snippets**: use your own snippets placed in `<project root>/.vscode/.altemplates` folder
 * **Design view** for Pages (alpha): card/list layout is rendered for local pages. Card/Document Symbols are also supported.
 
 ### Optional integration with [AZ AL Dev Tools](https://marketplace.visualstudio.com/items?itemName=andrzejzwierzchowski.al-code-outline)

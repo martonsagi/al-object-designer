@@ -2,7 +2,7 @@
     "name": "al-object-designer",
     "displayName": "AL Object Designer",
     "description": "Object Designer optimized for (Dynamics 365 Business Central) AL Language development.",
-    "version": "0.1.5-alpha1",
+    "version": "0.1.5",
     "publisher": "martonsagi",
     "license": "MIT",
     "author": {
@@ -26,7 +26,7 @@
         "Dynamics NAV"
     ],
     "engines": {
-        "vscode": "^1.29.0"
+        "vscode": "^1.42.0"
     },
     "categories": [
         "Other"
@@ -35,7 +35,8 @@
         "onCommand:extension.openALWindow",
         "onCommand:extension.openALDesignWindow",
         "onUri",
-        "*"
+        "onLanguage:al",
+        "workspaceContains:app.json"    
     ],
     "icon": "images/icon.png",
     "main": "./out/extension",
@@ -125,13 +126,16 @@
                     "description": "Change row-height setting for Object list."
                 },
                 "alObjectDesigner.gridRowHeightPixels": {
-                    "type": "number",                    
-                    "default": 0,                    
+                    "type": "number",
+                    "default": 0,
                     "description": "Define custom row-heigh in pixels. "
                 }
             }
         }
     },
+    "extensionKind": [
+        "workspace"
+    ],
     "scripts": {
         "vscode:prepublish": "npm run compile",
         "compile": "tsc -p ./",
@@ -142,9 +146,9 @@
     "devDependencies": {
         "@types/mocha": "^2.2.42",
         "@types/node": "^8.10.59",
+        "@types/vscode": "^1.42.0",
         "tslint": "^5.20.1",
-        "typescript": "^3.6.4",
-        "vscode": "^1.1.36"
+        "typescript": "^3.6.4"
     },
     "dependencies": {
         "balanced-match": "^1.0.0",

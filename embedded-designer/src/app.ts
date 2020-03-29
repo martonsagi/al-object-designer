@@ -353,7 +353,7 @@ export class App {
   }
 
   showAll() {
-    this.currentProject = false;
+    //this.currentProject = false;
     this.filterType('');
   }
 

@@ -13,7 +13,7 @@ export class ALTemplateCollector implements ALObjectDesigner.TemplateCollector {
 
     public async initialize() {
         let root = (workspace as any).workspaceFolders[0];
-        let fPath = path.join(root.uri.fsPath, '.altemplates', path.sep);
+        let fPath = path.join(root.uri.fsPath, '.vscode', '.altemplates', path.sep);
         let exists = await utils.folderExists(fPath);
         if (exists == false) {
             let source = path.join(this.extensionPath, 'altemplates', path.sep);
@@ -27,7 +27,7 @@ export class ALTemplateCollector implements ALObjectDesigner.TemplateCollector {
 
         for (let i = 0; i < fpaths.length; i++) {
             const wkspace = fpaths[i];
-            let fpath: any = path.join(wkspace.uri.fsPath, '.altemplates', path.sep);
+            let fpath: any = path.join(wkspace.uri.fsPath, '.vscode', '.altemplates', path.sep);
             let exists = await utils.folderExists(fpath);
             if (exists === true) {
             let items: any = await utils.readDir(fpath);

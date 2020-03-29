@@ -9,8 +9,12 @@
         <ui-section row-layout>
             <ui-sidebar class="object-types" label="Objects" scroll show.bind="mode == 'List'">
                 <ui-menu>
-                    <ui-menu-item active.bind="activeType == '' && !currentProject" click.trigger="showAll()">All</ui-menu-item>
-                    <ui-menu-item active.bind="currentProject" click.trigger="setCurrentProjectFilter()">Workspace</ui-menu-item>
+                    <div style="padding: 10px 5px 5px;">
+                        <ui-switch secondary value.bind="currentProject" click.trigger="setCurrentProjectFilter()" on-label="Workspace"
+                            off-label="Workspace" size="7em"></ui-switch>
+                    </div>
+                    </ui-menu-item>
+                    <ui-menu-item active.bind="activeType == ''" click.trigger="showAll()">All</ui-menu-item>
                     <ui-menu-item active.bind="activeType == 'Table'" click.trigger="filterType('Table')" id="filter-Table">Tables</ui-menu-item>
                     <ui-menu-item active.bind="activeType == 'TableExtension'" click.trigger="filterType('TableExtension')" id="filter-TableExtension">Table Ext.</ui-menu-item>
                     <ui-menu-item active.bind="activeType == 'Page'" click.trigger="filterType('Page')" id="filter-Page">Pages</ui-menu-item>

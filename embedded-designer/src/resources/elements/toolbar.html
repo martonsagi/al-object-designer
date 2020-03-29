@@ -1,21 +1,31 @@
 <template>
     <div class="object-bar buttons">
-        <ui-toolbar style="background: none;">
-            <ui-button style="margin-right: 5px;" show.bind="vsSettings.useAZALDevTools" secondary click.trigger="sendCommand('', 'AZWizard')" title="AZ AL Dev Tools - New Object Wizard">AZ AL Wizard</ui-button>
-            <ui-button style="margin-right: 5px;" primary click.trigger="sendCommand('', 'ALTestRunner')" title="AL Test Runner - Local unit testing">AL Test Runner</ui-button>
+        <ui-toolbar style="background: none;">    
+            <span id="searchHeader" style="padding-right: 10px; border-left: none; cursor: pointer" click.delegate="filterType('', true)">
+                ${query == '' ? 'Search' : 'All (X)'}
+            </span>
+            <input id="searchInput" type="text" id="searchVal" placeholder="Search for ${headerType}s" value.bind="query"
+            keyup.delegate="search() & throttle:350" />
+            
             <ui-switch secondary value.bind="showTests" click.trigger="setTestMethodView()" on-label="Tests"
                 off-label="Tests" size="4em"></ui-switch>
             <ui-switch secondary value.bind="showEvents" click.trigger="setEventsView()" on-label="Events"
                 off-label="Events" size="5em"></ui-switch>
 
-            <ui-button if.bind="showEvents && !showEventSubs" style="margin-right: 5px;" primary click.trigger="copySelectedEvents()" title="Copy Selected Events">Copy Events</ui-button>
+            <ui-button if.bind="showEvents && !showEventSubs" style="margin-right: 5px;" primary
+                click.trigger="copySelectedEvents()" title="Copy Selected Events">Copy Events</ui-button>
 
-            <ui-switch secondary value.bind="showEventSubs" show.bind="showEvents" click.trigger="setEventSubscriberView()" on-label="Subscriptions"
-                off-label="Subscriptions" size="7em"></ui-switch>
+            <ui-switch secondary value.bind="showEventSubs" show.bind="showEvents"
+                click.trigger="setEventSubscriberView()" on-label="Subscriptions" off-label="Subscriptions" size="7em">
+            </ui-switch>
 
             <ui-switch secondary value.bind="showMarkedOnly" click.trigger="setShowMarkedOnly()" on-label="Marked only"
                 off-label="Marked Only" size="7em"></ui-switch>
 
+            <span show.bind="loaded" style="margin-left: 10px; font-size: 1.2em">
+                <span textcontent.bind="count || 0"></span> ${activeType} ${headerType}${count > 1 ? 's' : ''}
+            </span>
+    
             <!-- span>Launch:&nbsp;</span>
             <ui-dropdown width="10em">
                 <ui-list-item value="1">Local</ui-list-item>
@@ -24,7 +34,8 @@
             <ui-button primary click.trigger="compilerCommand('build')">Build</ui-button>
             <ui-button success click.trigger="compilerCommand('run')">Publish</ui-button>
             <ui-button secondary click.trigger="compilerCommand('debug')">Debug</ui-button -->
-            <span>&nbsp;Snippets:&nbsp;</span>
+            <ui-filler></ui-filler>
+            <!-- span>&nbsp;Snippets:&nbsp;</span>
             <ui-dropdown width="10em">
                 <ui-list-group label="Built-in">
                     <ui-list-item value="1" click.delegate="addNewObject('empty')">
@@ -37,8 +48,12 @@
                         ${link.title}
                     </ui-list-item>
                 </ui-list-group>
-            </ui-dropdown>
-            <ui-filler></ui-filler>
+            </ui-dropdown -->
+            <ui-button style="margin-right: 5px;" show.bind="vsSettings.useAZALDevTools" secondary
+                click.trigger="sendCommand('', 'AZWizard')" title="AZ AL Dev Tools - New Object Wizard">AZ Wizard
+            </ui-button>
+            <ui-button style="margin-right: 5px;" primary click.trigger="sendCommand('', 'ALTestRunner')"
+                title="AL Test Runner - Local unit testing">Test Runner</ui-button>
             <ui-button primary click.delegate="exportObjectList()" title="Export Object List to CSV">Export</ui-button>
             <ui-button click.delegate="refreshDesigner()" title="Reload object list">Refresh</ui-button>
 

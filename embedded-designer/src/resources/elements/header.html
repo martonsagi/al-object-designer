@@ -1,7 +1,6 @@
 <template>
-    <div class="header" show.bind="mode == 'List'">
-        <h1>AL</h1>
-        <h1>Object Designer</h1>
+    <div class="header" show.bind="mode == 'List_hidden'">
+        <h1>AL Object Designer</h1>
         <h1 show.bind="loaded">
             <span textcontent.bind="count || 0"></span> ${activeType} ${headerType}${count > 1 ? 's' : ''}
         </h1>
