@@ -373,7 +373,7 @@ export class App {
 
   showAll() {
     //this.currentProject = false;
-    this.filterType(this.activeType, true);
+    this.filterType('');
   }
 
   addNewObject(type) {

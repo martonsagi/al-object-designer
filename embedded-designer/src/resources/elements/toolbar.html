@@ -1,7 +1,7 @@
 <template>
     <div class="object-bar buttons">
         <ui-toolbar style="background: none;">    
-            <span id="searchHeader" style="padding-right: 10px; border-left: none; cursor: pointer" click.delegate="filterType('', true)">
+            <span id="searchHeader" style="padding-right: 10px; border-left: none; cursor: pointer" click.delegate="filterType('')">
                 ${query == '' ? 'Search' : 'All (X)'}
             </span>
             <input id="searchInput" type="text" id="searchVal" placeholder="Search for ${headerType}s" value.bind="query"
