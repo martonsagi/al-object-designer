@@ -59,30 +59,30 @@ export class RunCommandBase extends ALCommandBase {
                 let launchUrl = settings.getUrl(message.Type, message.Id);
 
                 await vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(launchUrl));
-            } else {                
+            } else {
                 await vscode.commands.executeCommand('crs.RunCurrentObjectWeb');
             }
             await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
             if (createFile) {
-                this.deleteFile(fname);
+                await this.deleteFile(fname);
             }
         } else {
             if (message.FsPath != "") {
                 let newDoc = await vscode.workspace.openTextDocument(message.FsPath);
-                await vscode.window.showTextDocument(newDoc, vscode.ViewColumn.One);
+                vscode.window.showTextDocument(newDoc, vscode.ViewColumn.One);
             } else {
-                vscode.commands.executeCommand('editor.action.goToDeclaration').then(() => {
+                vscode.commands.executeCommand('editor.action.revealDefinition').then(async () => {
                     if (createFile) {
-                        this.deleteFile(fname);
+                        await this.deleteFile(fname);
                     }
                 })
             }
         }
     }
 
-    private deleteFile(name: string) {
+    private async deleteFile(name: string) {
         try {
-            utils.unlink(name);
+            await utils.unlink(name);
         } catch (e) {
             console.log(e);
         }

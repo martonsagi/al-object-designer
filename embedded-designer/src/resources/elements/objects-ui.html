@@ -40,61 +40,57 @@
 
                 <ul ref="contextMenu" show.bind="showMenu == true" class="context-menu-ul">
                         <li click.trigger="sendCommand(selectedObject, 'Definition')"><i
-                                class="fa fa-view"></i> View</li>
+                                class="fa fa-eye"></i> View</li>
                         <li
                             click.trigger="openEventList(selectedObject)"><i
-                            class="fa fa-view"></i>
+                            class="fas fa-eye"></i>
                             Events</li>
-                        <li show.bind="selectedObject.Type == 'Table'"
-                            click.trigger="sendCommand(selectedObject, 'NewTableExt')"><i
-                                class="fa fa-plus"></i>
-                            New Table Ext.</li>
                         <li show.bind="showEvents"
                             click.trigger="showEventParams(selectedObject)"><i
-                                class="fa fa-run"></i>
+                                class="fas fa-copy"></i>
                             Copy Event</li>
                         <li show.bind="selectedObject.CanExecute"
                             click.trigger="sendCommand(selectedObject, 'BrowserPreview')"><i
-                                class="fa fa-run"></i>
+                                class="fas fa-globe"></i>
                             Preview</li>
                         <li show.bind="selectedObject.TestMethod"
                             click.trigger="runTest(selectedObject)"><i
-                                class="fa fa-run"></i>
+                                class="fas fa-vial"></i>
                             Run Test</li>
                         <li show.bind="selectedObject.CanExecute"
                             click.trigger="sendCommand(selectedObject, 'Run')"><i
-                                class="fa fa-run"></i>
+                                class="fas fa-globe"></i>
                             Run</li>
                         <li show.bind="selectedObject.CanDesign"
                             click.trigger="openPageDesigner(selectedObject)"><i
-                                class="fa fa-design"></i>
+                                class="fas fa-pencil-ruler"></i>
                             Design</li>
                         <li show.bind="selectedObject.Type == 'Table' && !showEvents"
                             click.trigger="sendCommand(selectedObject, 'NewTableExt')"><i
-                                class="fa fa-plus"></i>
+                                class="fas fa-plus"></i>
                             New Table Ext.</li>
                         <li show.bind="selectedObject.Type == 'Page' && !showEvents"
                             click.trigger="sendCommand(selectedObject, 'NewPageExt')"><i
-                                class="fa fa-plus"></i>
+                                class="fas fa-plus"></i>
                             New
                             Page Ext.</li>
                         <li show.bind="selectedObject.CanCreatePage"
                             click.trigger="sendCommand(selectedObject, 'NewCard')"><i
-                                class="fa fa-list"></i>
+                                class="fas fa-list"></i>
                             New
                             Card</li>
                         <li show.bind="selectedObject.CanCreatePage"
                             click.trigger="sendCommand(selectedObject, 'NewList')"><i
-                                class="fa fa-list"></i>
+                                class="fas fa-list"></i>
                             New
                             List</li>
                         <li show.bind="selectedObject.CanCreatePage"
                             click.trigger="sendCommand(selectedObject, 'NewReport')"><i
-                                class="fa fa-report"></i>
+                                class="fas fa-chart-bar"></i>
                             New Report</li>
                         <li show.bind="selectedObject.CanCreatePage"
                             click.trigger="sendCommand(selectedObject, 'NewQuery')"><i
-                                class="fa fa-plus"></i>
+                                class="fas fa-plus"></i>
                             New Query</li>
                     </ul>
 
@@ -126,7 +122,7 @@
                             col-id.bind="selectedObject == element || hoverObject == element ? 'context-selected' : ''">
                             <ag-cell-template>
                                 <a class="context-menu-btn" class="context-menu"
-                                    click.trigger="params.context.setContextMenuVisible($event, params.data)">&nbsp;
+                                    click.trigger="params.context.setContextMenuVisible($event, params.data)"><i class="fas fa-ellipsis-v"></i>
                                 </a>
                             </ag-cell-template>
                         </ag-grid-column>

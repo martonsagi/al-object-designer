@@ -1,6 +1,6 @@
-@base-font-size : 14px;
-@border-color   : var(--vscode-panel-border);
-@text-color     : var(--vscode-editor-foreground);
+@base-font-size  : 14px;
+@border-color    : var(--vscode-panel-border);
+@text-color      : var(--vscode-editor-foreground);
 @bc-green-darker : #005e63;
 @bc-green-dark   : #008089;
 @bc-green        : #00B7C3;
@@ -74,9 +74,9 @@ h1:first-of-type {
 }
 
 input#searchInput {
-    width: 150px;
+    width       : 150px;
     margin-right: 5px;
-    padding: 6px;
+    padding     : 6px;
 }
 
 div.content {
@@ -216,14 +216,11 @@ tr.selected:hover {
 }
 
 a.context-menu-btn {
-    padding            : 0 20px;
-    display            : block;
-    font-weight        : bold;
-    background-image   : url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAA+UlEQVQ4ja3Uv0pDMRgF8F9KKReRUkQEHayzi47ikzj7CL6C+ESCb6Cj4NRNURzEQeqglnppHHLBCjeBWzwZ8gUO359zkoQoakMQKuyhwgLPUXxrJUPMLBziEREfOEM/x+9lKzDCbhOvYYx+jlxK1AnZCnjFDXYwwx3mOXLIiQ1BWJfGqjGN4qJzR0HYxAm28YUr3GarFlw7wrvk2jfOMVjFtQrDpc6HCuaUEtWSyKQLOWv2VpRcu8eFpNEcl1Fc2bURNppuXkqulcTexzUeMMEpejl+abQtHC+dDzDwq9sf/NsTKSWa4qmJP6WfoM6Rs2J3/Y+KrnXBD1GoiT9F9m3JAAAAAElFTkSuQmCC);
-    background-position: center center;
-    background-repeat  : no-repeat;
-    opacity            : 0.3;
-    text-decoration    : none !important;
+    padding        : 0 20px;
+    display        : block;
+    font-weight    : bold;
+    opacity        : 0.3;
+    text-decoration: none !important;
 }
 
 td#context-selected {
@@ -261,7 +258,7 @@ tr.selected:hover td#context-selected {
 }
 
 .context-menu-ul li:hover {
-    background: rgb(178, 233, 237) !important;
+    background: rgb(178, 233, 237);
 }
 
 .new-object-link {
@@ -429,7 +426,7 @@ tr.selected:hover td#context-selected {
     background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAYAAAByUDbMAAAA1ElEQVQ4je3UMUoDQRTG8d9bBrGwDhZWIraCWCVX8BR2XsCbeBKvEDsJHsAyRWoRi7DkWewWcTTCblL6DcPA481/PpiPFykdSoGCa5yNZCyxSNkWTPGIdiSs4B7zgnO8p5yNIYV4xgXmTV/bjHT17W7zV9dQ/cOGq/TnJMSt4b/aYFLDLvG0r7NGl/x9c9bSOXvFQpfibRWcVLVPrKvaW8+gnxpHOK32HbLaD7/0HadulR64xmr7uRAzfFQurlKu7FDsmmchbvwcS8uUL4NhY3TQ0H4BT2Q4kAyS3n0AAAAASUVORK5CYII=);
 }
 
-.fa-list {
+.fa-listx {
     background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAYAAAByUDbMAAABb0lEQVQ4jc3UPWtUQRTG8d8slyUssq4hiFgsIlYiKey0FCwNpLCw0EpMI9qJX8DCD+E3UUGtRUuLiGAKXwoVC1lks8fCGTm5m0bZwnMZ7j3/mfvMnIeZKSGsKgYrU0JBh3M49Q//L7CLNyEWsIlX2Ef8ZdvHE5wJoasr2sTnOhMcqS2zSa3iS2IdzmOK3a7C79ipb7iCG7iOeWU71Y67SWwdj1rNTWyG5yG+QVFOYxbicRtYlMs4GeJpYhvZwCY2xp2i/Kj5BYyLcr+ubICLmCYGxw4TG2I7DTqONVxNJU0x6rGhXmzhE9bD7we3sIcusYd4gUFiJ/AVl0L82bSLNFvLhZgnNsei7afElsoc43ZRZjVvnt1LkzTPMjt6mFjzJ3s2wjXLnmW2phdb+IBJ8uIm9lpe2QM867ENybMuiY6K8rN+D6Eoo9Q/xKDHDqysw3t8xEvLx+ldKn1SBd86eJxeVw2lDjhrBbdG+W8vx193OI8vsf/HiwAAAABJRU5ErkJggg==);
 }
 
@@ -437,7 +434,7 @@ tr.selected:hover td#context-selected {
     background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAYAAAByUDbMAAAA20lEQVQ4jeXUoUpEURDG8d8nN8lGMfkAIiYfwCCyryAmERVBDdrElzDIJsHig7iYxGA0mUwKBoPBIFyD5XpxdZd7mlMOzJzvP99hDpNarVRMFSMVh0UWI6tFYFjG5iSiSD9yEFlqw5pnU1BFDiPbkZlWeQNnWGkmq18MVDjFI27w8pfjcQfQi5xEBpG5rrBprGMPs6MufXtmZAFreMbFmI1GOpvHMbYmBf0E6xRFYe2vcYddvOIDO3jDPfbRwwPOcYXbpji+JnSE6w6mLmv1sMIQ7x1A8AT5H/vsE5REIQqDX2aJAAAAAElFTkSuQmCC);
 }
 
-.fa-plus {
+.fa-plusx {
     background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAYAAAByUDbMAAABBklEQVQ4jc3UT0pDMRAG8F9KESkuRYqKKxdFRLyBFxCv4sadp/AAXsF7uNedCxEtpS3qQkRU3rjos76WvohFxC+EMH/yZTKTSQphFpLUQhuLKPCIfohi5gaImoEDXOIBA5xipc4/hGbtKWxiqyJvl5H26zY0MmSzbDn/vPGn+FWyZpIaWMXylG1tSm6hk6SqrkAPwxBFwjpOyrWKNjYq8hOu8Tzld4HjED3YwRtizjlAJ8Q4Z7kn8h2aytw38Gp073nRxcsn6y0OTeYH9rBfkW9whruKrsDVOJhMOx2ZzM05dnPt9H8f7Z+R3fiq8rtRoYY5spT5HJeMumKhVN2jm/sca8nmwQet736P88KibwAAAABJRU5ErkJggg==);
 }
 
@@ -495,6 +492,12 @@ tr.selected:hover td#context-selected {
         border-color  : var(--vscode-panel-border) !important;
     }
 
+    .ag-menu {
+        color     : var(--vscode-editor-foreground);
+        background: var(--vscode-editor-background);
+        border-color: var(--vscode-panel-border) !important;
+    }
+
     .ag-row {
         border-color: var(--vscode-panel-border) !important;
     }
@@ -549,11 +552,11 @@ tr.selected:hover td#context-selected {
 
 .ag-pinned-left-header,
 .ag-pinned-left-cols-container,
-.ag-cell-last-left-pinned  {
-    border-right-color: @border-color !important;
+.ag-cell-last-left-pinned {
+    border-right-color: @border-color  !important;
 }
 
-
+body.vscode-high-contrast,
 body.vscode-dark {
 
     .ui-sidebar .ui-sidebar-head .ui-sidebar-title {
@@ -569,7 +572,7 @@ body.vscode-dark {
     a:visited,
     a:hover,
     a:focus {
-        color: var(--vscode-editor-foreground) !important;
+        color          : var(--vscode-editor-foreground) !important;
         text-decoration: none;
     }
 
@@ -586,13 +589,50 @@ body.vscode-dark {
 
     .object-bar {
         /*box-shadow   : none;
-        border-bottom: 1px solid var(--vscode-panel-border) !important;*/
+        border-bottom  : 1px solid var(--vscode-panel-border) !important;*/
     }
-    
+
+    .context-menu-ul {
+        color           : var(--vscode-editor-foreground);
+        background-color: var(--vscode-button-hoverBackground);
+
+        li {
+            border: 1px solid transparent;
+
+            &:hover {
+                border    : 1px solid var(--vscode-editor-foreground) !important;
+                background: var(--vscode-editor-background);
+            }
+        }
+    }
+
+    .ui-switch-control .ui-switch {
+        box-shadow: 0 0 0 1px @border-color;
+    }
+
+    .ui-switch-control.secondary .ui-switch>.ui-switch-input~.ui-switch-inner {
+        background-color: var(--vscode-editor-background);
+
+        &::before {
+            color: var(--vscode-editor-foreground);
+        }
+    }
+
+    .ui-switch-control .ui-switch .ui-switch-inner {
+
+        &::before,
+        &::after {
+            text-shadow: none !important;
+        }
+    }
+
+    .ui-switch-control.secondary .ui-switch>.ui-switch-input:checked~.ui-switch-inner {
+        background-color: @bc-green;
+    }
 }
 
 body.vscode-light {
-    
+
     .ag-header-cell:hover,
     .ag-row-hover {
         background: @bc-green-lighter  !important;
@@ -603,6 +643,34 @@ body.vscode-light {
 
         .ag-row-hover {
             background: @bc-green-light  !important;
+        }
+    }
+}
+
+body.vscode-high-contrast {
+
+    .object-bar {
+        box-shadow   : none;
+        border-bottom: 1px solid var(--vscode-panel-border) !important;
+    }
+
+    a,
+    a:link,
+    a:visited,
+    a:hover,
+    a:focus {
+        color          : var(--vscode-editor-foreground) !important;
+        text-decoration: underline;
+    }
+
+    .context-menu-ul {
+        color           : var(--vscode-editor-foreground);
+        background-color: #000000;
+        border          : 1px solid @border-color  !important;
+
+        li:hover {
+            border    : 1px solid @border-color  !important;
+            background: transparent !important;
         }
     }
 }

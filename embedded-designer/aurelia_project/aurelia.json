@@ -74,6 +74,7 @@
             {
                 "name": "vendor-bundle.js",
                 "prepend": [
+                    "node_modules/@fortawesome/fontawesome-free/js/all.min.js",
                     "node_modules/bluebird/js/browser/bluebird.core.js",
                     {
                         "path": "node_modules/aurelia-cli/lib/resources/scripts/configure-bluebird-no-long-stacktraces.js",

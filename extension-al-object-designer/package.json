@@ -36,7 +36,7 @@
         "onCommand:extension.openALDesignWindow",
         "onUri",
         "onLanguage:al",
-        "workspaceContains:app.json"    
+        "workspaceContains:app.json"
     ],
     "icon": "images/icon.png",
     "main": "./out/extension",
@@ -151,6 +151,7 @@
         "typescript": "^3.6.4"
     },
     "dependencies": {
+        "@fortawesome/fontawesome-free": "^5.13.0",
         "balanced-match": "^1.0.0",
         "clipboardy": "^1.2.3",
         "fs-extra": "^7.0.1",

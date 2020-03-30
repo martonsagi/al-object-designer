@@ -16,6 +16,8 @@ export class App {
   data: Array<any> = [];
   results: Array<any> = [];
   query: string = "";
+
+  @observable()
   activeType: string = "";
   count: number = 0;
   loaded: boolean = false;
@@ -271,10 +273,12 @@ export class App {
     return search.test(what) == true;
   }
 
-  selectionChanged(elem, event) {
-    let target = event.target;
+  selectionChanged(elem, target: HTMLElement) {
+    if (!target.classList || !target.classList.contains("context-menu-btn")) {
+      target = target.parentElement as HTMLElement;
+    }
     if (target)
-      this.showMenu = target.tagName.toLowerCase() == "a" && target.className.indexOf("context-menu-btn") != -1;
+      this.showMenu = target.tagName.toLowerCase() == "a" && target.classList.contains("context-menu-btn");
     else
       this.showMenu = false;
   }
@@ -301,9 +305,16 @@ export class App {
   }
 
   setContextMenuVisible(event, currRec) {
-    this.selectRow(currRec, event);
+    let target: HTMLElement = event.target;
+    if (!target.classList.contains("context-menu-btn")) {
+      target = target.parentElement.parentElement as HTMLElement;
+    }
+
+    console.log('context element', target);
+    this.selectRow(currRec, target);
     this.showMenu = !this.showMenu;
-    let rect = (event.target as HTMLElement).getBoundingClientRect();
+
+    let rect = target.getBoundingClientRect();
     this.contextMenu.style.left = rect.left + 'px';
     this.contextMenu.style.top = rect.top + 'px';
   }
@@ -455,5 +466,13 @@ export class App {
 
   openEventList(selectedObject) {
     this.sendCommand(selectedObject, 'OpenEventList');
+  }
+
+  activeTypeChanged() {
+    if (!this.columnApi)
+      return;
+    if (!this.showEventSubs && !this.showEvents && !this.showTests) {
+      this.columnApi.setColumnVisible("TargetObject" as any, ["tableextension", "pageextension", "pagecustomization", "enumextension", "interface"].indexOf(this.activeType.toLowerCase()) != -1 || this.activeType == '');
+    }
   }
 }

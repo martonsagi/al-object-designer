@@ -8,6 +8,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.13.0",
     "ag-grid-aurelia": "^20.2.0",
     "ag-grid-community": "^20.2.0",
     "aurelia-animator-css": "^1.0.4",
