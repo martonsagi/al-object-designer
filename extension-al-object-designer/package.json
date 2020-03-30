@@ -146,9 +146,9 @@
     "devDependencies": {
         "@types/mocha": "^2.2.42",
         "@types/node": "^8.10.59",
-        "@types/vscode": "^1.42.0",
+        "@types/vscode": "^1.43.0",
         "tslint": "^5.20.1",
-        "typescript": "^3.6.4"
+        "typescript": "^3.7.5"
     },
     "dependencies": {
         "@fortawesome/fontawesome-free": "^5.13.0",

@@ -71,7 +71,7 @@ export class RunCommandBase extends ALCommandBase {
                 let newDoc = await vscode.workspace.openTextDocument(message.FsPath);
                 vscode.window.showTextDocument(newDoc, vscode.ViewColumn.One);
             } else {
-                vscode.commands.executeCommand('editor.action.revealDefinition').then(async () => {
+                await vscode.commands.executeCommand('editor.action.revealDefinition').then(async () => {
                     if (createFile) {
                         await this.deleteFile(fname);
                     }

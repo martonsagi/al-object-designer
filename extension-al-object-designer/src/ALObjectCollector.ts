@@ -26,8 +26,9 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
         "TableExtensions",
         "ControlAddIns",
         "EnumTypes",
-        "DotNetPackages",
-        "Interfaces"
+        "EnumExtensions",
+        "Interfaces",
+        "DotNetPackages"
     ];
 
     private alTypes = [
@@ -43,8 +44,9 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
         "TableExtension",
         "ControlAddIn",
         "Enum",
-        "DotNetPackage",
-        "Interface"
+        "EnumExtension",
+        "Interface",
+        "DotNetPackage"        
     ];
 
     public constructor() {
@@ -186,7 +188,7 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
 
                 if (parts.length == 2) {
                     parts[2] = parts[1];
-                    parts[1] = '0';
+                    parts[1] = '';
                 }
 
                 if (parts.length > 2) {
@@ -194,7 +196,7 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
                         objId = parts[1];
 
                     let ucType = utils.toUpperCaseFirst(objType);
-                    let extendIndex = parts.indexOf('extends');
+                    let extendIndex = parts.indexOf('extends') != -1 ? parts.indexOf('extends') : parts.indexOf('implements');
                     let nameEndIndex = extendIndex != -1 ? extendIndex : parts.length;
                     let name: string = parts.slice(2, nameEndIndex).join(" ").trim();
                     name = utils.replaceAll(name, '"', '');
@@ -216,6 +218,7 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
                         "Id": objId || "",
                         "Name": name || "",
                         "TargetObject": targetObj || "",
+                        'TargetObjectType': ["Enum", "Codeunit"].indexOf(ucType) != -1 ? "Interface" : ucType.replace('Extension', ''),
                         "Publisher": projectInfo.publisher,
                         "Application": projectInfo.name || "",
                         "Version": projectInfo.version || "",

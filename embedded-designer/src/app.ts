@@ -32,7 +32,7 @@ export class App {
   showTests: boolean = false;
   headerType: string = 'object';
 
-  @observable
+  @observable()
   TargetObjectHeader: string = 'Extends';
 
   vsSettings: any;
@@ -168,7 +168,8 @@ export class App {
           || f.Publisher.toLowerCase().indexOf(this.query.toLowerCase()) != -1
           || f.Version.toLowerCase().indexOf(this.query.toLowerCase()) != -1
           || this.searchParts(this.query, `${f.Type}${f.Id}`) == true
-          || this.searchParts(this.query, this.showEvents ? `${f.Name} ${f.FieldName != '' ? f.FieldName + ' ' : ''}${f.EventName}` : f.Name) == true)
+          || this.searchParts(this.query, this.showEvents ? `${f.Name} ${f.FieldName != '' ? f.FieldName + ' ' : ''}${f.EventName}` : f.Name) == true
+          || this.searchParts(this.query, `${f.TargetObject}`) == true)
       );
 
     this.results.sort(
@@ -217,6 +218,13 @@ export class App {
       command = 'Definition';
       element.Name = element.TargetObject;
       name = element.Name;
+      if (element.TargetObjectType != '') {
+        element.Type = element.TargetObjectType;
+        element.Name = element.TargetObject;
+        name = element.Name;
+        type = element.Type;  
+        element.FsPath = "";
+      }
     }
 
     if (command == 'DefinitionEventPub' && element.TargetObject) {
@@ -365,7 +373,7 @@ export class App {
 
   showAll() {
     //this.currentProject = false;
-    this.filterType('');
+    this.filterType(this.activeType, true);
   }
 
   addNewObject(type) {
@@ -472,7 +480,8 @@ export class App {
     if (!this.columnApi)
       return;
     if (!this.showEventSubs && !this.showEvents && !this.showTests) {
-      this.columnApi.setColumnVisible("TargetObject" as any, ["tableextension", "pageextension", "pagecustomization", "enumextension", "interface"].indexOf(this.activeType.toLowerCase()) != -1 || this.activeType == '');
+      this.TargetObjectHeader = ["enum", "codeunit"].indexOf(this.activeType.toLowerCase()) != -1 ? 'Implements' : this.TargetObjectHeader;
+      this.columnApi.setColumnVisible("TargetObject" as any, ["tableextension", "pageextension", "pagecustomization", "enumextension", "enum", "codeunit"].indexOf(this.activeType.toLowerCase()) != -1 || this.activeType == '');
     }
   }
 }
