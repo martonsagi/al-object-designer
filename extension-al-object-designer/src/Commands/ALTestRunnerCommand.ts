@@ -15,14 +15,23 @@ export class ALTestRunnerCommand extends ALCommandBase {
     }
 
     async execute(message: any) {
-        //TODO:
-        //await vscode.window.showInformationMessage(`Integration with AL Test Runner extension is under development. Try again in the next release! :)`);
-        //return;
-
-        let checkExt = vscode.extensions.getExtension('jamespearson.al-test-runner');
-        if (!checkExt) {
+        let alTestRunnerExt = vscode.extensions.getExtension('jamespearson.al-test-runner');
+        if (!alTestRunnerExt) {
             await vscode.window.showErrorMessage(`AL Test Runner extension is not installed or disabled.`);
         }
+
+        let lastFilename = '';
+        alTestRunnerExt!.exports.onOutputTestResults = (context: any) => {
+            //console.log('Test Runner updated', context.event, context.filename);
+
+            if (lastFilename === 'last.xml' && context.filename !== lastFilename) {
+                lastFilename = context.filename;
+                console.log('AL Test Runner finished.');
+                alTestRunnerExt!.exports.getWorkspaceFolder = undefined;
+            } else {
+                lastFilename = context.filename;
+            }            
+        };
 
         let allTests = message.EventData.AllTests === true;
         let fileName = message.FsPath;
@@ -39,23 +48,18 @@ export class ALTestRunnerCommand extends ALCommandBase {
                 for (let project of projects) {
                     let info = this._projectCollector.projects.find(f => f.settings.name == project);
                     if (info) {
-                        checkExt!.exports.getWorkspaceFolder = () => {
+                        alTestRunnerExt!.exports.getWorkspaceFolder = () => {
                             return info.fsPath;
                         };
 
-                        //let doc = await vscode.workspace.openTextDocument(join(info.fsPath, 'app.json'));
-                        //let editor = await vscode.window.showTextDocument(doc, vscode.ViewColumn.Beside, true);
                         await vscode.commands.executeCommand('altestrunner.runAllTests', info.settings.id, info.settings.name);
-                        //await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
                     }
                 }
             }
-
-            //ALPanel.showPanel();
         } else {
             let projectInfo = this._projectCollector.getProjectFromObjectPath(fileName);
 
-            checkExt!.exports.getWorkspaceFolder = () => {
+            alTestRunnerExt!.exports.getWorkspaceFolder = () => {
                 return projectInfo.fsPath;
             };
 
@@ -63,8 +67,6 @@ export class ALTestRunnerCommand extends ALCommandBase {
                 let contents = await read(fileName) as string;
                 let position = contents.indexOf(functionName);
                 if (position != -1) {
-                    //let doc = await vscode.workspace.openTextDocument(fileName);
-                    //let editor = await vscode.window.showTextDocument(doc, vscode.ViewColumn.Beside, false);
                     await vscode.commands.executeCommand('altestrunner.runTest', fileName, position, projectInfo.id, projectInfo.name);
                 } else {
                     await vscode.window.showErrorMessage(`Unable to run test: ${functionName} could not be found in ${fileName}`);
