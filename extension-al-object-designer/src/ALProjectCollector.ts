@@ -33,6 +33,7 @@ export class ALProjectCollector {
     getProjectFromObjectPath(objPath: string) {
         let info = this.projects.find(f => objPath.indexOf(f.fsPath) !== -1);
         if (info) {
+            info.settings.fsPath = info.fsPath;
             return info.settings;
         }
 

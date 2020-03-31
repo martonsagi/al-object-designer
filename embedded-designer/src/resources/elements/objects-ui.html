@@ -8,12 +8,16 @@
 
         <ui-section row-layout>
             <ui-sidebar class="object-types" label="Objects" scroll show.bind="mode == 'List'">
+                <div style="padding: 10px 5px 5px;">
+                    <ui-switch secondary value.bind="currentProject" click.trigger="setCurrentProjectFilter()" on-label="Workspace"
+                        off-label="Workspace" size="8em"></ui-switch>
+                </div>
+                <div style="padding: 0 5px 5px;">
+                    <ui-switch secondary value.bind="showMarkedOnly" click.trigger="setShowMarkedOnly()" on-label="Marked only"
+                    off-label="Marked Only" size="8em"></ui-switch>
+                </div>
+                
                 <ui-menu>
-                    <div style="padding: 10px 5px 5px;">
-                        <ui-switch secondary value.bind="currentProject" click.trigger="setCurrentProjectFilter()" on-label="Workspace"
-                            off-label="Workspace" size="7em"></ui-switch>
-                    </div>
-                    </ui-menu-item>
                     <ui-menu-item active.bind="activeType == ''" click.trigger="showAll()">All</ui-menu-item>
                     <ui-menu-item active.bind="activeType == 'Table'" click.trigger="filterType('Table')" id="filter-Table">Tables</ui-menu-item>
                     <ui-menu-item active.bind="activeType == 'TableExtension'" click.trigger="filterType('TableExtension')" id="filter-TableExtension">Table Ext.</ui-menu-item>
@@ -110,7 +114,7 @@
                             <ag-header-template>
                                 <label>
                                     <ui-switch secondary value.bind="params.context.allRowsSelected" click.trigger="params.context.markAllObjects($event, params.data)" on-label="All"
-                                    off-label="All" size="2em"></ui-switch>
+                                    off-label="All" size="4em"></ui-switch>
                                 </label>
                             </ag-header-template>
                             <ag-cell-template>
@@ -134,7 +138,7 @@
                                     || ''}</a>
                             </ag-cell-template>
                         </ag-grid-column>
-                        <ag-grid-column header-name="Extends/Implements" field="TargetObject" editable.bind="true" width.bind="150" filter="agTextColumnFilter">
+                        <ag-grid-column header-name="Extends/Implements" field="TargetObject" editable.bind="true" width.bind="200" filter="agTextColumnFilter">
                             <ag-cell-template>
                                 <a href="#click"
                                     click.delegate="params.context.sendCommand(params.data, 'DefinitionExt')">${params.data.TargetObject

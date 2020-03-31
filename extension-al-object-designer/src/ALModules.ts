@@ -259,6 +259,7 @@ export module ALObjectDesigner {
         Name: string;
         TargetObject?: string;
         Publisher: string;
+        Application: string;
         Version: string;
         CanExecute: boolean;
         CanDesign: boolean;

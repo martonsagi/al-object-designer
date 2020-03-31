@@ -75,7 +75,7 @@ h1:first-of-type {
 
 input#searchInput {
     width       : 150px;
-    margin-right: 5px;
+    margin-right: 0px;
     padding     : 6px;
 }
 
@@ -477,6 +477,12 @@ tr.selected:hover td#context-selected {
     }
 }
 
+@media only screen and (max-width: 1000px) {
+    #object-counter {
+        display: none;
+    }
+}
+
 
 .ag-theme-material {
     color           : var(--vscode-editor-foreground);
@@ -493,8 +499,8 @@ tr.selected:hover td#context-selected {
     }
 
     .ag-menu {
-        color     : var(--vscode-editor-foreground);
-        background: var(--vscode-editor-background);
+        color       : var(--vscode-editor-foreground);
+        background  : var(--vscode-editor-background);
         border-color: var(--vscode-panel-border) !important;
     }
 
@@ -556,7 +562,42 @@ tr.selected:hover td#context-selected {
     border-right-color: @border-color  !important;
 }
 
-body.vscode-high-contrast,
+.ui-option {
+    padding: 0 0 0 4px;
+}
+
+.ui-switch-control {
+    height: inherit;
+
+    .ui-switch {
+        border-radius: 0;
+        height       : 1.85em;
+
+        .ui-switch-handle {
+            border-radius: 0;
+            top          : 2px;
+            width        : 1.4em;
+            height       : 1.4em;
+            background: #FFFEFC linear-gradient(to bottom, #fffefc,#fffefc);
+        }
+
+        .ui-switch-inner {
+            font-size     : @base-font-size;
+            text-transform: none;
+            line-height   : 1.85em;
+        }
+
+        .ui-switch-input:checked~.ui-switch-handle {
+            margin-left: -1.65em;
+        }
+    }
+}
+
+.ui-switch-control.secondary .ui-switch>.ui-switch-input ~ .ui-switch-inner {
+    background-color: transparent;
+}
+
+.ui-switch-control .ui-switch body.vscode-high-contrast,
 body.vscode-dark {
 
     .ui-sidebar .ui-sidebar-head .ui-sidebar-title {
@@ -594,7 +635,7 @@ body.vscode-dark {
 
     .context-menu-ul {
         color           : var(--vscode-editor-foreground);
-        background-color: var(--vscode-button-hoverBackground);
+        background-color: var(--vscode-input-background);
 
         li {
             border: 1px solid transparent;
@@ -602,6 +643,22 @@ body.vscode-dark {
             &:hover {
                 border    : 1px solid var(--vscode-editor-foreground) !important;
                 background: var(--vscode-editor-background);
+            }
+        }
+    }
+
+    .ui-switch-control {
+        
+        .ui-switch {
+            
+    
+            .ui-switch-handle {
+                
+                background: var(--vscode-input-background) linear-gradient(to bottom, var(--vscode-input-background), var(--vscode-input-background));
+            }
+    
+            .ui-switch-input:checked~.ui-switch-handle {
+                background: #FFFEFC linear-gradient(to bottom, #fffefc,#fffefc);
             }
         }
     }

@@ -128,6 +128,14 @@ export class ALPanel {
         await handler.dispatch(objectInfo);
     }
 
+    public static showPanel() {
+        ALPanel.currentPanel!._showPanel();
+    }
+
+    public _showPanel() {
+        this._panel.reveal(vscode.ViewColumn.One);
+    }
+
     private constructor(
         panel: vscode.WebviewPanel,
         extensionPath: string,
