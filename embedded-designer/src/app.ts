@@ -122,7 +122,7 @@ export class App {
             this.columnApi.setColumnVisible("Name" as any, false);
             this.columnApi.setColumnVisible("Version" as any, false);
             this.columnApi.setColumnVisible("Publisher" as any, false);
-            //this.columnApi.setColumnVisible("Application" as any, false);
+            this.columnApi.setColumnVisible("ContextColumn" as any, false);
             this.loaded = true;
             //this.api.hideOverlay();
             this.api.sizeColumnsToFit();

@@ -125,8 +125,7 @@
                         </ag-grid-column>
                         <ag-grid-column header-name="Type" field="Type" editable.bind="false" min-width.bind="80" max-width.bind="120"></ag-grid-column>
                         <ag-grid-column header-name="ID" field="Id" min-wdith="30" max-width.bind="90" header-class.bind="'td-number'" cell-class.bind="'td-number'" filter="agNumberColumnFilter"></ag-grid-column>
-                        <ag-grid-column cell-class="context-menu-td" editable.bind="false" min-width.bind="40" max-width.bind="40" 
-                            col-id.bind="selectedObject == element || hoverObject == element ? 'context-selected' : ''">
+                        <ag-grid-column cell-class="context-menu-td ${selectedObject == element || hoverObject == element ? 'context-selected' : ''}" col-id="ContextColumn" editable.bind="false" min-width.bind="40" max-width.bind="40">
                             <ag-cell-template>
                                 <a class="context-menu-btn" class="context-menu"
                                     click.trigger="params.context.setContextMenuVisible($event, params.data)"><i class="fas fa-ellipsis-v"></i>
@@ -172,7 +171,7 @@
                                     || ''}</a>
                             </ag-cell-template>
                         </ag-grid-column>
-                        <ag-grid-column header-name="Event Type" width.bind="200" field="EventType" editable.bind="false" filter="agTextColumnFilter"></ag-grid-column>
+                        <ag-grid-column header-name="Event Type" width.bind="100" max-width.bind="120" field="EventType" editable.bind="false" filter="agTextColumnFilter"></ag-grid-column>
                         <ag-grid-column header-name="Application" width.bind="150" field="Application" editable.bind="false" filter="agTextColumnFilter"></ag-grid-column>
                         <ag-grid-column header-name="Version" width.bind="150" field="Version" editable.bind="false" filter="agTextColumnFilter"></ag-grid-column>
                         <ag-grid-column header-name="Publisher" width.bind="150" field="Publisher" editable.bind="false" filter="agTextColumnFilter"></ag-grid-column>
