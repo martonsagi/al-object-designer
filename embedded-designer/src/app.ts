@@ -91,10 +91,12 @@ export class App {
       this.columnApi.setColumnVisible("Scope" as any, !this.showEvents);
       this.columnApi.setColumnVisible("UnitTest" as any, this.showTests);
       this.api.sizeColumnsToFit();
+      this.api.showLoadingOverlay();
     }
 
     window.addEventListener('message', event => {
       this.loaded = false;
+      this.api.showLoadingOverlay();
       const message = event.data; // The JSON data our extension sent
       switch (message.command) {
         case 'data':
@@ -103,6 +105,8 @@ export class App {
           this.events = message.events;
           this.loaded = true;
           this.filterType("");
+          //this.api.hideOverlay();
+          this.api.sizeColumnsToFit();
           break;
         case 'designer':
           this.objectInfo = message.objectInfo;
@@ -120,6 +124,7 @@ export class App {
             this.columnApi.setColumnVisible("Publisher" as any, false);
             //this.columnApi.setColumnVisible("Application" as any, false);
             this.loaded = true;
+            //this.api.hideOverlay();
             this.api.sizeColumnsToFit();
           }).bind(this), 250);
 
@@ -211,7 +216,7 @@ export class App {
       allTests = true;
     }
 
-    element = Object.assign({}, element);    
+    element = Object.assign({}, element);
     let name = element.Name;
     let type = element.Type;
     let id = element.Id;
@@ -233,7 +238,7 @@ export class App {
         element.Type = element.TargetObjectType;
         element.Name = element.TargetObject;
         name = element.Name;
-        type = element.Type;  
+        type = element.Type;
         element.FsPath = "";
       }
     }
@@ -398,7 +403,7 @@ export class App {
   resetSearch() {
     if (this.query == "")
       return;
-      
+
     this.query = "";
     this.search();
   }
@@ -413,6 +418,8 @@ export class App {
 
   refreshDesigner() {
     this.loaded = false;
+    if (this.api)
+      this.api.showLoadingOverlay();
     this.sendCommand({}, 'Refresh');
   }
 
@@ -507,7 +514,7 @@ export class App {
     if (!this.columnApi)
       return;
     if (!this.showEventSubs && !this.showEvents && !this.showTests) {
-      this.TargetObjectHeader = ["enum", "codeunit"].indexOf(this.activeType.toLowerCase()) != -1 ? 'Implements' : this.TargetObjectHeader;
+      this.TargetObjectHeader = ["enum", "codeunit"].indexOf(this.activeType.toLowerCase()) != -1 ? 'Implements' : 'Extends';
       this.columnApi.setColumnVisible("TargetObject" as any, ["tableextension", "pageextension", "pagecustomization", "enumextension", "enum", "codeunit"].indexOf(this.activeType.toLowerCase()) != -1 || this.activeType == '');
       this.columnApi.setColumnVisible("Id" as any, ["interface", "profile", "controladdin"].indexOf(this.activeType.toLowerCase()) == -1 || this.activeType == '');
       this.api.sizeColumnsToFit();

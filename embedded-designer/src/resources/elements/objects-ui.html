@@ -39,14 +39,14 @@
                 </ui-menu>
             </ui-sidebar>
             <ui-content scroll>
-                <div hidden.bind="loaded">
+                <div style="display: none;">
                     <div style="font-size: 1.2em;" class="ui-bg-primary ui-pad-all ui-text-white">Discovering objects...</div>
                 </div>
 
                 <ul ref="contextMenu" show.bind="showMenu == true" class="context-menu-ul">
                         <li click.trigger="sendCommand(selectedObject, 'Definition')"><i
                                 class="fa fa-eye"></i> View</li>
-                        <li
+                        <li show.bind="selectedObject.TestMethod !== true"
                             click.trigger="openEventList(selectedObject)"><i
                             class="fas fa-eye"></i>
                             Events</li>
@@ -58,7 +58,7 @@
                             click.trigger="sendCommand(selectedObject, 'BrowserPreview')"><i
                                 class="fas fa-globe"></i>
                             Preview</li>
-                        <li show.bind="selectedObject.TestMethod"
+                        <li show.bind="selectedObject.TestMethod && vsSettings.useALTestRunner"
                             click.trigger="runTest(selectedObject)"><i
                                 class="fas fa-vial"></i>
                             Run Test</li>
@@ -100,7 +100,7 @@
                     </ul>
 
                 <div class="virtual-repeater-wrapper">
-                    <ag-grid-aurelia show.bind="loaded" #agGrid style="width: 100%; height: 100%;"
+                    <ag-grid-aurelia #agGrid style="width: 100%; height: 100%;"
                         class="ag-theme-material" 
                         context.bind="$this" 
                         row-data.bind="results"
@@ -110,20 +110,22 @@
                         cell-mouse-over.call="setContextBtnVisible($event.node.data)" 
                         cell-mouse-out.call="setContextBtnVisible(null)"
                         grid-options.bind="gridOptions">
-                        <ag-grid-column header-name="Select" pinned.bind="'left'" width.bind="70" editable.bind="false">
+                        <ag-grid-column header-name="Select" pinned.bind="'left'" min-width.bind="65" max-width.bind="65" editable.bind="false">
                             <ag-header-template>
-                                <label>
+
+                                <label class="all-header-cell-label">
                                     <ui-switch secondary value.bind="params.context.allRowsSelected" click.trigger="params.context.markAllObjects($event, params.data)" on-label="All"
-                                    off-label="All" size="4em"></ui-switch>
+                                    off-label="All" size="3.5em"></ui-switch>
                                 </label>
+
                             </ag-header-template>
                             <ag-cell-template>
                                 <label style="padding: 15px;"><input type="checkbox" checked.bind="params.data.Marked"></label>
                             </ag-cell-template>
                         </ag-grid-column>
-                        <ag-grid-column header-name="Type" field="Type" editable.bind="false" width.bind="100"></ag-grid-column>
-                        <ag-grid-column header-name="ID" field="Id" width.bind="120" header-class.bind="'td-number'" cell-class.bind="'td-number'" filter="agNumberColumnFilter"></ag-grid-column>
-                        <ag-grid-column cell-class="context-menu-td" editable.bind="false" width.bind="50" 
+                        <ag-grid-column header-name="Type" field="Type" editable.bind="false" min-width.bind="80" max-width.bind="120"></ag-grid-column>
+                        <ag-grid-column header-name="ID" field="Id" min-wdith="30" max-width.bind="90" header-class.bind="'td-number'" cell-class.bind="'td-number'" filter="agNumberColumnFilter"></ag-grid-column>
+                        <ag-grid-column cell-class="context-menu-td" editable.bind="false" min-width.bind="40" max-width.bind="40" 
                             col-id.bind="selectedObject == element || hoverObject == element ? 'context-selected' : ''">
                             <ag-cell-template>
                                 <a class="context-menu-btn" class="context-menu"
@@ -138,7 +140,10 @@
                                     || ''}</a>
                             </ag-cell-template>
                         </ag-grid-column>
-                        <ag-grid-column header-name="Extends/Implements" field="TargetObject" editable.bind="true" width.bind="200" filter="agTextColumnFilter">
+                        <ag-grid-column header-name="Extends" field="TargetObject" editable.bind="true" width.bind="200" filter="agTextColumnFilter">
+                            <ag-header-template>
+                                ${params.context.TargetObjectHeader}
+                            </ag-header-template>
                             <ag-cell-template>
                                 <a href="#click"
                                     click.delegate="params.context.sendCommand(params.data, 'DefinitionExt')">${params.data.TargetObject

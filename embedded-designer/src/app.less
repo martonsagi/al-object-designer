@@ -16,11 +16,11 @@ body {
     margin   : 0;
     padding  : 0;
     font-size: @base-font-size;
+    color: var(--vscode-editor-foreground);
+    background-color: var(--vscode-editor-background);
 }
 
 body {
-    color             : var(--vscode-editor-foreground);
-    background-color  : var(--vscode-editor-background);
     /*font-family     : "Segoe UI", "Segoe WP", Segoe, device-segoe, Tahoma, Helvetica, Arial, sans-serif;*/
 }
 
@@ -76,7 +76,7 @@ h1:first-of-type {
 input#searchInput {
     width       : 150px;
     margin-right: 0px;
-    padding     : 6px;
+    padding     : 5px;
 }
 
 div.content {
@@ -216,7 +216,7 @@ tr.selected:hover {
 }
 
 a.context-menu-btn {
-    padding        : 0 20px;
+    padding        : 0 14px;
     display        : block;
     font-weight    : bold;
     opacity        : 0.3;
@@ -409,6 +409,11 @@ tr.selected:hover td#context-selected {
     padding-right: 5px;
 }
 
+.all-header-cell-label {
+    display: block;
+    padding-top: 8px;
+}
+
 /*
  * http://fatopng.com/fontawesome-to-base64 :D
  */
@@ -597,7 +602,7 @@ tr.selected:hover td#context-selected {
     background-color: transparent;
 }
 
-.ui-switch-control .ui-switch body.vscode-high-contrast,
+body.vscode-high-contrast,
 body.vscode-dark {
 
     .ui-sidebar .ui-sidebar-head .ui-sidebar-title {
@@ -686,6 +691,16 @@ body.vscode-dark {
     .ui-switch-control.secondary .ui-switch>.ui-switch-input:checked~.ui-switch-inner {
         background-color: @bc-green;
     }
+
+    .ag-theme-material .ag-overlay-loading-wrapper {
+        background-color: rgba(0, 0, 0, 0.3);
+    }
+
+    .ag-overlay-loading-center {
+        color: var(--vscode-editor-foreground);
+        background-color: var(--vscode-editor-background);
+    }
+    
 }
 
 body.vscode-light {
@@ -729,5 +744,13 @@ body.vscode-high-contrast {
             border    : 1px solid @border-color  !important;
             background: transparent !important;
         }
+    }
+
+    .ag-theme-material .ag-overlay-loading-wrapper {
+        background-color: rgba(0, 0, 0, 0.9);
+    }
+
+    .ag-overlay-loading-center {
+        border-color: @border-color;
     }
 }

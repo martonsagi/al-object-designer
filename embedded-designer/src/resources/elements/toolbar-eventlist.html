@@ -1,6 +1,14 @@
 <template>
     <div class="object-bar buttons">
         <ui-toolbar style="background: none;">
+            <input id="searchInput" type="text" id="searchVal" placeholder="Search for ${headerType}s" value.bind="query"
+            keyup.delegate="search() & throttle:350" />
+            <ui-button style="margin: 0 5px 0 0;" primary click.trigger="resetSearch()"
+            title="${query == '' ? 'Search' : 'Reset'}">
+                <span hidden.bind="query != ''"><i class="fas fa-search"></i></span>
+                <span hidden.bind="query == ''"><i class="fas fa-times"></i></span>
+            </ui-button>
+
             <ui-button disabled.bind="!(showEvents && !showEventSubs)" style="margin-right: 5px;" primary
             click.trigger="copySelectedEvents()" title="Copy Selected Events"><i class="far fa-copy"></i></ui-button>
 

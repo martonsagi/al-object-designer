@@ -2,7 +2,7 @@
     "name": "al-object-designer",
     "displayName": "AL Object Designer",
     "description": "Object Designer optimized for (Dynamics 365 Business Central) AL Language development.",
-    "version": "0.1.5-alpha3",
+    "version": "0.1.5-beta1",
     "publisher": "martonsagi",
     "license": "MIT",
     "author": {
@@ -112,7 +112,7 @@
                 "alObjectDesigner.useALTestRunner": {
                     "type": "boolean",
                     "default": false,
-                    "description": "Enable integration with AL Test Runner extension (soon... upcoming feature)."
+                    "description": "Enable integration with AL Test Runner extension (experimental)."
                 },
                 "alObjectDesigner.gridRowHeightOption": {
                     "type": "string",

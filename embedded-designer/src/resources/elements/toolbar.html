@@ -3,7 +3,7 @@
         <ui-toolbar style="background: none;">    
             <input id="searchInput" type="text" id="searchVal" placeholder="Search for ${headerType}s" value.bind="query"
             keyup.delegate="search() & throttle:350" />
-            <ui-button style="margin-right: 5px;" primary click.trigger="resetSearch()"
+            <ui-button style="margin: 0 5px 0 0;" primary click.trigger="resetSearch()"
             title="${query == '' ? 'Search' : 'Reset'}">
                 <span hidden.bind="query != ''"><i class="fas fa-search"></i></span>
                 <span hidden.bind="query == ''"><i class="fas fa-times"></i></span>
@@ -13,8 +13,10 @@
                 click.trigger="sendCommand('', 'AZWizard')" title="AZ AL Dev Tools - New Object Wizard">
                 <i class="fas fa-magic"></i> AZ Wizard
             </ui-button>
-            <ui-button style="margin-right: 5px;" primary click.trigger="sendCommand('', 'ALTestRunner')"
-                title="AL Test Runner - Local unit testing"><i class="fas fa-vial"></i> Test Runner</ui-button>
+            <ui-button style="margin-right: 5px;" show.bind="vsSettings.useALTestRunner" primary 
+                click.trigger="sendCommand('', 'ALTestRunner')" title="AL Test Runner - Local unit testing">
+                <i class="fas fa-vial"></i> Test Runner
+            </ui-button>
             
             <ui-button disabled.bind="!(showEvents && !showEventSubs)" style="margin-right: 5px;" primary
                 click.trigger="copySelectedEvents()" title="Copy Selected Events"><i class="far fa-copy"></i></ui-button>
@@ -58,7 +60,7 @@
             </span>
 
             <ui-button secondary click.delegate="exportObjectList()" title="Export Object List to CSV"><i class="far fa-file-excel"></i></ui-button>
-            <ui-button click.delegate="refreshDesigner()" title="Reload object list"><i class="fas fa-sync"></i></ui-button>
+            <ui-button primary click.delegate="refreshDesigner()" title="Reload object list"><i class="fas fa-sync"></i></ui-button>
 
         </ui-toolbar>
     </div>

@@ -210,6 +210,25 @@ export class ALPanel {
     }
 
     public async update() {
+        vscode.window.withProgress({
+            location: vscode.ProgressLocation.Notification,
+            title: 'Processing Workspace: discovering AL Objects and Symbols...',
+            cancellable: true
+        }, async (progress, token) => {
+            token.onCancellationRequested(() => {
+                console.warn("AL Object Designer: user cancelled the AL Object Discovery.");
+            });
+
+            let startTime = Date.now();
+            await this._update();
+            let endTime = Date.now();
+            console.log(`AL Object Discovery took ${endTime - startTime}ms`);
+            
+            return true;
+        });
+    }
+
+    private async _update() {
         try {
             if (!this._panel.webview.html)
                 this._panel.webview.html = await this._getHtmlForWebview();
@@ -269,7 +288,7 @@ export class ALPanel {
             }
         } catch (e) {
             console.log(`An error occured in ALPanel.update() method. Details: ${e.message}`, e);
-            await vscode.window.showErrorMessage(`An error occured in ALPanel.update() method. Details: ${e.message}`);            
+            await vscode.window.showErrorMessage(`An error occured in ALPanel.update() method. Details: ${e.message}`);
         }
     }
 
