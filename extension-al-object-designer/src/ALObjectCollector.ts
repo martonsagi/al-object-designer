@@ -1,4 +1,4 @@
-import { workspace } from 'vscode';
+import { workspace, window } from 'vscode';
 import * as path from 'path';
 import * as utils from './utils';
 import { ALSymbolPackage, ALObjectDesigner } from './ALModules';
@@ -83,19 +83,28 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
 
         let tmpDalFiles = dalFiles.map(m => {
             let name = path.basename(m);
+            let version = name.split('_').pop();
 
             return {
                 name: name,
+                appName: name.replace(version!, ''),
+                version: version,
                 fsPath: m
             };
         });
 
         dalFiles = tmpDalFiles
             .filter((val, i, arr) => {
-                let result = arr.filter((f, j) => f.name == val.name);
+                let result = arr.filter((f, j) => f.appName == val.appName);
                 if (result.length > 0) {
+                    let checkVersionArr = arr.filter((f, j) => f.appName == val.appName);
+                    let versions = [...new Set(checkVersionArr.map(item => item.version))];
+                    if (versions && versions.length > 1) {
+                        window.showWarningMessage(`Multiple package versions found: ${val.appName.replace(/_/g, ' ').slice(0, -1)}. Using ${result[0].version}.`);
+                    }
+    
                     return arr.indexOf(result[0]) === i;
-                }
+                }                
 
                 return false;
             })
