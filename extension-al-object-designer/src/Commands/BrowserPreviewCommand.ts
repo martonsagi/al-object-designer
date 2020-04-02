@@ -25,7 +25,7 @@ export class BrowserPreviewCommand extends ALCommandBase {
         switch(message.Type) {
             case 'TableExtension':
             case 'PageExtension':
-                let sourceObject = message.Objects.find((f: any) => f.Name == message.TargetObject && f.Type == type);
+                let sourceObject = ALPanel.objectList!.find((f: any) => f.Name == message.TargetObject && f.Type == type);
                 if (sourceObject) {
                     objectId = sourceObject.Id;
                 }

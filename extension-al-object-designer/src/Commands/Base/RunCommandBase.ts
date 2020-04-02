@@ -25,7 +25,7 @@ export class RunCommandBase extends ALCommandBase {
                 break;
         }
 
-        let createFile: boolean = message.EventData.SymbolData?.SymbolZipPath == "" || message.Command == 'Run';
+        let createFile: boolean = !message.EventData.SymbolData?.SymbolZipPath || message.EventData.SymbolData?.SymbolZipPath == "" || message.Command == 'Run';
         let fname = "";
 
         let vsUri;

@@ -133,7 +133,7 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
 
         for (let pFile of projectFiles) {
             let checkIndex = objs.findIndex((f: any) => {
-                return f.Type.toLowerCase() == pFile.Type.toLowerCase() && f.Id == pFile.Id;
+                return f.Type.toLowerCase() == pFile.Type.toLowerCase() && f.Name == pFile.Name;
             });
 
             if (checkIndex) {
@@ -337,6 +337,7 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
                                 "Id": t.Id || "",
                                 "Name": t.Name || "",
                                 "TargetObject": t.TargetObject || "",
+                                'TargetObjectType': ["Enum", "Codeunit"].indexOf(lType) != -1 ? "Interface" : lType.replace('Extension', ''),
                                 "Publisher": json.Publisher || "Platform",
                                 "Application": json.Name || "",
                                 "Version": json.Version || "",

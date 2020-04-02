@@ -134,7 +134,7 @@
                         </ag-grid-column>
                         <ag-grid-column header-name="Name" field="Name" width.bind="250" editable.bind="true" filter="agTextColumnFilter">
                             <ag-cell-template>
-                                <a href="#click"
+                                <a 
                                     click.delegate="params.context.sendCommand(params.data, 'Definition')">${params.data.Name
                                     || ''}</a>
                             </ag-cell-template>
@@ -144,14 +144,14 @@
                                 ${params.context.TargetObjectHeader}
                             </ag-header-template>
                             <ag-cell-template>
-                                <a href="#click"
+                                <a 
                                     click.delegate="params.context.sendCommand(params.data, 'DefinitionExt')">${params.data.TargetObject
                                     || ''}</a>
                             </ag-cell-template>
                         </ag-grid-column>
                         <ag-grid-column header-name="Event Name" width.bind="350" field="EventName" editable.bind="true" filter="agTextColumnFilter">
                             <ag-cell-template>
-                                <a href="#click" click.delegate="params.context.showEventParams(params.data)">
+                                <a click.delegate="params.context.showEventParams(params.data)">
                                     <span if.bind="params.data.FieldName != ''">${params.data.FieldName} -
                                     </span>${params.data.EventName || ''}
                                 </a>
@@ -159,14 +159,14 @@
                         </ag-grid-column>
                         <ag-grid-column header-name="Unit Test" col-id="UnitTest" field="EventName" editable.bind="true" width.bind="250" filter="agTextColumnFilter">
                             <ag-cell-template>
-                                <a href="#click"
+                                <a 
                                     click.delegate="params.context.sendCommand(params.data, 'Definition')">${params.data.EventName
                                     || ''}</a>
                             </ag-cell-template>
                         </ag-grid-column>
                         <ag-grid-column header-name="Event Publisher" col-id="EventPublisher" field="TargetObject" editable.bind="true" width.bind="150" filter="agTextColumnFilter">
                             <ag-cell-template>
-                                <a href="#click"
+                                <a 
                                     click.delegate="params.context.sendCommand(params.data, 'DefinitionEventPub')">${params.data.TargetObjectType} ${params.data.TargetObject
                                     || ''}</a>
                             </ag-cell-template>

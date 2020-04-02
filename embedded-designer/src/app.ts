@@ -233,14 +233,13 @@ export class App {
     if (command == 'DefinitionExt' && element.TargetObject) {
       command = 'Definition';
       element.Name = element.TargetObject;
-      name = element.Name;
       if (element.TargetObjectType != '') {
         element.Type = element.TargetObjectType;
         element.Name = element.TargetObject;
-        name = element.Name;
-        type = element.Type;
-        element.FsPath = "";
       }
+
+      name = element.Name;
+      type = element.Type;
     }
 
     if (command == 'DefinitionEventPub' && element.TargetObject) {
@@ -249,7 +248,6 @@ export class App {
       element.Type = element.TargetObjectType;
       name = element.Name;
       type = element.Type;
-      element.FsPath = "";
     }
 
     if (command == 'ALTestRunner') {
@@ -265,13 +263,10 @@ export class App {
       FsPath: element.FsPath,
       Command: command,
       EventData: element,
-      Objects: [],
       TargetObject: element.TargetObject
     };
 
-    if (command == 'BrowserPreview') {
-      message.Objects = this.data;
-    }
+    console.log(command, name, type, message);
 
     let messages = [message];
 
