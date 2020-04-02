@@ -32,8 +32,8 @@
         "Other"
     ],
     "activationEvents": [
-        "onCommand:extension.openALWindow",
-        "onCommand:extension.openALDesignWindow",
+        "onCommand:alObjectDesigner.openALWindow",
+        "onCommand:alObjectDesigner.openALDesignWindow",
         "onUri",
         "onLanguage:al",
         "workspaceContains:app.json"
@@ -43,29 +43,33 @@
     "contributes": {
         "commands": [
             {
-                "command": "extension.openALWindow",
+                "command": "alObjectDesigner.openALWindow",
                 "title": "AL Object Designer"
             },
             {
-                "command": "extension.openALDesignWindow",
+                "command": "alObjectDesigner.openALDesignWindow",
                 "title": "AL Designer"
             },
             {
-                "command": "extension.generateALTables",
+                "command": "alObjectDesigner.generateALTables",
                 "title": "Generate AL Tables"
+            },            {
+                "command": "alObjectDesigner.clearCache",
+                "title": "AL Object Designer: Clear Cache"
             }
+
         ],
         "menus": {
             "editor/title": [
                 {
                     "when": "resourceLangId == al",
-                    "command": "extension.openALDesignWindow",
+                    "command": "alObjectDesigner.openALDesignWindow",
                     "group": "navigation"
                 }
             ],
             "explorer/context": [
                 {
-                    "command": "extension.openALWindow",
+                    "command": "alObjectDesigner.openALWindow",
                     "group": "2_workspace"
                 }
             ]
@@ -98,6 +102,11 @@
                     "type": "boolean",
                     "default": false,
                     "description": "Detection rule: one object per files."
+                },
+                "alObjectDesigner.useInternalNavigation": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Use custom Go To Definition feature. (Auto-enabled on Linux)"
                 },
                 "alObjectDesigner.useCRS": {
                     "type": "boolean",

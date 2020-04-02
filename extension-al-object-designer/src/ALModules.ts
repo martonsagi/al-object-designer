@@ -308,6 +308,7 @@ export module ALObjectDesigner {
         Path: string = '';
         Type: string = '';
         Index: number = 0;
+        SymbolZipPath?: string = '';
     }
 
     export interface TemplateCollector extends Collector<TemplateItem> {

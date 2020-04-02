@@ -4,7 +4,7 @@ import * as utils from '../../utils';
 import { ALPanel } from "../../ALPanel";
 import { ALCommandBase } from "./ALCommandBase";
 import { ALSettings } from '../../ALSettings';
-import { settings } from 'cluster';
+import { platform } from 'os';
 
 export class RunCommandBase extends ALCommandBase {
 
@@ -25,12 +25,12 @@ export class RunCommandBase extends ALCommandBase {
                 break;
         }
 
-        let createFile: boolean = message.FsPath == "" || message.Command == 'Run';
+        let createFile: boolean = message.EventData.SymbolData?.SymbolZipPath == "" || message.Command == 'Run';
         let fname = "";
 
         let vsUri;
         if (createFile) {
-            fname =  path.join((vscode.workspace as any).workspaceFolders[0].uri.fsPath, '.vscode', `.alcache`, `Opening_${Date.now()}.al`);
+            fname = path.join((vscode.workspace as any).workspaceFolders[0].uri.fsPath, '.vscode', `.alcache`, `Opening_${Date.now()}.al`);
             let snippet =
                 `${notDefinition ? message.Type.toLowerCase() : "codeunit"} ${notDefinition ? message.Id : "99999999"} ${notDefinition ? '"' + message.Name + '"' : "Temp"} {
     var
@@ -50,12 +50,6 @@ export class RunCommandBase extends ALCommandBase {
             let useCrs = this._vsSettings.useCRS === true && vscode.extensions.getExtension('crs.RunCurrentObjectWeb');
             if (useCrs === false) {
                 let settings = new ALSettings(vsUri);
-                /*let server = settings.get('server'),
-                    instance = settings.get('serverInstance');
-
-                server = server[server.length - 1] != '/' ? server + '/' : server;
-                let launchUrl = `${server}${instance}/?${message.Type.toLowerCase()}=${message.Id}`;*/
-
                 let launchUrl = settings.getUrl(message.Type, message.Id);
 
                 await vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(launchUrl));
@@ -71,11 +65,21 @@ export class RunCommandBase extends ALCommandBase {
                 let newDoc = await vscode.workspace.openTextDocument(message.FsPath);
                 vscode.window.showTextDocument(newDoc, vscode.ViewColumn.One);
             } else {
-                await vscode.commands.executeCommand('editor.action.revealDefinition').then(async () => {
-                    if (createFile) {
-                        await this.deleteFile(fname);
+                if (createFile) {
+                    if (["win32", "darwin"].indexOf(platform()) === -1) {
+                        await vscode.window.showWarningMessage(`${message.Type} ${message.Name}: Go to definition is not support on '${platform()}' platform.`);
+                    } else {
+                        await vscode.commands.executeCommand('editor.action.revealDefinition').then(async () => {
+                            if (createFile) {
+                                await this.deleteFile(fname);
+                            }
+                        });
                     }
-                })
+                } else {
+                    let uri = vscode.Uri.parse(`alObjectDesignerDal://symbol/${message.Type}${message.Id > 0 ? ` ${message.Id} ` : ''}${message.Name.replace(/\//g, "_")} - ${message.EventData.Application}.al#${JSON.stringify(message.EventData.SymbolData)}`);
+                    let doc = await vscode.workspace.openTextDocument(uri); // calls back into the provider
+                    await vscode.window.showTextDocument(doc, { preview: true, viewColumn: vscode.ViewColumn.Active });
+                }
             }
         }
     }

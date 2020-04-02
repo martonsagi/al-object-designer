@@ -6,6 +6,7 @@ import { ALObjectCollectorCache } from './ALObjectCollectorCache';
 import { ALEventGenerator } from './ALEventGenerator';
 import { ALProjectCollector } from './ALProjectCollector';
 import { ALObjectParser } from './ALObjectParser';
+import { platform } from 'os';
 const firstBy = require('thenby');
 
 export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
@@ -46,7 +47,7 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
         "Enum",
         "EnumExtension",
         "Interface",
-        "DotNetPackage"        
+        "DotNetPackage"
     ];
 
     public constructor() {
@@ -102,9 +103,9 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
                     if (versions && versions.length > 1) {
                         window.showWarningMessage(`Multiple package versions found: ${val.appName.replace(/_/g, ' ').slice(0, -1)}. Using ${result[0].version}.`);
                     }
-    
+
                     return arr.indexOf(result[0]) === i;
-                }                
+                }
 
                 return false;
             })
@@ -349,14 +350,46 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
                                 "SymbolData": {
                                     'Path': filePath,
                                     'Type': elem,
-                                    'Index': index
+                                    'Index': index,
+                                    'SymbolZipPath': ''
                                 },
                                 "Scope": scope
                             };
                         });
-                        
+
                         let tempArr2 = await Promise.all(tempArr);
                         objs = objs.concat(tempArr2);
+                    }
+                }
+            }
+
+            // re-process zip for internal paths
+            if (this._vsSettings.useInternalNavigation === true || ["win32", "darwin"].indexOf(platform()) === -1) {
+                let sourceFiles = Object.keys(zip.files).filter((i: any) => (i as string).endsWith('.al'));
+                for (let sourceFile of sourceFiles) {
+                    let contents: string = await zip.file(sourceFile).async('string');
+                    let line = utils.getObjectHeadersFromText(contents);
+
+                    let parts = line[0].split(" ");
+
+                    if (parts.length == 2) {
+                        parts[2] = parts[1];
+                        parts[1] = '';
+                    }
+
+                    if (parts.length > 2) {
+                        let objType = parts[0];
+                        let ucType = utils.toUpperCaseFirst(objType);
+                        let extendIndex = parts.indexOf('extends') != -1 ? parts.indexOf('extends') : parts.indexOf('implements');
+                        let nameEndIndex = extendIndex != -1 ? extendIndex : parts.length;
+                        let name: string = parts.slice(2, nameEndIndex).join(" ").trim();
+                        name = utils.replaceAll(name, '"', '');
+                        ucType = ucType.replace('extension', 'Extension');
+
+                        let alObj: ALObjectDesigner.CollectorItem = objs.find(f => f.Type.toLowerCase() == objType.toLowerCase() && f.Name.toLowerCase() == name.toLowerCase());
+                        if (alObj) {
+                            alObj.SymbolData!.SymbolZipPath = sourceFile;
+                        }
                     }
                 }
             }
@@ -369,10 +402,17 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
             this.collectorCache.setCache(filePath, levents, 'events');
 
         } catch (e) {
-            this.log(`Runtime package found, skipped: ${filePath}`);
+            this.log(`Error: ${e.message}. Possibly runtime package found, skipped: ${filePath}`, e);
         }
 
         return objs;
+    }
+
+    public async extractSymbolSource(info: ALObjectDesigner.SymbolData) {
+        let zip: any = await utils.readZip(info.Path);
+        let contents: string = await zip.file(info.SymbolZipPath).async('string');
+
+        return contents;
     }
 
     public async extractLocalEvents(type: string, item: any, info: any) {

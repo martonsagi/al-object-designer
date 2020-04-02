@@ -149,6 +149,12 @@ export async function getFirstCodeLine(file: string) {
 
 export async function getObjectHeaders(filePath: string) {
     let fileContent: string = await read(filePath) as string;
+    let result = getObjectHeadersFromText(fileContent);
+
+    return result;
+}
+
+export function getObjectHeadersFromText(fileContent: string) {
     //let pattern = /([a-z]+)\s([0-9]+|.*?)\s?(.*)/gm;
     let pattern = /\b^(codeunit|page|pageextension|pagecustomization|dotnet|enum|interface|enumextension|query|report|table|tableextension|xmlport|profile|controladdin)\s([0-9]+|.*?)\s?(.*)/gmi;
     let matches = getAllMatches(pattern, fileContent);
@@ -157,6 +163,7 @@ export async function getObjectHeaders(filePath: string) {
 
     return result;
 }
+
 
 export function insertString(inStr: string, index: number, str: string) {
     if (index > 0)

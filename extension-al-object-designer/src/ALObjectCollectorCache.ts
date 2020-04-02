@@ -15,6 +15,12 @@ export class ALObjectCollectorCache implements ALObjectDesigner.ObjectCollectorC
         this._vsSettings = utils.getVsConfig();
     }
 
+    async clearCache() {
+        let root = (workspace as any).workspaceFolders[0];
+        let fPath = path.join(root.uri.fsPath, '.vscode', '.alcache', path.sep);
+        await fs.remove(fPath);
+    }
+
     async isCached(filepath: string, tagName?: string) {
         let cache = await this.getCacheInfo(filepath, tagName);
         let stat = await fs.stat(filepath);
