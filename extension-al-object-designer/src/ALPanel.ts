@@ -20,6 +20,7 @@ export class ALPanel {
     public objectInfo: any;
     public static objectList?: Array<ALObjectDesigner.CollectorItem>;
     public static eventList?: Array<ALObjectDesigner.CollectorItem>;
+    public currEvents?: Array<ALObjectDesigner.CollectorItem>;
 
     public static readonly viewType = 'alObjectDesigner';
 
@@ -301,8 +302,8 @@ export class ALPanel {
                         events = events.concat(levents);
                     }
                     events = objectCollector.updateEventTargets(ALPanel.objectList, events);
+                    ALPanel.currentPanel!.currEvents = events;
                     //let events = generator.generateTableEvents(this.objectInfo.Symbol, this.objectInfo, true);
-
 
                     let eventsObjView = events.map(m => {
                         let result = JSON.parse(JSON.stringify(m));

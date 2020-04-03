@@ -11,7 +11,8 @@ export class CopyEventCommand extends ALCommandBase {
     }
 
     getEventSnippet(objEvent: any) {
-        let objectRow = ALPanel.eventList!.find(f => f.Type == objEvent.Type && f.Name == objEvent.Name && f.EventName == objEvent.EventName && f.EventType == objEvent.EventType) as ALObjectDesigner.CollectorItem;
+        let eventList = this.objectDesigner.currEvents || ALPanel.eventList;
+        let objectRow = eventList!.find(f => f.Type == objEvent.Type && f.Name == objEvent.Name && f.EventName == objEvent.EventName && f.EventType == objEvent.EventType) as ALObjectDesigner.CollectorItem;
         //let objEvent = message.EventData;
         let eventParams = [];
 
