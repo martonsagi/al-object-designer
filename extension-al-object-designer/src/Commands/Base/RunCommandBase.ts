@@ -64,24 +64,40 @@ export class RunCommandBase extends ALCommandBase {
                 await this.deleteFile(fname);
             }
         } else {
-            if (message.FsPath != "") {
-                let newDoc = await vscode.workspace.openTextDocument(message.FsPath);
+            if (objectRow.FsPath != "") {
+                let newDoc = await vscode.workspace.openTextDocument(objectRow.FsPath);
                 vscode.window.showTextDocument(newDoc, vscode.ViewColumn.One);
             } else {
                 if (createFile) {
                     if (["win32", "darwin"].indexOf(platform()) === -1) {
-                        await vscode.window.showWarningMessage(`${message.Type} ${message.Name}: Go to definition is not support on '${platform()}' platform.`);
+                        await vscode.window.showWarningMessage(`${objectRow.Type} ${objectRow.Name}: couldn't find definition on this '${platform()}' platform.`);
                     } else {
-                        await vscode.commands.executeCommand('editor.action.revealDefinition').then(async () => {
+                        if (this._vsSettings.useInternalNavigation === true) {
                             if (createFile) {
                                 await this.deleteFile(fname);
                             }
-                        });
+                            await vscode.window.showErrorMessage(`${objectRow.Type} ${objectRow.Name}: couldn't find definition.`);
+                        } else {
+                            try {
+                                vscode.commands.executeCommand('editor.action.revealDefinition')
+                                    .then(() => {
+                                        if (createFile) {
+                                            this.deleteFile(fname);
+                                        }
+                                    });
+                            }
+                            catch (e) {
+                                await vscode.window.showErrorMessage(`${objectRow.Type} ${objectRow.Name}: couldn't find definition.`);
+                                if (createFile) {
+                                    await this.deleteFile(fname);
+                                }
+                            }
+                        }
                     }
                 } else {
-                    let uri = vscode.Uri.parse(`alObjectDesignerDal://symbol/${message.Type}${message.Id > 0 ? ` ${message.Id} ` : ''}${message.Name.replace(/\//g, "_")} - ${message.EventData.Application}.al#${JSON.stringify(objectRow.SymbolData)}`);
+                    let uri = vscode.Uri.parse(`alObjectDesignerDal://symbol/${objectRow.Type}${objectRow.Id > 0 ? ` ${objectRow.Id} ` : ''}${objectRow.Name.replace(/\//g, "_")} - ${objectRow.Application}.al#${JSON.stringify({Type: objectRow.Type, Name: objectRow.Name})}`);
                     let doc = await vscode.workspace.openTextDocument(uri); // calls back into the provider
-                    await vscode.window.showTextDocument(doc, { preview: true, viewColumn: vscode.ViewColumn.Active });
+                    await vscode.window.showTextDocument(doc, { preview: true, viewColumn: vscode.ViewColumn.Beside });
                 }
             }
         }

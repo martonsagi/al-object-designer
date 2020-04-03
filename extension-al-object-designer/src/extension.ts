@@ -1,3 +1,4 @@
+import { DalDefinitionProvider } from './DalDefinitionProvider';
 import { ALObjectCollectorCache } from './ALObjectCollectorCache';
 'use strict';
 
@@ -46,7 +47,7 @@ export function activate(context: vscode.ExtensionContext) {
         }
     }));
 
-    
+
     context.subscriptions.push(vscode.commands.registerCommand('alObjectDesigner.clearCache', async () => {
         try {
             let collectorCache = new ALObjectCollectorCache();
@@ -59,6 +60,8 @@ export function activate(context: vscode.ExtensionContext) {
     }));
 
     context.subscriptions.push(vscode.workspace.registerTextDocumentContentProvider('alObjectDesignerDal', new DalDocumentProvider()));
+    context.subscriptions.push(vscode.languages.registerDefinitionProvider({ scheme: 'alObjectDesignerDal' }, new DalDefinitionProvider()));
+    context.subscriptions.push(vscode.languages.registerDefinitionProvider({ scheme: 'al-preview' }, new DalDefinitionProvider()));
 }
 
 // this method is called when your extension is deactivated

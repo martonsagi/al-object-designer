@@ -1,5 +1,7 @@
 import { ALObjectCollector } from './ALObjectCollector';
 import { TextDocumentContentProvider, EventEmitter, Uri } from 'vscode';
+import { ALPanel } from './ALPanel';
+import { ALObjectDesigner } from './ALModules';
 
 export class DalDocumentProvider implements TextDocumentContentProvider {
 
@@ -8,12 +10,16 @@ export class DalDocumentProvider implements TextDocumentContentProvider {
     onDidChange = this.onDidChangeEmitter.event;
 
     async provideTextDocumentContent(uri: Uri): Promise<string> {
-        let symbolData = JSON.parse(uri.fragment);
+        let message = JSON.parse(uri.fragment);
         let result: string = uri.fragment;
-        
+
         let collector = new ALObjectCollector();
-        result = await collector.extractSymbolSource(symbolData);
-        
+        let objectRow = ALPanel.objectList!.find(f => f.Type == message.Type && f.Name == message.Name) as ALObjectDesigner.CollectorItem;
+
+        if (objectRow) {
+            result = await collector.extractSymbolSource(objectRow.SymbolData!);
+        }
+
         return result;
     }
 }
