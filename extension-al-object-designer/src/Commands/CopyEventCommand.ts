@@ -11,12 +11,13 @@ export class CopyEventCommand extends ALCommandBase {
     }
 
     getEventSnippet(objEvent: any) {
+        let objectRow = ALPanel.eventList!.find(f => f.Type == objEvent.Type && f.Name == objEvent.Name && f.EventName == objEvent.EventName && f.EventType == objEvent.EventType) as ALObjectDesigner.CollectorItem;
         //let objEvent = message.EventData;
         let eventParams = [];
 
-        if (objEvent.EventParameters) {
-            for (let eventParam of objEvent.EventParameters) {
-                let paramType = eventParam.TypeDefinition;
+        if (objectRow.EventParameters) {
+            for (let eventParam of objectRow.EventParameters) {
+                let paramType: any = eventParam.TypeDefinition;
                 let paramTypeStr = `${paramType.Name}`;
                 if (paramType.Subtype) {
                     if (!paramType.IsEmpty) {

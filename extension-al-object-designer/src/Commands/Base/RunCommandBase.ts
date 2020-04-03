@@ -5,6 +5,7 @@ import { ALPanel } from "../../ALPanel";
 import { ALCommandBase } from "./ALCommandBase";
 import { ALSettings } from '../../ALSettings';
 import { platform } from 'os';
+import { ALObjectDesigner } from '../../ALModules';
 
 export class RunCommandBase extends ALCommandBase {
 
@@ -25,7 +26,9 @@ export class RunCommandBase extends ALCommandBase {
                 break;
         }
 
-        let createFile: boolean = !message.EventData.SymbolData?.SymbolZipPath || message.EventData.SymbolData?.SymbolZipPath == "" || message.Command == 'Run';
+        let objectRow = ALPanel.objectList!.find(f => f.Type == message.Type && f.Name == message.Name) as ALObjectDesigner.CollectorItem;
+
+        let createFile: boolean = !objectRow.SymbolData?.SymbolZipPath || objectRow.SymbolData?.SymbolZipPath == "" || message.Command == 'Run';
         let fname = "";
 
         let vsUri;
@@ -76,7 +79,7 @@ export class RunCommandBase extends ALCommandBase {
                         });
                     }
                 } else {
-                    let uri = vscode.Uri.parse(`alObjectDesignerDal://symbol/${message.Type}${message.Id > 0 ? ` ${message.Id} ` : ''}${message.Name.replace(/\//g, "_")} - ${message.EventData.Application}.al#${JSON.stringify(message.EventData.SymbolData)}`);
+                    let uri = vscode.Uri.parse(`alObjectDesignerDal://symbol/${message.Type}${message.Id > 0 ? ` ${message.Id} ` : ''}${message.Name.replace(/\//g, "_")} - ${message.EventData.Application}.al#${JSON.stringify(objectRow.SymbolData)}`);
                     let doc = await vscode.workspace.openTextDocument(uri); // calls back into the provider
                     await vscode.window.showTextDocument(doc, { preview: true, viewColumn: vscode.ViewColumn.Active });
                 }

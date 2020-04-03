@@ -145,17 +145,7 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
 
         // update event targets
         this.events = this.updateEventTargets(objs, this.events);
-        /*this.events = this.events.map(e => {
-            if (e.EventType == "EventSubscriber") {
-                let objData = objs.find(f => f.Type == e.TargetObjectType && f.Id == e.TargetObject);
-                if (objData) {
-                    e.TargetObject = objData.Name;
-                }
-            }
-
-            return e;
-        });*/
-
+       
         objs = utils.uniqBy(objs, JSON.stringify);
 
         objs.sort(
@@ -246,38 +236,7 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
                     // Process local eventpublishers
                     if (objType.toLowerCase() == 'codeunit') {
                         let levents = await this.extractLocalEvents(ucType, newItem, info);
-                        this.events = this.events.concat(levents);
-                        /*let parser = new ALObjectParser();
-                        let parsedEvents = await parser.ExtractMethodsWithAttrs(file);
-                        for (let pKey in parsedEvents) {
-                            if (parsedEvents[pKey].length > 0) {
-                                let levents = parsedEvents[pKey].map((m: any) => {
-                                    return {
-                                        "TypeId": this.alTypes.indexOf(ucType) || "",
-                                        "Type": ucType || "",
-                                        "Id": objId || "",
-                                        "Name": name || "",
-                                        'TargetObjectType': m.TargetObjectType,
-                                        "TargetObject": m.TargetObject || "",
-                                        "Publisher": projectInfo.publisher,
-                                        "Application": projectInfo.name || "",
-                                        "Version": projectInfo.version || "",
-                                        "CanExecute": false,
-                                        "CanDesign": false,
-                                        "FsPath": file,
-                                        'EventName': m.Name,
-                                        'EventType': m.EventType,
-                                        'EventPublisher': (m.EventType as string).endsWith('Event'),
-                                        'TestMethod': m.EventType === 'Test',
-                                        'EventParameters': m.Parameters,
-                                        "FieldName": "",
-                                        "SymbolData": null,
-                                        "Scope": 'Extension'
-                                    }
-                                });
-                                this.events = this.events.concat(levents);
-                            }
-                        }*/
+                        this.events = this.events.concat(levents);                        
                     }
                 }
             }

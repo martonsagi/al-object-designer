@@ -248,7 +248,27 @@ export class ALPanel {
                         console.log(`Cannot load templates: ${e}`);
                     }
 
-                    await this._panel.webview.postMessage({ command: 'data', data: ALPanel.objectList, 'customLinks': links, 'events': ALPanel.eventList });
+                    let objectsView = ALPanel.objectList.map(m => {
+                        let result = JSON.parse(JSON.stringify(m));
+                        delete result.EventParameters;
+                        delete result.SymbolData;
+                        return result;
+                    });
+
+                    let eventsView = ALPanel.eventList.map(m => {
+                        let result = JSON.parse(JSON.stringify(m));
+                        delete result.EventParameters;
+                        delete result.SymbolData;
+                        return result;
+                    });
+
+                    /*await utils.write(path.join('D:', 'objects_test_old.json'), JSON.stringify(ALPanel.objectList));
+                    await utils.write(path.join('D:', 'events_test_old.json'), JSON.stringify(ALPanel.eventList));
+
+                    await utils.write(path.join('D:', 'objects_test.json'), JSON.stringify(objectsView));
+                    await utils.write(path.join('D:', 'events_test.json'), JSON.stringify(eventsView));*/
+
+                    await this._panel.webview.postMessage({ command: 'data', data: objectsView, 'customLinks': links, 'events': eventsView });
                     break;
                 case ALObjectDesigner.PanelMode.Design:
                     this.objectInfo = await parser.updateCollectorItem(this.objectInfo);
@@ -283,7 +303,15 @@ export class ALPanel {
                     events = objectCollector.updateEventTargets(ALPanel.objectList, events);
                     //let events = generator.generateTableEvents(this.objectInfo.Symbol, this.objectInfo, true);
 
-                    await this._panel.webview.postMessage({ command: 'eventlist', 'data': this.objectInfo, 'events': events });
+
+                    let eventsObjView = events.map(m => {
+                        let result = JSON.parse(JSON.stringify(m));
+                        delete result.EventParameters;
+                        delete result.SymbolData;
+                        return result;
+                    });
+
+                    await this._panel.webview.postMessage({ command: 'eventlist', 'data': this.objectInfo, 'events': eventsObjView });
                     break;
             }
         } catch (e) {
