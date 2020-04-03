@@ -2,7 +2,7 @@
     "name": "al-object-designer",
     "displayName": "AL Object Designer",
     "description": "Object Designer optimized for (Dynamics 365 Business Central) AL Language development.",
-    "version": "0.1.5-beta2",
+    "version": "0.2.0",
     "publisher": "martonsagi",
     "license": "MIT",
     "author": {
@@ -48,11 +48,11 @@
             },
             {
                 "command": "alObjectDesigner.openALDesignWindow",
-                "title": "AL Designer"
+                "title": "AL Page Designer"
             },
             {
                 "command": "alObjectDesigner.generateALTables",
-                "title": "Generate AL Tables"
+                "title": "AL Object Designer: Generate AL Tables"
             },            {
                 "command": "alObjectDesigner.clearCache",
                 "title": "AL Object Designer: Clear Cache"

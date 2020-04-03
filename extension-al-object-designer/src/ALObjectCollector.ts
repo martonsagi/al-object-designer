@@ -27,7 +27,7 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
         "TableExtensions",
         "ControlAddIns",
         "EnumTypes",
-        "EnumExtensions",
+        "EnumExtensionTypes",
         "Interfaces",
         "DotNetPackages"
     ];
@@ -290,12 +290,17 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
                                 }
                             }
 
+                            let targetObject = t.TargetObject || "";
+                            if (["Enum", "Codeunit"].indexOf(lType) != -1 && t.ImplementedInterfaces) {
+                                targetObject = (t.ImplementedInterfaces as Array<string>).join(', ');
+                            }
+
                             return {
                                 "TypeId": j || "",
                                 "Type": lType || "",
                                 "Id": t.Id || "",
                                 "Name": t.Name || "",
-                                "TargetObject": t.TargetObject || "",
+                                "TargetObject": targetObject,
                                 'TargetObjectType': ["Enum", "Codeunit"].indexOf(lType) != -1 ? "Interface" : lType.replace('Extension', ''),
                                 "Publisher": json.Publisher || "Platform",
                                 "Application": json.Name || "",
