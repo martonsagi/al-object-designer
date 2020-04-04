@@ -1,16 +1,17 @@
-import { DalDefinitionProvider } from './DalDefinitionProvider';
-import { ALObjectCollectorCache } from './ALObjectCollectorCache';
 'use strict';
 
+import { DalDefinitionProvider } from './DalDefinitionProvider';
+import { ALObjectCollectorCache } from './ALObjectCollectorCache';
 import * as vscode from 'vscode';
 import { ALPanel } from './ALPanel';
 import { ALObjectDesigner } from './ALModules';
 import querystring = require('querystring');
 import { ALTableGenerator } from './ALTableGenerator';
 import { DalDocumentProvider } from './DalDocumentProvider';
+import { getVsConfig } from './utils';
 
 // this method is called when your extension is activated
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand('alObjectDesigner.openALWindow', async () => {
         try {
             await ALPanel.open(context.extensionPath, ALObjectDesigner.PanelMode.List);
@@ -62,6 +63,16 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.workspace.registerTextDocumentContentProvider('alObjectDesignerDal', new DalDocumentProvider()));
     context.subscriptions.push(vscode.languages.registerDefinitionProvider({ scheme: 'alObjectDesignerDal' }, new DalDefinitionProvider()));
     context.subscriptions.push(vscode.languages.registerDefinitionProvider({ scheme: 'al-preview' }, new DalDefinitionProvider()));
+
+    let preloadTask = async() => {
+        let vsSettings = getVsConfig();
+        if (vsSettings.useInternalNavigation === true) {
+            await ALPanel.preLoad();
+        }
+    };
+    context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders(preloadTask));
+
+    await preloadTask();
 }
 
 // this method is called when your extension is deactivated

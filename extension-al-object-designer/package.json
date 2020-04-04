@@ -36,7 +36,7 @@
         "onCommand:alObjectDesigner.openALDesignWindow",
         "onUri",
         "onLanguage:al",
-        "workspaceContains:app.json"
+        "workspaceContains:**/app.json"
     ],
     "icon": "images/icon.png",
     "main": "./out/extension",

@@ -133,6 +133,28 @@ export class ALPanel {
         ALPanel.currentPanel!._showPanel();
     }
 
+    public static async preLoad() {
+        vscode.window.withProgress({
+            location: vscode.ProgressLocation.Notification,
+            title: 'Preload: discovering AL Objects and Symbols...',
+            cancellable: true
+        }, async (progress, token) => {
+            token.onCancellationRequested(() => {
+                console.warn("AL Object Designer: user cancelled the AL Object Discovery.");
+            });
+
+            let startTime = Date.now();
+            let objectCollector = new ALObjectCollector();
+            ALPanel.objectList = await objectCollector.discover();
+            ALPanel.eventList = objectCollector.events;
+            let endTime = Date.now();
+            console.log(`AL Object Discovery took ${endTime - startTime}ms`);
+
+            return true;
+        });
+
+    }
+
     public _showPanel() {
         this._panel.reveal(vscode.ViewColumn.One);
     }
@@ -224,7 +246,7 @@ export class ALPanel {
             await this._update();
             let endTime = Date.now();
             console.log(`AL Object Discovery took ${endTime - startTime}ms`);
-            
+
             return true;
         });
     }
