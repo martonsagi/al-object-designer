@@ -78,6 +78,9 @@ export class App {
     this.vsSettings = vsSettings;
 
     this.gridOptions.rowHeight = this.getRowHeight();
+    this.gridOptions.getRowNodeId = function (data: any) {
+      return `${data.Type}-${data.Name}-${data.EventName}`;
+    };
     this.gridOptions.onGridReady = () => {
       this.api = this.gridOptions.api;
       this.columnApi = this.gridOptions.columnApi;
@@ -100,12 +103,26 @@ export class App {
       const message = event.data; // The JSON data our extension sent
       switch (message.command) {
         case 'data':
+          let origSelectedObject;
+          if (this.selectedObject) {
+            origSelectedObject = JSON.parse(JSON.stringify(this.selectedObject));
+          }
           this.data = message.data;
           this.customLinks = message.customLinks;
           this.events = message.events;
           this.loaded = true;
-          this.filterType("");
+          //this.filterType("");
+          this.search('');
           //this.api.hideOverlay();
+
+          if (origSelectedObject) {
+            let id = `${origSelectedObject.Type}-${origSelectedObject.Name}-${origSelectedObject.EventName}`;
+            let node = this.api.getRowNode(id);
+            this.api.refreshCells();
+            node.setSelected(true, true);
+            console.log('origSelectedObject', origSelectedObject, node, node.isSelected());
+          }
+
           this.api.sizeColumnsToFit();
           break;
         case 'designer':

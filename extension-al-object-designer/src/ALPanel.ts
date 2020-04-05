@@ -23,6 +23,7 @@ export class ALPanel {
     public currEvents?: Array<ALObjectDesigner.CollectorItem>;
 
     public static readonly viewType = 'alObjectDesigner';
+    public static preloadDone: boolean = false;
 
     private readonly _panel: vscode.WebviewPanel;
     private readonly _extensionPath: string;
@@ -133,10 +134,10 @@ export class ALPanel {
         ALPanel.currentPanel!._showPanel();
     }
 
-    public static async preLoad() {
+    public static async preLoad(message?: string) {
         vscode.window.withProgress({
             location: vscode.ProgressLocation.Notification,
-            title: 'Preload: discovering AL Objects and Symbols...',
+            title: message || 'Preload: discovering AL Objects and Symbols...',
             cancellable: true
         }, async (progress, token) => {
             token.onCancellationRequested(() => {
@@ -149,10 +150,10 @@ export class ALPanel {
             ALPanel.eventList = objectCollector.events;
             let endTime = Date.now();
             console.log(`AL Object Discovery took ${endTime - startTime}ms`);
+            ALPanel.preloadDone = true;
 
             return true;
         });
-
     }
 
     public _showPanel() {
@@ -192,26 +193,21 @@ export class ALPanel {
             }
         }, null, this._disposables);
 
+        this._registerALFileWatcher(mode);
+    }
+
+    private _registerALFileWatcher(mode: ALObjectDesigner.PanelMode) {
         if (mode === ALObjectDesigner.PanelMode.List) {
             let watcher = vscode.workspace.createFileSystemWatcher('**/*.al');
-            watcher.onDidCreate(async (e: vscode.Uri) => {
+            let alFileTask = async (e: vscode.Uri) => {
                 if (e.fsPath.indexOf('.vscode') == -1) {
                     await this.update();
                 }
-            });
+            };
 
-            watcher.onDidChange(async (e: vscode.Uri) => {
-                if (e.fsPath.indexOf('.vscode') == -1) {
-                    await this.update();
-                }
-            });
-
-            watcher.onDidDelete(async (e: vscode.Uri) => {
-                if (e.fsPath.indexOf('.vscode') == -1) {
-                    await this.update();
-                }
-            });
-
+            this._disposables.push(watcher.onDidCreate(alFileTask));
+            this._disposables.push(watcher.onDidChange(alFileTask));
+            this._disposables.push(watcher.onDidDelete(alFileTask));
             this._disposables.push(watcher);
         }
     }
@@ -260,8 +256,12 @@ export class ALPanel {
             let objectCollector = new ALObjectCollector();
             switch (this.panelMode) {
                 case ALObjectDesigner.PanelMode.List:
-                    ALPanel.objectList = await objectCollector.discover();
-                    ALPanel.eventList = objectCollector.events;
+                    if (ALPanel.preloadDone === true) {
+                        ALPanel.preloadDone = true;
+                    } else {
+                        ALPanel.objectList = await objectCollector.discover();
+                        ALPanel.eventList = objectCollector.events;
+                    }
                     let links: Array<ALObjectDesigner.TemplateItem> = [];
                     try {
                         let linkCollector = new ALTemplateCollector(this._extensionPath);
@@ -271,25 +271,19 @@ export class ALPanel {
                         console.log(`Cannot load templates: ${e}`);
                     }
 
-                    let objectsView = ALPanel.objectList.map(m => {
+                    let objectsView = ALPanel.objectList!.map(m => {
                         let result = JSON.parse(JSON.stringify(m));
                         delete result.EventParameters;
                         delete result.SymbolData;
                         return result;
                     });
 
-                    let eventsView = ALPanel.eventList.map(m => {
+                    let eventsView = ALPanel.eventList!.map(m => {
                         let result = JSON.parse(JSON.stringify(m));
                         delete result.EventParameters;
                         delete result.SymbolData;
                         return result;
                     });
-
-                    /*await utils.write(path.join('D:', 'objects_test_old.json'), JSON.stringify(ALPanel.objectList));
-                    await utils.write(path.join('D:', 'events_test_old.json'), JSON.stringify(ALPanel.eventList));
-
-                    await utils.write(path.join('D:', 'objects_test.json'), JSON.stringify(objectsView));
-                    await utils.write(path.join('D:', 'events_test.json'), JSON.stringify(eventsView));*/
 
                     await this._panel.webview.postMessage({ command: 'data', data: objectsView, 'customLinks': links, 'events': eventsView });
                     break;
