@@ -118,6 +118,11 @@
                     "default": false,
                     "description": "Enable integration with AL Test Runner extension (experimental)."
                 },
+                "alObjectDesigner.useCustomSnippets": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Enable custom AL Snippets dropdown that uses .altemplates folder (inactive by default)."
+                },
                 "alObjectDesigner.gridRowHeightOption": {
                     "type": "string",
                     "default": "large",

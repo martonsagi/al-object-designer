@@ -29,19 +29,15 @@
             
             <ui-switch secondary value.bind="showTests" click.trigger="setTestMethodView()" on-label="Tests"
                 off-label="Tests" size="5em"></ui-switch>
-
     
-            <!-- span>Launch:&nbsp;</span>
-            <ui-dropdown width="10em">
-                <ui-list-item value="1">Local</ui-list-item>
-                <ui-list-item value="2">Cloud</ui-list-item>
-            </ui-dropdown>
-            <ui-button primary click.trigger="compilerCommand('build')">Build</ui-button>
-            <ui-button success click.trigger="compilerCommand('run')">Publish</ui-button>
-            <ui-button secondary click.trigger="compilerCommand('debug')">Debug</ui-button -->
             <ui-filler></ui-filler>
-            <!-- span>&nbsp;Snippets:&nbsp;</span>
-            <ui-dropdown width="10em">
+
+            <span show.bind="loaded" style="margin-right: 10px; font-size: 1.2em" id="object-counter">
+                <span textcontent.bind="count || 0"></span> ${activeType} ${headerType}${count > 1 ? 's' : ''}
+            </span>
+            
+            <span if.bind="vsSettings.useCustomSnippets">&nbsp;Snippets:&nbsp;</span>
+            <ui-dropdown if.bind="vsSettings.useCustomSnippets" width="10em">
                 <ui-list-group label="Built-in">
                     <ui-list-item value="1" click.delegate="addNewObject('empty')">
                         New Object
@@ -53,11 +49,7 @@
                         ${link.title}
                     </ui-list-item>
                 </ui-list-group>
-            </ui-dropdown -->
-
-            <span show.bind="loaded" style="margin-right: 10px; font-size: 1.2em" id="object-counter">
-                <span textcontent.bind="count || 0"></span> ${activeType} ${headerType}${count > 1 ? 's' : ''}
-            </span>
+            </ui-dropdown>
 
             <ui-button secondary click.delegate="exportObjectList()" title="Export Object List to CSV"><i class="far fa-file-excel"></i></ui-button>
             <ui-button primary click.delegate="refreshDesigner()" title="Reload object list"><i class="fas fa-sync"></i></ui-button>

@@ -22,6 +22,11 @@ export class ALObjectCollectorCache implements ALObjectDesigner.ObjectCollectorC
     }
 
     async isCached(filepath: string, tagName?: string) {
+        // remove old cache folder: as of v0.2.0
+        let root = (workspace as any).workspaceFolders[0];
+        let oldPath = path.join(root.uri.fsPath, '.alcache', path.sep);
+        await fs.remove(oldPath);
+        
         let cache = await this.getCacheInfo(filepath, tagName);
         let stat = await fs.stat(filepath);
         let mtime = stat.mtime.getTime();

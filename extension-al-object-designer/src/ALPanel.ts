@@ -257,7 +257,7 @@ export class ALPanel {
             switch (this.panelMode) {
                 case ALObjectDesigner.PanelMode.List:
                     if (ALPanel.preloadDone === true) {
-                        ALPanel.preloadDone = true;
+                        ALPanel.preloadDone = false;
                     } else {
                         ALPanel.objectList = await objectCollector.discover();
                         ALPanel.eventList = objectCollector.events;
