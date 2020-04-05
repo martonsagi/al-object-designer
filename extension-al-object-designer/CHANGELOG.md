@@ -1,6 +1,30 @@
 # Change Log
 All notable changes to the "al-object-designer" extension.
 
+## 0.2.0 - 2020-04-06
+**Breaking changes:**
+- .alcache, .altemplates folders moved under .vscode
+- VSCode command prefixes change from 'extension.' to 'alObjectDesigner.'
+- Toolbar "Snippets" menu is hidden by default
+
+
+**Enhancement:**
+- Compact UI, Dark Mode
+- AL Interface support
+- Visual Studio Code Remote / Online support
+- Custom Symbol opening feature
+- 'Go to Definition' in Symbols
+- AL Test Runner integration
+- New "Clear Cache" command
+- New "Object Discovery" experience
+
+**Bugfixes:**
+- #48: Object Designer stucks in "Discovering Objects"
+- #49: Filter resets after interacting with object
+- #52: Open Objects in Multi-Root Workspace with Non-AL Folders
+- #55: InternalEvent - "Discovering Objects" forever!
+
+
 ## 0.1.4 - 2020-01-03
 **Enhancement:**
 - New view type: Event List

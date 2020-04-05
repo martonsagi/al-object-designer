@@ -12,6 +12,8 @@ C/Side Object Designer was something that the new AL development environment lac
 * **Export list to CSV:** current view (objects/events/subscriptions) including all records and visible columns - respecting filters - is exported.
 * **Live Update:** object list is automatically maintained as you create/change/delete objects or download symbols.
 * **Multi-Folder workspaces** are supported: e.g. a workspace with MainApp/TestApp folders.
+* **Visual Studio Code Online / Remote** platform support
+* **Go To Definition** support within application Symbol 
 * **Object Search**: filter by Object Type, Name or ID.
 * **Event Search**: filter by Object Type, Name, ID or Event Name.
 * **Copy/Paste Events**: copy event subscription definition to clipboard by clicking on Event Name.
@@ -27,6 +29,10 @@ C/Side Object Designer was something that the new AL development environment lac
 ### Optional integration with [AZ AL Dev Tools](https://marketplace.visualstudio.com/items?itemName=andrzejzwierzchowski.al-code-outline)
 * **AZ AL Wizard** button: launch AL objects wizards
 
+### Optional integration with [AL Test Runner](https://marketplace.visualstudio.com/items?itemName=jamespearson.al-test-runner)
+* **AL Test Runner** button: launch AL Test Runner
+
+
 ![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/media/preview1.PNG)
 
 ## Requirements
@@ -38,10 +44,14 @@ Optional dependencies:
   * If installed, `Run Object` function uses commands from this extension
 * [AZ AL Dev Tools](https://marketplace.visualstudio.com/items?itemName=andrzejzwierzchowski.al-code-outline)
   * If installed, `AZ AL Wizard` button appears at the top left corner.
+* [AL Test Runner](https://marketplace.visualstudio.com/items?itemName=jamespearson.al-test-runner)
+  * If installed, `AL Test Runner` button appears at the top left corner.
 
 ## VS Commands
+Prefix: `alObjectDesigner.`
 * **AL Object Designer**: opens Object Overview
 * **AL Page Designer**: opens up Page Designer for currently edited AL Object (Page)
+* **Clear Cache**: deletes `.alcache` folder
 * **Generate AL Tables**: create table objects by importing custom CSV format
 
 ![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/media/commands.png)
@@ -117,7 +127,10 @@ Selection;Option; ,First,Second
 |useCRS   |Run objects using CRS AL Extension (default)   |
 |logging   |Diagnostic logging to Developer Tools console   |
 |singleObjectPerFile   |Detection rule: one object per files   |
+|useInternalNavigation   |Use custom Go To Definition feature. (Auto-enabled on Linux).   |
 |useAZALDevTools   |Enable integration with AZ AL Dev Tools extension.   |
+|useALTestRunner   |Enable integration with AL Test Runner extension (experimental).   |
+|useCustomSnippets   |Enable custom AL Snippets dropdown that uses .altemplates folder (inactive by default).   |
 |gridRowHeightOption   |Row-height setting for Object list. Values: large (default), medium, small, custom.   |
 |gridRowHeightPixels   |Custom row height in pixels. gridRowHeightOption must be set to custom.   |
 
@@ -171,6 +184,19 @@ Selection;Option; ,First,Second
 ### Event List for Tables/Pages
 
 ![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/media/preview12_page_events.png)
+
+### VSCode Online Support
+
+![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/media/ALObjectDesignerOnline.gif)
+
+### AL Test Runner integration
+
+![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/media/preview14_ALTestRunner.png)
+
+### AL Interfaces
+
+![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/media/ALObjectDesignerInterfaces.gif)
+
 
 ### Real-time Page Designer (alpha)
 ![](https://raw.githubusercontent.com/martonsagi/al-object-designer/master/media/ALObjectDesigner_PageDesign.gif)
