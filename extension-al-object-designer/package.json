@@ -32,6 +32,7 @@
         "Other"
     ],
     "activationEvents": [
+        "onView:alObjectDesignerTree",
         "onCommand:alObjectDesigner.openALWindow",
         "onCommand:alObjectDesigner.openALDesignWindow",
         "onUri",
@@ -53,11 +54,11 @@
             {
                 "command": "alObjectDesigner.generateALTables",
                 "title": "AL Object Designer: Generate AL Tables"
-            },            {
+            },
+            {
                 "command": "alObjectDesigner.clearCache",
                 "title": "AL Object Designer: Clear Cache"
             }
-
         ],
         "menus": {
             "editor/title": [
@@ -71,6 +72,23 @@
                 {
                     "command": "alObjectDesigner.openALWindow",
                     "group": "2_workspace"
+                }
+            ]
+        },
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "al-object-designer-bar",
+                    "title": "AL Object Designer",
+                    "icon": "./images/fontawesome-list-alt-regular.svg"
+                }
+            ]
+        },
+        "views": {
+            "al-object-designer-bar": [
+                {
+                    "id": "alObjectDesignerTree",
+                    "name": "AL Object Designer"
                 }
             ]
         },

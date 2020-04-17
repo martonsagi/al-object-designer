@@ -11,6 +11,7 @@ import { DalDocumentProvider } from './DalDocumentProvider';
 import { getVsConfig } from './utils';
 import { ALObjectCollector } from './ALObjectCollector';
 import { ALProjectCollector } from './ALProjectCollector';
+import { ALOpenTreeProvider } from './ALOpenTreeProvider';
 
 // this method is called when your extension is activated
 export async function activate(context: vscode.ExtensionContext) {
@@ -64,6 +65,7 @@ export async function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.workspace.registerTextDocumentContentProvider('alObjectDesignerDal', new DalDocumentProvider()));
     context.subscriptions.push(vscode.languages.registerDefinitionProvider({ scheme: 'alObjectDesignerDal' }, new DalDefinitionProvider()));
     context.subscriptions.push(vscode.languages.registerDefinitionProvider({ scheme: 'al-preview' }, new DalDefinitionProvider()));
+    context.subscriptions.push(vscode.window.registerTreeDataProvider('alObjectDesignerTree', new ALOpenTreeProvider()));
 
     let vsSettings = getVsConfig();
     if (vsSettings.useInternalNavigation === true) {
