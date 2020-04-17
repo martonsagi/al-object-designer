@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to the "al-object-designer" extension.
 
+## 0.2.1 - 2020-04-17
+**Enhancement:**
+ - #58 Sidebar Icon in order to open Object Designer quickly
+ - Find Usage of Event Publishers
+
 ## 0.2.0 - 2020-04-06
 **Breaking changes:**
 - .alcache, .altemplates folders moved under .vscode
