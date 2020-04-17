@@ -447,6 +447,10 @@ export class App {
     this.sendCommand(element, 'CopyEvent');
   }
 
+  showEventUsage(element) {
+    this.sendCommand(element, 'FindUsage');
+  }
+
   designerFieldOnClick(event) {
     console.log(event);
   }

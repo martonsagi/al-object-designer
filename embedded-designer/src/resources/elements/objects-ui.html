@@ -51,6 +51,10 @@
                             class="fas fa-eye"></i>
                             Events</li>
                         <li show.bind="showEvents"
+                            click.trigger="showEventUsage(selectedObject)"><i
+                                class="fas fa-eye"></i>
+                            Find Usage</li>
+                        <li show.bind="showEvents"
                             click.trigger="showEventParams(selectedObject)"><i
                                 class="fas fa-copy"></i>
                             Copy Event</li>
