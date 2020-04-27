@@ -2,7 +2,7 @@
     "name": "al-object-designer",
     "displayName": "AL Object Designer",
     "description": "Object Designer optimized for (Dynamics 365 Business Central) AL Language development.",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "publisher": "martonsagi",
     "license": "MIT",
     "author": {
@@ -115,6 +115,11 @@
                     "type": "boolean",
                     "default": false,
                     "description": "Detection rule: one object per files."
+                },
+                "alObjectDesigner.pasteAllEventParameters": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Paste all event parameters when copying Event Publishers (default)."
                 },
                 "alObjectDesigner.useInternalNavigation": {
                     "type": "boolean",

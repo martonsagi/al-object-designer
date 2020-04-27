@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to the "al-object-designer" extension.
 
+## 0.2.2 - 2020-04-27
+**Enhancement:**
+ - New option: "Paste All Event Parameters": Paste all event parameters when copying Event Publishers (default).
+
 ## 0.2.1 - 2020-04-17
 **Enhancement:**
  - #58 Sidebar Icon in order to open Object Designer quickly

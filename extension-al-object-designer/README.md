@@ -127,6 +127,7 @@ Selection;Option; ,First,Second
 |useCRS   |Run objects using CRS AL Extension (default)   |
 |logging   |Diagnostic logging to Developer Tools console   |
 |singleObjectPerFile   |Detection rule: one object per files   |
+|pasteAllEventParameters   |Paste all event parameters when copying Event Publishers (default).   |
 |useInternalNavigation   |Use custom Go To Definition feature. (Auto-enabled on Linux).   |
 |useAZALDevTools   |Enable integration with AZ AL Dev Tools extension.   |
 |useALTestRunner   |Enable integration with AL Test Runner extension (experimental).   |
@@ -141,7 +142,6 @@ Selection;Option; ,First,Second
 * Design feature works only with pages, the window is empty when selecting page extensions.
 * View (Go to definition) is active for all object types, however, it will not work with Control Add-ins for example. 
 * Event listing may include commented out event publishers/subscriptions.
-* It might be too bright for dark themes. 
 
 ## Preview
 

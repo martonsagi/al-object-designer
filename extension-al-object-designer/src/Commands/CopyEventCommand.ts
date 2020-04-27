@@ -2,12 +2,15 @@ import * as vscode from 'vscode';
 import { ALPanel } from "../ALPanel";
 import { ALCommandBase } from "./Base/ALCommandBase";
 import { ALObjectDesigner } from '../ALModules';
+import * as utils from '../utils';
 const clipboardy = require('clipboardy');
 
 export class CopyEventCommand extends ALCommandBase {
+    protected _vsSettings: any;
 
     public constructor(lObjectDesigner: ALPanel, lExtensionPath: string) {
         super(lObjectDesigner, lExtensionPath);
+        this._vsSettings = utils.getVsConfig();
     }
 
     getEventSnippet(objEvent: any) {
@@ -16,27 +19,29 @@ export class CopyEventCommand extends ALCommandBase {
         //let objEvent = message.EventData;
         let eventParams = [];
 
-        if (objectRow.EventParameters) {
-            for (let eventParam of objectRow.EventParameters) {
-                let paramType: any = eventParam.TypeDefinition;
-                let paramTypeStr = `${paramType.Name}`;
-                if (paramType.Subtype) {
-                    if (!paramType.IsEmpty) {
-                        let objectList = ALPanel.objectList as Array<ALObjectDesigner.CollectorItem>;
-                        let object = objectList.find(f => {
-                            let lType = paramType.Name == 'Record' ? 'Table' : paramType.Name;
-                            return f.Type == lType && f.Id == paramType.Subtype.Id;
-                        });
+        if (this._vsSettings.pasteAllEventParameters === true) {
+            if (objectRow.EventParameters) {
+                for (let eventParam of objectRow.EventParameters) {
+                    let paramType: any = eventParam.TypeDefinition;
+                    let paramTypeStr = `${paramType.Name}`;
+                    if (paramType.Subtype) {
+                        if (!paramType.IsEmpty) {
+                            let objectList = ALPanel.objectList as Array<ALObjectDesigner.CollectorItem>;
+                            let object = objectList.find(f => {
+                                let lType = paramType.Name == 'Record' ? 'Table' : paramType.Name;
+                                return f.Type == lType && f.Id == paramType.Subtype.Id;
+                            });
 
-                        if (object) {
-                            paramType.Subtype.Id = `"${object.Name}"`;
+                            if (object) {
+                                paramType.Subtype.Id = `"${object.Name}"`;
+                            }
+
+                            paramTypeStr = `${paramType.Name} ${paramType.Subtype.Id}`
                         }
-
-                        paramTypeStr = `${paramType.Name} ${paramType.Subtype.Id}`
                     }
-                }
 
-                eventParams.push(`${eventParam.IsVar ? 'var ' : ''}${eventParam.Name}: ${paramTypeStr}`);
+                    eventParams.push(`${eventParam.IsVar ? 'var ' : ''}${eventParam.Name}: ${paramTypeStr}`);
+                }
             }
         }
 
