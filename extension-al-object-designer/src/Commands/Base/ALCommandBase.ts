@@ -19,6 +19,6 @@ export class ALCommandBase {
 
     async showMessage(message: any) {
         if (this.showInfo === true)
-            await vscode.window.showInformationMessage(`${message.Type} ${message.Id} ${message.Name} opened.`);
+            vscode.window.showInformationMessage(`${message.Type} ${message.Id} ${message.Name} opened.`);
     }
 }

@@ -145,7 +145,7 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
 
         // update event targets
         this.events = this.updateEventTargets(objs, this.events);
-       
+
         objs = utils.uniqBy(objs, JSON.stringify);
 
         objs.sort(
@@ -236,7 +236,7 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
                     // Process local eventpublishers
                     if (objType.toLowerCase() == 'codeunit') {
                         let levents = await this.extractLocalEvents(ucType, newItem, info);
-                        this.events = this.events.concat(levents);                        
+                        this.events = this.events.concat(levents);
                     }
                 }
             }
@@ -344,12 +344,11 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
 
                     if (parts.length > 2) {
                         let objType = parts[0];
-                        let ucType = utils.toUpperCaseFirst(objType);
+                        let sliceIndex = ["interface", "profile", "controladdin", "dotnet"].indexOf(objType.toLowerCase()) != -1 ? 1 : 2;
                         let extendIndex = parts.indexOf('extends') != -1 ? parts.indexOf('extends') : parts.indexOf('implements');
                         let nameEndIndex = extendIndex != -1 ? extendIndex : parts.length;
-                        let name: string = parts.slice(2, nameEndIndex).join(" ").trim();
+                        let name: string = parts.slice(sliceIndex, nameEndIndex).join(" ").trim();
                         name = utils.replaceAll(name, '"', '');
-                        ucType = ucType.replace('extension', 'Extension');
 
                         let alObj: ALObjectDesigner.CollectorItem = objs.find(f => f.Type.toLowerCase() == objType.toLowerCase() && f.Name.toLowerCase() == name.toLowerCase());
                         if (alObj) {
