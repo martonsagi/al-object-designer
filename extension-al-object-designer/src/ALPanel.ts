@@ -342,7 +342,7 @@ export class ALPanel {
         // And get the special URI to use with the webview
         const htmlOnDiskPath = vscode.Uri.file(path.join(this._extensionPath, 'designer', 'index.html'));
         const appOnDiskPath = vscode.Uri.file(path.join(this._extensionPath, 'designer', 'scripts', 'vendor-bundle.js'));
-        const appJsSrc: any = appOnDiskPath.with({ scheme: 'vscode-resource' });
+        const appJsSrc: any = this._panel.webview.asWebviewUri(appOnDiskPath);
 
         let content: string = (await utils.read(htmlOnDiskPath.fsPath) as string);
         content = content.replace('scripts/vendor-bundle.js', appJsSrc);
