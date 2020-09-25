@@ -426,7 +426,7 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
             let TargetType = subsParts[0].split('::')[1];
             let TargetObj = '';
             if (subsParts[1].indexOf('::') != -1) {
-                TargetObj = subsParts[1].split('::')[1].replace(/\"/, '').trim();
+                TargetObj = subsParts[1].split('::')[1].replace(/\"/g, '').trim();
             } else {
                 TargetObj = subsParts[1];
             }
