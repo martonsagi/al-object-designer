@@ -4,7 +4,7 @@ All notable changes to the "al-object-designer" extension.
 ## 0.2.3 - 2020-09-25
 
 **Bugfixes**:
- - Objectdiscovery related fixes
+ - Object discovery related fixes
 
 ## 0.2.2 - 2020-04-27
 **Enhancement:**
