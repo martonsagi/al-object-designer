@@ -335,25 +335,30 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
                     let contents: string = await zip.file(sourceFile).async('string');
                     let line = utils.getObjectHeadersFromText(contents);
 
-                    let parts = line[0].split(" ");
+                    if (line[0]) {
 
-                    if (parts.length == 2) {
-                        parts[2] = parts[1];
-                        parts[1] = '';
-                    }
+                        let parts = line[0].split(" ");
 
-                    if (parts.length > 2) {
-                        let objType = parts[0];
-                        let sliceIndex = ["interface", "profile", "controladdin", "dotnet"].indexOf(objType.toLowerCase()) != -1 ? 1 : 2;
-                        let extendIndex = parts.indexOf('extends') != -1 ? parts.indexOf('extends') : parts.indexOf('implements');
-                        let nameEndIndex = extendIndex != -1 ? extendIndex : parts.length;
-                        let name: string = parts.slice(sliceIndex, nameEndIndex).join(" ").trim();
-                        name = utils.replaceAll(name, '"', '');
-
-                        let alObj: ALObjectDesigner.CollectorItem = objs.find(f => f.Type.toLowerCase() == objType.toLowerCase() && f.Name.toLowerCase() == name.toLowerCase());
-                        if (alObj) {
-                            alObj.SymbolData!.SymbolZipPath = sourceFile;
+                        if (parts.length == 2) {
+                            parts[2] = parts[1];
+                            parts[1] = '';
                         }
+
+                        if (parts.length > 2) {
+                            let objType = parts[0];
+                            let sliceIndex = ["interface", "profile", "controladdin", "dotnet"].indexOf(objType.toLowerCase()) != -1 ? 1 : 2;
+                            let extendIndex = parts.indexOf('extends') != -1 ? parts.indexOf('extends') : parts.indexOf('implements');
+                            let nameEndIndex = extendIndex != -1 ? extendIndex : parts.length;
+                            let name: string = parts.slice(sliceIndex, nameEndIndex).join(" ").trim();
+                            name = utils.replaceAll(name, '"', '');
+
+                            let alObj: ALObjectDesigner.CollectorItem = objs.find(f => f.Type.toLowerCase() == objType.toLowerCase() && f.Name.toLowerCase() == name.toLowerCase());
+                            if (alObj) {
+                                alObj.SymbolData!.SymbolZipPath = sourceFile;
+                            }
+                        }
+                    } else {
+                        console.log('Error in re-process zip for internal paths: Object header was empty.', sourceFile, line);
                     }
                 }
             }
