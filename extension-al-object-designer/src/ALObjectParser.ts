@@ -432,6 +432,8 @@ export class ALObjectParser implements ALObjectDesigner.ObjectParser {
             }
             result.TargetObjectType = TargetType;
             result.TargetObject = TargetObj;
+            result.TargetEventName = subsParts[2].trim().replace(/["']/g, '')
+            result.TargetElementName = subsParts[3].trim().replace(/["']/g, '')
         }
 
         if (parts[6].trim() != '') {

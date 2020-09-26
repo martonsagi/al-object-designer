@@ -258,6 +258,7 @@ export module ALObjectDesigner {
         Id: number;
         Name: string;
         TargetObject?: string;
+        TargetObjectType?: string;
         Publisher: string;
         Application: string;
         Version: string;
@@ -267,8 +268,13 @@ export module ALObjectDesigner {
         FsPath: string;
         EventName: string;
         EventType?: string;
-        Events?: Array<any>;
+        EventPublisher?: boolean;
+        TargetEventName?: string;
+        TargetElementName?: string;
         EventParameters?: Array<ALSymbolPackage.Parameter>;
+        Events?: Array<any>;
+        TestMethod?: boolean;
+        FieldName?: string;
         SymbolData?: SymbolData;
         Symbol: any;
         SubType: string;

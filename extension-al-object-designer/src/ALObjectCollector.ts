@@ -227,7 +227,17 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
                         "CanCreatePage": ['Table', 'TableExtension'].indexOf(ucType) != -1,
                         "FsPath": file,
                         "EventName": 'not_an_event',
+                        // EventType?: string;
+                        // EventPublisher?: boolean;
+                        // TargetEventName?: string;
+                        // TargetElementName?: string;
+                        // EventParameters?: Array<ALSymbolPackage.Parameter>;
+                        // "Events": levents,
+                        // TestMethod: boolean
+                        // FieldName: string;
                         "SymbolData": null,
+                        // Symbol: any;
+                        // Subtype: string;
                         "Scope": 'Extension'
                     };
 
@@ -309,8 +319,14 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
                                 "CanDesign": ["Page"].indexOf(lType) != -1,
                                 "CanCreatePage": ['Table', 'TableExtension'].indexOf(lType) != -1,
                                 "FsPath": "",
-                                //"Events": levents,
                                 "EventName": 'not_an_event',
+                                // EventType?: string;
+                                // EventPublisher?: boolean;
+                                // TargetEventName?: string;
+                                // TargetElementName?: string;
+                                // EventParameters?: Array<ALSymbolPackage.Parameter>;
+                                // "Events": levents,
+                                // TestMethod: boolean
                                 "FieldName": "",
                                 "SymbolData": {
                                     'Path': filePath,
@@ -318,6 +334,8 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
                                     'Index': index,
                                     'SymbolZipPath': ''
                                 },
+                                // Symbol: any;
+                                // Subtype: string;
                                 "Scope": scope
                             };
                         });
@@ -396,21 +414,27 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
                         "Type": type || "",
                         "Id": item.Id || "",
                         "Name": item.Name || "",
-                        'TargetObjectType': m.TargetObjectType,
                         "TargetObject": m.TargetObject || "",
+                        'TargetObjectType': m.TargetObjectType,
                         "Publisher": info.Publisher,
                         "Application": info.Application || "",
                         "Version": info.Version || "",
                         "CanExecute": false,
                         "CanDesign": false,
+                        // CanCreatePage: boolean;
                         "FsPath": item.FsPath,
                         'EventName': m.Name,
                         'EventType': m.EventType,
                         'EventPublisher': (m.EventType as string).endsWith('Event'),
-                        'TestMethod': m.EventType === 'Test',
+                        'TargetEventName': m.TargetEventName || "",
+                        'TargetElementName': m.TargetElementName || "",
                         'EventParameters': m.Parameters,
+                        // Events: Array<any>
+                        'TestMethod': m.EventType === 'Test',
                         "FieldName": "",
                         "SymbolData": null,
+                        // Symbol: any
+                        // SubType: string
                         "Scope": 'Extension'
                     }
                 });
@@ -434,9 +458,15 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
                     if (attr) {
                         let targetObj = '';
                         let targetObjType = '';
+                        let targetEventName = '';
+                        let targetElementName = '';
                         if (attr.Arguments.length > 2) {
                             targetObj = attr.Arguments[1].Value;
                             targetObjType = attr.Arguments[0].Value;
+                            if (attr.Arguments.length >= 4) {
+                                targetEventName = attr.Arguments[2].Value
+                                targetElementName = attr.Arguments[3].Value
+                            }
                         }
 
                         levents.push({
@@ -444,21 +474,28 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
                             'Type': type,
                             'Id': item.Id,
                             'Name': item.Name,
-                            'TargetObjectType': targetObjType,
                             "TargetObject": targetObj || "",
+                            'TargetObjectType': targetObjType,
                             "Publisher": info.Publisher || "Platform",
                             "Application": info.Application || "",
                             "Version": info.Version || "",
                             "CanExecute": false,
                             "CanDesign": false,
+                            // CanCreatePage: boolean
                             "FsPath": "",
                             'EventName': m.Name,
                             'EventType': attr.Name,
                             'EventPublisher': attr.Name.toLowerCase() != 'eventsubscriber',
+                            'TargetEventName': targetEventName || "",
+                            'TargetElementName': targetElementName || "",
                             'EventParameters': m.Parameters,
-                            'TargetEventName': attr.Arguments[2],
+                            // Events: Array<any>
+                            // TestMethod: boolean
                             "FieldName": "",
                             "SymbolData": null
+                            // Symbol: any
+                            // SubType: string
+                            // Scope: string
                         });
                     }
                 }
