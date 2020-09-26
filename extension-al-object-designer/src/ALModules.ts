@@ -300,6 +300,7 @@ export module ALObjectDesigner {
         Path: string = '';
         Timestamp: number = 0;
         Items: Array<CollectorItem> = [];
+        CreatedwithVersion: string = '';
     }
 
     export interface Collector<T> {

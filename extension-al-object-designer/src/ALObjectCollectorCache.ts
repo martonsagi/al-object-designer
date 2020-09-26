@@ -3,9 +3,10 @@ import * as utils from './utils';
 import { ALObjectDesigner } from "./ALModules";
 import CollectorItem = ALObjectDesigner.CollectorItem;
 import ObjectCollectorCacheInfo = ALObjectDesigner.ObjectCollectorCacheInfo;
-import { workspace } from 'vscode';
+import { extensions, workspace } from 'vscode';
 const fs = require('fs-extra');
 const hash = require('hash.js');
+const semver = require('semver');
 
 export class ALObjectCollectorCache implements ALObjectDesigner.ObjectCollectorCache {
 
@@ -27,12 +28,17 @@ export class ALObjectCollectorCache implements ALObjectDesigner.ObjectCollectorC
         let oldPath = path.join(root.uri.fsPath, '.alcache', path.sep);
         if (await utils.folderExists(oldPath)) {
             await fs.remove(oldPath);
-        }        
-        
+        }
+
         let cache = await this.getCacheInfo(filepath, tagName);
         let stat = await fs.stat(filepath);
         let mtime = stat.mtime.getTime();
 
+        let cacheWasChangedInVersion: string = '0.2.4';
+        if (!cache.content.CreatedwithVersion || semver.gte(cacheWasChangedInVersion, cache.content.CreatedwithVersion)) {
+            await this.clearCache();
+            cache.invalid = true;
+        }
         return cache.invalid === false && mtime <= cache.content.Timestamp;
     }
 
@@ -40,9 +46,10 @@ export class ALObjectCollectorCache implements ALObjectDesigner.ObjectCollectorC
         let cache = await this.getCacheInfo(filepath, tagName);
         let stat = await fs.stat(filepath);
 
-        let row = cache.content;
+        let row: ObjectCollectorCacheInfo = cache.content;
         row.Timestamp = stat.mtime.getTime();
         row.Items = data;
+        row.CreatedwithVersion = extensions.getExtension('martonsagi.al-object-designer')?.packageJSON.version;
 
         await fs.writeJson(cache.path, row);
     }
@@ -57,7 +64,7 @@ export class ALObjectCollectorCache implements ALObjectDesigner.ObjectCollectorC
     async getCacheInfo(filepath: string, tagName?: string) {
         let root = (workspace as any).workspaceFolders[0];
         let fPath = path.join(root.uri.fsPath, '.vscode', '.alcache', path.sep);
-        let fileHash = hash.sha256().update(filepath+(this._vsSettings.showStandardEvents === true ? 1 : 0)).digest('hex');
+        let fileHash = hash.sha256().update(filepath + (this._vsSettings.showStandardEvents === true ? 1 : 0)).digest('hex');
         let jsonFile = path.join(fPath, `cache_${fileHash}${tagName || ''}.json`);
         let cacheInfo: ObjectCollectorCacheInfo = new ObjectCollectorCacheInfo();
         let isInvalid = false;
