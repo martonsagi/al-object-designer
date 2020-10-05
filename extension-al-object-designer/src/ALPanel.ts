@@ -199,15 +199,17 @@ export class ALPanel {
     private _registerALFileWatcher(mode: ALObjectDesigner.PanelMode) {
         if (mode === ALObjectDesigner.PanelMode.List) {
             let watcher = vscode.workspace.createFileSystemWatcher('**/*.al');
-            let alFileTask = async (e: vscode.Uri) => {
+            let alFileTask = async (e: vscode.Uri, type: string) => {
                 if (e.fsPath.indexOf('.vscode') == -1) {
-                    await this.update();
+                    if (this._vsSettings.disableFileWatcherOnChange !== true) {
+                        await this.update();
+                    }
                 }
             };
 
-            this._disposables.push(watcher.onDidCreate(alFileTask));
-            this._disposables.push(watcher.onDidChange(alFileTask));
-            this._disposables.push(watcher.onDidDelete(alFileTask));
+            this._disposables.push(watcher.onDidCreate(e => alFileTask(e, 'add')));
+            this._disposables.push(watcher.onDidChange(e => alFileTask(e, 'change')));
+            this._disposables.push(watcher.onDidDelete(e => alFileTask(e, 'unlink')));
             this._disposables.push(watcher);
         }
     }

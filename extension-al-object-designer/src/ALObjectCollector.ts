@@ -98,13 +98,14 @@ export class ALObjectCollector implements ALObjectDesigner.ObjectCollector {
             .filter((val, i, arr) => {
                 let result = arr.filter((f, j) => f.appName == val.appName);
                 if (result.length > 0) {
+                    let lastVersion = result.pop();
                     let checkVersionArr = arr.filter((f, j) => f.appName == val.appName);
                     let versions = [...new Set(checkVersionArr.map(item => item.version))];
-                    if (versions && versions.length > 1) {
-                        window.showWarningMessage(`Multiple package versions found: ${val.appName.replace(/_/g, ' ').slice(0, -1)}. Using ${result[0].version}.`);
+                    if (versions && versions.length > 1 && this._vsSettings.multiplePackageVersionWarning === true) {
+                        window.showWarningMessage(`Multiple package versions found: ${val.appName.replace(/_/g, ' ').slice(0, -1)}. Using ${lastVersion!.version}.`);
                     }
 
-                    return arr.indexOf(result[0]) === i;
+                    return arr.indexOf(lastVersion!) === i;
                 }
 
                 return false;
