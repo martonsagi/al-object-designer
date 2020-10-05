@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to the "al-object-designer" extension.
 
+## 0.2.4 - 2020-10-05
+
+**Enhancement:**
+ - New settings:
+   - disableFileWatcherOnChange: This options prevents filewatcher to update object cache on every file change. Useful for BaseApp customization.
+   - multiplePackageVersionWarning: Display warning if multiple versions found of same app packages (e.g. Application_14.x and Application_16.x).
+
 ## 0.2.3 - 2020-09-25
 
 **Bugfixes**:
