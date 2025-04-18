@@ -154,9 +154,58 @@ export async function getObjectHeaders(filePath: string) {
     return result;
 }
 
+/*
+// Regex Test
+import { getObjectHeadersFromText } from './utils';
+
+describe('getObjectHeadersFromText', () => {
+    it('should extract valid object headers from file content', () => {
+        const fileContent = `
+            codeunit 50100 MyCodeunit
+            pageextension 70000 MyPageExtension
+            table 12345 MyTable
+            invalidObjectType 123 InvalidObject
+        `;
+
+        const expectedHeaders = [
+            'codeunit 50100 MyCodeunit',
+            'pageextension 70000 MyPageExtension',
+            'table 12345 MyTable'
+        ];
+
+        const result = getObjectHeadersFromText(fileContent);
+
+        expect(result).toEqual(expectedHeaders);
+    });
+
+    it('should return an empty array if no valid object headers are present', () => {
+        const fileContent = `
+            invalidObjectType 123 InvalidObject
+            random text here
+        `;
+
+        const expectedHeaders: string[] = [];
+
+        const result = getObjectHeadersFromText(fileContent);
+
+        expect(result).toEqual(expectedHeaders);
+    });
+
+    it('should handle empty input gracefully', () => {
+        const fileContent = ``;
+
+        const expectedHeaders: string[] = [];
+
+        const result = getObjectHeadersFromText(fileContent);
+
+        expect(result).toEqual(expectedHeaders);
+    });
+});
+*/
+
 export function getObjectHeadersFromText(fileContent: string) {
     //let pattern = /([a-z]+)\s([0-9]+|.*?)\s?(.*)/gm;
-    let pattern = /\b^(codeunit|page|pageextension|pagecustomization|dotnet|enum|interface|enumextension|query|report|table|tableextension|xmlport|profile|controladdin)\s([0-9]+|.*?)\s?(.*)/gmi;
+    let pattern = /^(codeunit|page|pageextension|pagecustomization|dotnet|enum|interface|enumextension|query|report|table|tableextension|xmlport|profile|controladdin)\s([0-9]+|.*?)\s?(.*)/gmi;
     let matches = getAllMatches(pattern, fileContent);
 
     let result = matches.map(m => m[0]);
